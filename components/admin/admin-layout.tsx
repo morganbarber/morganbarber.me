@@ -16,6 +16,7 @@ import {
   Menu,
   X,
   Terminal,
+  Inbox,
 } from "lucide-react"
 import { supabase } from "@/lib/supabase-client"
 import { isAdmin } from "@/lib/admin-auth"
@@ -24,6 +25,7 @@ const adminNavItems = [
   { name: "Dashboard", path: "/admin", icon: LayoutDashboard },
   { name: "Blog Posts", path: "/admin/posts", icon: FileText },
   { name: "Projects", path: "/admin/projects", icon: FolderOpen },
+  { name: "Messages", path: "/admin/messages", icon: Inbox },
   { name: "Users", path: "/admin/users", icon: Users },
   { name: "Newsletter", path: "/admin/newsletter", icon: Mail },
   { name: "Comments", path: "/admin/comments", icon: MessageSquare },

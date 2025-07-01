@@ -6,6 +6,7 @@ import { useState } from "react"
 import TerminalWindow from "@/components/terminal-window"
 import TypingText from "@/components/typing-text"
 import { Mail, Linkedin, Github, MapPin, Send, CheckCircle } from "lucide-react"
+import { supabase } from "@/lib/supabase-client"
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -16,22 +17,40 @@ export default function Contact() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [error, setError] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setError("")
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      const { error } = await supabase.from("contact_messages").insert([
+        {
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          subject: formData.subject.trim(),
+          message: formData.message.trim(),
+        },
+      ])
 
-    setIsSubmitting(false)
-    setIsSubmitted(true)
+      if (error) {
+        throw error
+      }
 
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false)
-      setFormData({ name: "", email: "", subject: "", message: "" })
-    }, 3000)
+      setIsSubmitted(true)
+
+      // Reset form after 3 seconds
+      setTimeout(() => {
+        setIsSubmitted(false)
+        setFormData({ name: "", email: "", subject: "", message: "" })
+      }, 3000)
+    } catch (error: any) {
+      console.error("Error submitting message:", error)
+      setError("Failed to send message. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -131,6 +150,8 @@ export default function Contact() {
                     />
                   </div>
 
+                  {error && <div className="text-red-300 text-sm bg-red-400/10 p-2 rounded">{error}</div>}
+
                   <button
                     type="submit"
                     disabled={isSubmitting}
@@ -165,7 +186,7 @@ export default function Contact() {
                     className="flex items-center space-x-3 text-green-400 hover:text-green-300 transition-colors group"
                   >
                     <Mail className="h-5 w-5 group-hover:scale-110 transition-transform" />
-                    <span>morgan@morganbarber.me</span>
+                    <span>morgan.barber@example.com</span>
                   </a>
 
                   <a
