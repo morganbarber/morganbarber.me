@@ -22,11 +22,6 @@ export default function TerminalWindow({ title = "terminal", children, className
           </div>
           <span className="text-green-400 font-mono text-sm ml-4">{title}</span>
         </div>
-        <div className="flex items-center space-x-1 text-green-400/60">
-          <Minimize2 className="w-4 h-4 hover:text-green-400 cursor-pointer transition-colors" />
-          <Maximize2 className="w-4 h-4 hover:text-green-400 cursor-pointer transition-colors" />
-          <X className="w-4 h-4 hover:text-red-400 cursor-pointer transition-colors" />
-        </div>
       </div>
 
       {/* Terminal Content */}

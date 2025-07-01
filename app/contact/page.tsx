@@ -165,7 +165,7 @@ export default function Contact() {
                     className="flex items-center space-x-3 text-green-400 hover:text-green-300 transition-colors group"
                   >
                     <Mail className="h-5 w-5 group-hover:scale-110 transition-transform" />
-                    <span>morgan.barber@example.com</span>
+                    <span>morgan@morganbarber.me</span>
                   </a>
 
                   <a
