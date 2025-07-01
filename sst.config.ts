@@ -3,7 +3,7 @@
 export default $config({
   app(input) {
     return {
-      name: "morganbarber.me",
+      name: "morganbarber-me",
       removal: input?.stage === "production" ? "retain" : "remove",
       protect: ["production"].includes(input?.stage),
       home: "aws",
