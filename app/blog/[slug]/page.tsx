@@ -6,7 +6,7 @@ import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import TerminalWindow from "@/components/terminal-window"
-import { Calendar, Clock, Tag, ArrowLeft, Heart, MessageCircle, Share2, User } from "lucide-react"
+import { Calendar, Clock, Tag, ArrowLeft, Heart, MessageCircle, Share2, CheckCircle, User } from "lucide-react"
 import { supabase } from "@/lib/supabase-client"
 import type { Database } from "@/lib/supabase"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
@@ -28,6 +28,7 @@ export default function BlogPost() {
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [newComment, setNewComment] = useState("")
   const [submittingComment, setSubmittingComment] = useState(false)
+  const [shareSuccess, setShareSuccess] = useState(false)
 
   useEffect(() => {
     fetchPost()
@@ -149,6 +150,25 @@ export default function BlogPost() {
     setSubmittingComment(false)
   }
 
+  const handleShare = async () => {
+    try {
+      const url = window.location.href
+      await navigator.clipboard.writeText(url)
+      setShareSuccess(true)
+      setTimeout(() => setShareSuccess(false), 2000)
+    } catch (error) {
+      // Fallback for browsers that don't support clipboard API
+      const textArea = document.createElement("textarea")
+      textArea.value = window.location.href
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand("copy")
+      document.body.removeChild(textArea)
+      setShareSuccess(true)
+      setTimeout(() => setShareSuccess(false), 2000)
+    }
+  }
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -250,9 +270,23 @@ export default function BlogPost() {
                 </div>
               </div>
 
-              <button className="flex items-center space-x-2 px-3 py-2 rounded text-green-400 hover:bg-green-400/10 transition-colors">
-                <Share2 className="h-4 w-4" />
-                <span>Share</span>
+              <button
+                onClick={handleShare}
+                className={`flex items-center space-x-2 px-3 py-2 rounded transition-colors ${
+                  shareSuccess ? "text-green-300 bg-green-400/20" : "text-green-400 hover:bg-green-400/10"
+                }`}
+              >
+                {shareSuccess ? (
+                  <>
+                    <CheckCircle className="h-4 w-4" />
+                    <span>Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="h-4 w-4" />
+                    <span>Share</span>
+                  </>
+                )}
               </button>
             </div>
           </article>

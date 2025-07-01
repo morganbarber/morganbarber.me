@@ -1,12 +1,13 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import AdminLayout from "@/components/admin/admin-layout"
 import TerminalWindow from "@/components/terminal-window"
 import { Save, ArrowLeft, Plus, X, Github, ExternalLink, Lock, Unlock } from "lucide-react"
 import { supabase } from "@/lib/supabase-client"
+import { ensureAdminProfile } from "@/lib/admin-auth"
 
 export default function NewProject() {
   const router = useRouter()
@@ -23,6 +24,11 @@ export default function NewProject() {
   const [newTech, setNewTech] = useState("")
   const [newFeature, setNewFeature] = useState("")
   const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    // Ensure admin profile exists when component mounts
+    ensureAdminProfile()
+  }, [])
 
   const addTech = () => {
     if (newTech.trim() && !formData.tech_stack.includes(newTech.trim())) {
@@ -63,14 +69,27 @@ export default function NewProject() {
     setSaving(true)
 
     try {
-      const { error } = await supabase.from("projects").insert([formData])
+      // Ensure admin profile exists before creating project
+      await ensureAdminProfile()
 
-      if (error) throw error
+      // Clean up the form data - remove empty strings from URLs
+      const cleanedData = {
+        ...formData,
+        github_url: formData.github_url.trim() || null,
+        demo_url: formData.demo_url.trim() || null,
+      }
+
+      const { error } = await supabase.from("projects").insert([cleanedData])
+
+      if (error) {
+        console.error("Supabase error:", error)
+        throw error
+      }
 
       router.push("/admin/projects")
     } catch (error: any) {
       console.error("Error saving project:", error)
-      alert("Error saving project: " + error.message)
+      alert("Error saving project: " + (error.message || "Unknown error"))
     } finally {
       setSaving(false)
     }
