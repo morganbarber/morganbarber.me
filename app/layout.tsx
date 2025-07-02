@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     title: "Morgan Barber - Cybersecurity Specialist",
     description:
       "Cybersecurity specialist with CompTIA certifications. Expert in network security, threat analysis, and technology innovation.",
-    images: ["/og-image.png"],
+    images: ["/icon-512.png"],
     creator: "@morganbarber",
   },
   robots: {
@@ -81,9 +81,8 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: "your-google-verification-code",
-    yandex: "your-yandex-verification-code",
-    yahoo: "your-yahoo-verification-code",
+    google: "-C8SIRhvHRLBIFSao9B-sYKltH2AfKhspnrhSmwtwuw",
+    yandex: "95b6e95d1e0d8f94"
   },
   alternates: {
     canonical: "https://morganbarber.dev",
