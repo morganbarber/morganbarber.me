@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next"
-import { supabase } from "@/lib/supabase-client"
+import { supabaseServer } from "@/lib/supabase-server"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://morganbarber.dev"
@@ -45,7 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   // Fetch published blog posts
-  const { data: blogPosts } = await supabase
+  const { data: blogPosts } = await supabaseServer
     .from("blog_posts")
     .select("slug, updated_at, published_at")
     .eq("published", true)
@@ -59,7 +59,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   // Fetch projects
-  const { data: projects } = await supabase
+  const { data: projects } = await supabaseServer
     .from("projects")
     .select("id, updated_at")
     .order("updated_at", { ascending: false })
