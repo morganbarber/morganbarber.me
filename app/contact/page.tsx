@@ -182,7 +182,7 @@ export default function Contact() {
 
                 <div className="space-y-3">
                   <a
-                    href="mailto:morgan.barber@example.com"
+                    href="mailto:morgan@morganbarber.me"
                     className="flex items-center space-x-3 text-green-400 hover:text-green-300 transition-colors group"
                   >
                     <Mail className="h-5 w-5 group-hover:scale-110 transition-transform" />
@@ -190,7 +190,7 @@ export default function Contact() {
                   </a>
 
                   <a
-                    href="https://linkedin.com/in/morganbarber"
+                    href="https://linkedin.com/in/MorganEthanBarber"
                     className="flex items-center space-x-3 text-green-400 hover:text-green-300 transition-colors group"
                   >
                     <Linkedin className="h-5 w-5 group-hover:scale-110 transition-transform" />
