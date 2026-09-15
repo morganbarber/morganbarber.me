@@ -1,0 +1,29 @@
+{
+    "name": "@repo/security",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        "./audit": "./src/audit.ts",
+        "./headers": "./src/headers.ts",
+        "./rate-limit": "./src/rate-limit.ts",
+        "./request": "./src/request.ts",
+        "./url": "./src/url.ts"
+    },
+    "scripts": {
+        "lint": "eslint .",
+        "type-check": "tsc --noEmit",
+        "test": "node --experimental-strip-types --test src/*.test.ts"
+    },
+    "dependencies": {
+        "@repo/config": "*",
+        "server-only": "^0.0.1"
+    },
+    "devDependencies": {
+        "@repo/eslint-config": "*",
+        "@repo/typescript-config": "*",
+        "@types/node": "^20",
+        "eslint": "^9",
+        "typescript": "^5"
+    }
+}

@@ -1,0 +1,39 @@
+{
+    "name": "@repo/admin",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev --port 3100 --hostname 127.0.0.1",
+        "build": "next build",
+        "start": "next start --port 3100 --hostname 127.0.0.1",
+        "lint": "eslint .",
+        "type-check": "tsc --noEmit",
+        "admin:hash-password": "node scripts/hash-password.mjs",
+        "test": "node --experimental-strip-types --test lib/*.test.ts"
+    },
+    "dependencies": {
+        "@repo/config": "*",
+        "@repo/data": "*",
+        "@repo/security": "*",
+        "@repo/supabase": "*",
+        "@repo/types": "*",
+        "@repo/ui": "*",
+        "lucide-react": "^0.562.0",
+        "next": "^16.3.5",
+        "react": "19.2.3",
+        "react-dom": "19.2.3",
+        "server-only": "^0.0.1",
+        "zod": "^4.6.5"
+    },
+    "devDependencies": {
+        "@repo/eslint-config": "*",
+        "@repo/typescript-config": "*",
+        "@tailwindcss/postcss": "^4",
+        "@types/node": "^20",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "eslint": "^9",
+        "tailwindcss": "^4",
+        "typescript": "^5"
+    }
+}

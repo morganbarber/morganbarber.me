@@ -1,0 +1,203 @@
+@import "tailwindcss";
+@source "../../../packages/ui/src/**/*";
+
+@theme {
+  --font-sans: var(--font-oswald), Impact, Haettenschweiler, ui-sans-serif, system-ui;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+
+  /*
+    `text-muted-foreground` is used on virtually every body paragraph in this
+    project, but no token backed it — so Tailwind emitted nothing and all that
+    text silently rendered at full foreground brightness, flattening the entire
+    type hierarchy. This is the missing token.
+  */
+  --color-muted-foreground: var(--muted-foreground);
+}
+
+:root {
+  color-scheme: dark;
+
+  --background: #050505;
+  --foreground: #ededed;
+
+  /* Matrix green */
+  --primary: #00ff41;
+  /* Cyber red */
+  --secondary: #ff003c;
+  /* Hyper blue */
+  --accent: #2e00f5;
+
+  --muted: #1a1a1a;
+  /*
+    #8a8a8a on #050505 is ~7.4:1 — comfortably past WCAG AA (4.5:1) for body
+    text. A dimmer grey would look better in a screenshot and be harder to read
+    on a phone in daylight.
+  */
+  --muted-foreground: #8a8a8a;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  /* Brutalist cursor — deliberate. */
+  cursor: crosshair;
+  /* Stops iOS inflating font sizes on rotation. */
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Typing in a field with a crosshair cursor is needlessly hostile. */
+input,
+textarea,
+select {
+  cursor: text;
+}
+
+button,
+a,
+[role="button"] {
+  cursor: pointer;
+}
+
+/*
+  A visible focus ring on every interactive element. Without this, keyboard
+  navigation on a dark theme is close to invisible — :focus-visible means mouse
+  users never see it.
+*/
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--primary);
+  color: var(--background);
+}
+
+/*
+  Anchor targets clear the fixed header instead of hiding behind it.
+
+  `scroll-behavior: smooth` is deliberately NOT set: Lenis (packages/ui
+  smooth-scroll) drives scrolling itself, and the native smooth behaviour fights
+  it — the two animate the same scroll position on different clocks, which shows
+  up as stutter on anchor jumps. Lenis provides the smoothing; CSS provides the
+  offset.
+*/
+html {
+  scroll-padding-top: 6rem;
+}
+
+/* Long words and URLs wrap instead of forcing a horizontal scrollbar. */
+p,
+h1,
+h2,
+h3,
+h4 {
+  overflow-wrap: break-word;
+}
+
+/*
+  Glitch heading (packages/ui/src/components/glitch-text.tsx).
+
+  The two colour-fringe layers are pseudo-elements rather than duplicated DOM
+  nodes. That is what fixed the "last character wraps to the next line" bug: the
+  old markup needed an `inline-block` wrapper to size itself, and the browser's
+  shrink-to-fit rounding made that box a fraction of a pixel too narrow. A
+  single block-level element has no such box to round.
+
+  `content: attr(data-text)` also means the duplicated text is not selectable
+  and never reaches the accessibility tree, so copying a heading yields the text
+  once rather than three times.
+*/
+.glitch-text {
+  position: relative;
+  /* isolate creates a stacking context so the layers sit behind the real text
+     but still in front of the section background. The previous `-z-10` pushed
+     them behind the background entirely on some sections. */
+  isolation: isolate;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 100ms ease-out;
+  /* Inherit type metrics from the host element so the layers line up exactly. */
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  -webkit-text-stroke: inherit;
+}
+
+.glitch-text::before {
+  color: var(--primary);
+  transform: translate(2px, -2px);
+  mix-blend-mode: screen;
+}
+
+.glitch-text::after {
+  color: var(--secondary);
+  transform: translate(-2px, 2px);
+  mix-blend-mode: screen;
+  transition-delay: 75ms;
+}
+
+.glitch-text:hover::before,
+.glitch-text:hover::after,
+.glitch-text:focus-visible::before,
+.glitch-text:focus-visible::after {
+  opacity: 1;
+}
+
+/* The fringe is decorative; motion-sensitive users get the clean heading. */
+@media (prefers-reduced-motion: reduce) {
+  .glitch-text::before,
+  .glitch-text::after {
+    display: none;
+  }
+}
+
+@layer utilities {
+  .text-stroke {
+    -webkit-text-stroke: 1px var(--foreground);
+    color: transparent;
+  }
+}
+
+/*
+  Global reduced-motion honouring.
+
+  The components that own significant motion (Lenis smooth scroll, the loader,
+  the nav drawer) check `prefers-reduced-motion` in JavaScript and opt out
+  properly. This is the backstop for everything else — Tailwind's animate-*
+  utilities, CSS transitions, and any future addition that forgets to ask.
+
+  Durations are near-zero rather than `none` so that transition-end handlers
+  still fire and state machines do not stall.
+*/
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

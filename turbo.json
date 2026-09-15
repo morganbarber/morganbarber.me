@@ -1,0 +1,63 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "tasks": {
+        "build": {
+            "dependsOn": [
+                "^build"
+            ],
+            "outputs": [
+                ".next/**",
+                "!.next/cache/**"
+            ]
+        },
+        "lint": {
+            "dependsOn": [
+                "^lint"
+            ]
+        },
+        "dev": {
+            "cache": false,
+            "persistent": true
+        },
+        "type-check": {
+            "dependsOn": [
+                "^type-check"
+            ]
+        },
+        "test": {
+            "dependsOn": [
+                "^build"
+            ],
+            "outputs": []
+        }
+    },
+    "globalEnv": [
+        "ADMIN_ALLOW_PRODUCTION",
+        "ADMIN_PASSWORD",
+        "ADMIN_PASSWORD_HASH",
+        "ADMIN_SESSION_SECRET",
+        "ANALYTICS_SALT",
+        "AWS_LAMBDA_FUNCTION_NAME",
+        "CF_PAGES",
+        "FLY_APP_NAME",
+        "NETLIFY",
+        "NEXT_PUBLIC_SITE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NODE_ENV",
+        "NO_COLOR",
+        "PORTFOLIO_URL",
+        "RAILWAY_ENVIRONMENT",
+        "RENDER",
+        "REVALIDATE_SECRET",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "VERCEL",
+        "VERCEL_ENV",
+        "VERCEL_URL"
+    ],
+    "globalDependencies": [
+        "**/.env.*local",
+        "tsconfig.json"
+    ]
+}

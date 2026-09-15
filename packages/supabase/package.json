@@ -1,0 +1,39 @@
+{
+    "name": "@repo/supabase",
+    "version": "0.0.0",
+    "private": true,
+    "exports": {
+        "./client": "./src/client.ts",
+        "./server": "./src/server.ts",
+        "./admin": "./src/admin.ts"
+    },
+    "scripts": {
+        "lint": "eslint .",
+        "type-check": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@supabase/ssr": "^0.8.0",
+        "@supabase/supabase-js": "^2.90.1",
+        "@repo/config": "*",
+        "@repo/types": "*",
+        "server-only": "^0.0.1"
+    },
+    "devDependencies": {
+        "@repo/eslint-config": "*",
+        "@repo/types": "*",
+        "@repo/typescript-config": "*",
+        "@types/node": "^20",
+        "eslint": "^9",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-config-turbo": "^2.7.5",
+        "eslint-plugin-only-warn": "^1.1.0",
+        "eslint-plugin-react": "^7.37.5",
+        "eslint-plugin-react-hooks": "^7.0.1",
+        "typescript": "^5"
+    },
+    "peerDependencies": {
+        "next": ">=16.3.5",
+        "react": "^18.0.0 || ^19.0.0"
+    },
+    "type": "module"
+}

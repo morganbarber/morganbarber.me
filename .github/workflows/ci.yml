@@ -1,0 +1,200 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Weekly dependency audit: most advisories land after a merge, not during one.
+    - cron: "0 6 * * 1"
+
+# The default GITHUB_TOKEN is read-only unless a job asks for more.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Type-check, lint, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Type-check
+        run: npm run type-check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm run test
+
+      - name: Build (portfolio + admin)
+        run: npm run build:all
+        env:
+          # Placeholders: the build must succeed without a live database, which
+          # is exactly the fail-soft behaviour the data layer is built for.
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_placeholder_for_ci_builds_only
+          NEXT_PUBLIC_SITE_URL: https://morganbarber.me
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Fail on high or critical advisories
+        run: npm audit --audit-level=high
+
+      - name: Verify registry signatures
+        # Proves every installed tarball is the one the registry signed, which
+        # is the control against a compromised mirror or a tampered cache —
+        # something `npm audit` (a known-CVE lookup) says nothing about.
+        # NIST SSDF PS.2 / PW.4.1.
+        run: npm audit signatures
+
+      - name: Generate SBOM
+        # NIST SSDF PS.3.2 and EO 14028 both ask for a machine-readable
+        # inventory of what shipped. Without one, answering "are we affected by
+        # CVE-x" means re-deriving the dependency tree of a past release.
+        run: npm sbom --sbom-format cyclonedx --omit dev > sbom.cyclonedx.json
+
+      - name: Publish SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.cyclonedx.json
+          retention-days: 90
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # gitleaks needs history to scan commits, not just the tip.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Scan history for committed credentials
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: No .env file may be tracked
+        run: |
+          # .env.example templates are committed on purpose; anything else is a
+          # secret that has already leaked to everyone with repo access.
+          tracked=$(git ls-files | grep -E '(^|/)\.env' | grep -v '\.example$' || true)
+          if [ -n "$tracked" ]; then
+            echo "::error::Tracked .env files found:"
+            echo "$tracked"
+            exit 1
+          fi
+          echo "OK: no .env files tracked"
+
+      - name: Service-role keys must never appear in the repo
+        run: |
+          # Matches both key generations. --exclude-dir keeps the scan off its
+          # own documentation and lockfiles.
+          if grep -rInE 'sb_secret_[A-Za-z0-9_-]{10,}' \
+               --exclude-dir=.git --exclude-dir=node_modules --exclude='*.md' .; then
+            echo "::error::A Supabase secret key appears in the repository."
+            exit 1
+          fi
+          echo "OK: no secret keys in the source"
+
+  boundaries:
+    name: Package boundaries
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: The public site must never import a service-role module
+        run: |
+          # apps/portfolio has no legitimate reason to touch the admin client or
+          # the admin data layer. If it ever does, the service-role key becomes
+          # reachable from a deployed app — fail the build rather than ship it.
+          if grep -rn "@repo/supabase/admin\|@repo/data/admin" apps/portfolio --include='*.ts' --include='*.tsx'; then
+            echo "::error::apps/portfolio imports a service-role module. This must never be deployed."
+            exit 1
+          fi
+          echo "OK: no privileged imports in apps/portfolio"
+
+      - name: NEXT_PUBLIC_ must never hold a secret key
+        run: |
+          if grep -rn "NEXT_PUBLIC_[A-Z_]*=\(sb_secret_\|eyJ.*service_role\)" --include='.env.example' .; then
+            echo "::error::A secret key appears in a NEXT_PUBLIC_ variable."
+            exit 1
+          fi
+          echo "OK: no secret keys in public variables"
+
+  headers:
+    name: Security headers
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: verify
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build (portfolio + admin)
+        run: npm run build:all
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_placeholder_for_ci_builds_only
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+
+      - name: Start server and verify CSP, nonce propagation and headers
+        run: |
+          npm start --workspace portfolio-web &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3000 >/dev/null && break
+            sleep 1
+          done
+          npm run check:headers
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_placeholder_for_ci_builds_only
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000

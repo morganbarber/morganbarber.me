@@ -1,0 +1,58 @@
+# =============================================================================
+# What must NOT be uploaded to Vercel
+# =============================================================================
+# This file is a security control, not an optimisation. SST uploads the whole
+# repository for the build; anything listed here never leaves this machine.
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# The admin dashboard. NEVER DEPLOY THIS.
+# ---------------------------------------------------------------------------
+# It is built to run with the Supabase service-role key, which bypasses every
+# row-level security policy. It also refuses to start when it detects a hosting
+# platform, and its proxy rejects non-localhost requests — but the cheapest
+# guarantee is that the code is not there at all.
+apps/admin
+
+# ---------------------------------------------------------------------------
+# Secrets
+# ---------------------------------------------------------------------------
+# Vercel injects environment variables at build time; a committed-by-accident
+# .env file uploaded alongside the source would override them and leak.
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+**/!.env.example
+
+# ---------------------------------------------------------------------------
+# Local SST state
+# ---------------------------------------------------------------------------
+# With home: "local", .sst holds the Pulumi state, which contains resolved
+# values for every variable this deployment manages.
+.sst
+
+# ---------------------------------------------------------------------------
+# Build output and caches — Vercel rebuilds from source
+# ---------------------------------------------------------------------------
+node_modules
+**/node_modules
+.next
+**/.next
+.turbo
+**/.turbo
+dist
+**/dist
+coverage
+*.tsbuildinfo
+
+# ---------------------------------------------------------------------------
+# Not needed for a build
+# ---------------------------------------------------------------------------
+.git
+.github
+*.log
+.DS_Store
+.vscode
+.idea
