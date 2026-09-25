@@ -167,9 +167,12 @@ npm run check:headers -- https://morganbarber.me # production
 | Workflow       | Runs on          | What it gates                                                                                                       |
 | -------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------- |
 | `ci.yml`       | push, PR         | format, lint, types, workflow lint, tests + coverage, boundaries, build, smoke (headers + SEO against a real build) |
-| `security.yml` | push, PR, weekly | npm audit + signatures, SBOM, dependency review, gitleaks, secret-file scans                                        |
-| `codeql.yml`   | push, PR, weekly | CodeQL `security-extended`                                                                                          |
+| `security.yml` | push, PR, weekly | npm audit + signatures, SBOM, dependency review¹, gitleaks, secret-file scans                                       |
+| `codeql.yml`   | push, PR, weekly | CodeQL `security-extended`¹                                                                                         |
 | `pr-title.yml` | PR               | Conventional Commit PR titles                                                                                       |
+
+¹ Skipped while the repository is private: both need GitHub Advanced Security
+there, and run automatically once it is public.
 
 Actions are pinned by SHA and kept current by Dependabot. There is deliberately
 no deploy workflow: SST state is local

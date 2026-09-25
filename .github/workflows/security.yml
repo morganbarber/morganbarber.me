@@ -50,7 +50,9 @@ jobs:
 
   dependency-review:
     name: Dependency review
-    if: github.event_name == 'pull_request'
+    # Needs the dependency graph, which on a private repository requires GitHub
+    # Advanced Security. npm audit (above) covers advisories either way.
+    if: github.event_name == 'pull_request' && !github.event.repository.private
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
