@@ -71,8 +71,17 @@ const optionalText = (max: number) =>
     .optional()
     .transform((value) => (value ? value : null));
 
+/*
+  `.optional()` on the whole union is load-bearing. Zod 4 distinguishes a MISSING
+  key from a key whose value is `undefined`: `z.undefined()` inside the union
+  only accepts the latter, so an omitted checkbox — which is exactly what an
+  unchecked box produces in FormData — failed as "expected nonoptional" instead
+  of reading as false. The admin action masked this by pre-filling "false";
+  schemas.test.ts now pins the behaviour so the workaround is not required.
+*/
 const checkbox = z
-  .union([z.literal("on"), z.literal("true"), z.literal("false"), z.boolean(), z.undefined()])
+  .union([z.literal("on"), z.literal("true"), z.literal("false"), z.boolean()])
+  .optional()
   .transform((value) => value === "on" || value === "true" || value === true);
 
 const sortOrder = z.coerce.number().int().min(0).max(100000).default(0);

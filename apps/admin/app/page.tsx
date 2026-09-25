@@ -23,10 +23,7 @@ export default async function DashboardPage() {
   // once instead of the same failure repeated in every card.
   if (!hasServiceRoleKey()) return <SetupRequired />;
 
-  const [counts, messages] = await Promise.all([
-    getContentCounts(),
-    listContactMessages(),
-  ]);
+  const [counts, messages] = await Promise.all([getContentCounts(), listContactMessages()]);
 
   const unread = (messages.data ?? []).filter((message) => message.status === "new");
   const error = counts.error ?? messages.error;
@@ -112,19 +109,20 @@ export default async function DashboardPage() {
         <ul className="space-y-2 text-muted-foreground max-w-2xl list-none p-0">
           <li className="flex gap-2">
             <span className="text-primary shrink-0">&gt;</span>
-            New blog posts and projects are created <strong className="text-foreground">unpublished</strong>.
-            They stay invisible to visitors until you tick Published.
+            New blog posts and projects are created{" "}
+            <strong className="text-foreground">unpublished</strong>. They stay invisible to
+            visitors until you tick Published.
           </li>
           <li className="flex gap-2">
             <span className="text-primary shrink-0">&gt;</span>
-            The public site caches content for an hour. Saving here refreshes it
-            straight away, provided <code className="text-foreground">PORTFOLIO_URL</code> and{" "}
+            The public site caches content for an hour. Saving here refreshes it straight away,
+            provided <code className="text-foreground">PORTFOLIO_URL</code> and{" "}
             <code className="text-foreground">REVALIDATE_SECRET</code> are set.
           </li>
           <li className="flex gap-2">
             <span className="text-primary shrink-0">&gt;</span>
-            Post and project content is rendered as plain text, never HTML — a
-            stray tag shows as text instead of becoming a script.
+            Post and project content is rendered as plain text, never HTML — a stray tag shows as
+            text instead of becoming a script.
           </li>
         </ul>
       </section>

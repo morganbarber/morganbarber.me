@@ -1,0 +1,42 @@
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: build
+      include: scope
+    labels: [dependencies]
+    # Grouped so related packages move together — a Next.js bump that leaves
+    # eslint-config-next behind is a broken build, not an update.
+    groups:
+      next:
+        patterns: ["next", "eslint-config-next", "@next/*"]
+      react:
+        patterns: ["react", "react-dom", "@types/react", "@types/react-dom"]
+      supabase:
+        patterns: ["@supabase/*"]
+      tooling:
+        dependency-type: development
+        update-types: [minor, patch]
+    ignore:
+      # Majors of the framework are deliberate migrations, not routine bumps.
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
+    labels: [dependencies, ci]
+    groups:
+      actions:
+        patterns: ["*"]

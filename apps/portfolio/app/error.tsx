@@ -33,10 +33,10 @@ export default function Error({
             {"// ERROR_CODE_500"}
           </p>
           <GlitchHeading
-              as="h1"
-              lines={["SYSTEM", "FAULT"]}
-              className="text-5xl md:text-7xl leading-none"
-              lineClassName={[undefined, "text-transparent text-stroke"]}
+            as="h1"
+            lines={["SYSTEM", "FAULT"]}
+            className="text-5xl md:text-7xl leading-none"
+            lineClassName={[undefined, "text-transparent text-stroke"]}
           />
         </div>
 

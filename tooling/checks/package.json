@@ -1,0 +1,23 @@
+{
+  "name": "@repo/checks",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Operational checks run against a live deployment or database: security headers, SEO, Supabase posture.",
+  "bin": {
+    "check-headers": "./bin/check-headers.mjs",
+    "check-seo": "./bin/check-seo.mjs",
+    "check-supabase": "./bin/check-supabase.mjs",
+    "check-deps": "./bin/check-deps.mjs"
+  },
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "eslint": "^9"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

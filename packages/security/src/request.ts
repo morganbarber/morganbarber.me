@@ -1,5 +1,7 @@
 import "server-only";
 
+import { sha256Hex } from "./crypto";
+
 /**
  * Helpers for reasoning about an inbound request: who sent it, whether it came
  * from us, and whether it is a human.
@@ -35,9 +37,7 @@ export function clientIp(headers: Headers): string | null {
 function isIpLike(value: string): boolean {
   if (value.length > 45) return false;
   // IPv4, or anything with the hex-and-colons shape of IPv6.
-  return (
-    /^\d{1,3}(?:\.\d{1,3}){3}$/.test(value) || /^[0-9a-fA-F:]+$/.test(value)
-  );
+  return /^\d{1,3}(?:\.\d{1,3}){3}$/.test(value) || /^[0-9a-fA-F:]+$/.test(value);
 }
 
 /**
@@ -59,12 +59,7 @@ export async function visitorHash(
   const ip = clientIp(headers);
   if (!ip) return null;
 
-  const data = new TextEncoder().encode(`${salt}:${ip}`);
-  const digest = await crypto.subtle.digest("SHA-256", data);
-  return [...new Uint8Array(digest)]
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("")
-    .slice(0, 32);
+  return (await sha256Hex(`${salt}:${ip}`)).slice(0, 32);
 }
 
 /**
@@ -146,20 +141,14 @@ export function geoFromHeaders(headers: Headers): {
   };
 
   return {
-    country:
-      headers.get("x-vercel-ip-country") ??
-      headers.get("cf-ipcountry") ??
-      null,
+    country: headers.get("x-vercel-ip-country") ?? headers.get("cf-ipcountry") ?? null,
     region: decode(headers.get("x-vercel-ip-country-region")),
     city: decode(headers.get("x-vercel-ip-city")),
   };
 }
 
 /** Registrable host of a referrer, or null when absent, invalid or same-site. */
-export function referrerHost(
-  referrer: string | null | undefined,
-  siteUrl: string,
-): string | null {
+export function referrerHost(referrer: string | null | undefined, siteUrl: string): string | null {
   if (!referrer) return null;
   try {
     const url = new URL(referrer);

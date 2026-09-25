@@ -1,0 +1,12 @@
+node_modules
+.next
+.turbo
+.sst
+dist
+coverage
+package-lock.json
+next-env.d.ts
+sst-env.d.ts
+*.tsbuildinfo
+# SQL is hand-formatted for readability; Prettier has no SQL support by default.
+*.sql

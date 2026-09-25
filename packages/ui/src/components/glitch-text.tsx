@@ -44,11 +44,7 @@ interface GlitchTextProps {
   as?: "h1" | "h2" | "h3" | "h4" | "p" | "span" | "div";
 }
 
-export default function GlitchText({
-  text,
-  className,
-  as: Component = "h1",
-}: GlitchTextProps) {
+export default function GlitchText({ text, className, as: Component = "h1" }: GlitchTextProps) {
   return (
     <Component
       // Read by the ::before/::after layers via content: attr(data-text).

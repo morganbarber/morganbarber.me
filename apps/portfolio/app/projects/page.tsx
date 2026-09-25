@@ -1,22 +1,32 @@
 import type { Metadata } from "next";
 import ProjectsPage from "@/components/projects-page";
+import StructuredData from "@/components/structured-data";
 import { getProjects } from "@repo/data/content";
-import { getSiteUrl } from "@repo/config/env";
+import { pageMetadata } from "@/lib/seo";
+import { breadcrumbNode, graph, projectsIndexNode } from "@/lib/structured-data";
 
-export const metadata: Metadata = {
-  title: "Projects",
+export const metadata: Metadata = pageMetadata({
+  title: "Cybersecurity Projects",
   description:
-    "Showcase of cybersecurity and development projects including machine learning, robotics, and network security environments.",
-  alternates: { canonical: `${getSiteUrl()}/projects` },
-  openGraph: {
-    title: "Projects | Morgan Barber",
-    description:
-      "Explore Morgan Barber's portfolio of cybersecurity and engineering projects.",
-    url: `${getSiteUrl()}/projects`,
-  },
-};
+    "Cybersecurity projects by Morgan Barber: a Python network intrusion detection system, an end-to-end encrypted chat app and a web vulnerability scanner.",
+  path: "/projects",
+});
 
 export default async function Projects() {
   const { data: projects } = await getProjects();
-  return <ProjectsPage projects={projects} />;
+
+  return (
+    <>
+      <StructuredData
+        data={graph(
+          projectsIndexNode(projects),
+          breadcrumbNode([
+            { name: "Home", path: "/" },
+            { name: "Projects", path: "/projects" },
+          ]),
+        )}
+      />
+      <ProjectsPage projects={projects} />
+    </>
+  );
 }

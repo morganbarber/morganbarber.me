@@ -29,6 +29,14 @@ const serverSchema = z.object({
     .string()
     .min(32, "REVALIDATE_SECRET must be at least 32 characters")
     .optional(),
+
+  /**
+   * HackTheBox App Token (HTB → Profile Settings → App Tokens). Optional: it
+   * enables live profile stats; without it the section shows the static
+   * fallback values in @repo/config/site. Server-only — it is a credential for
+   * your HTB account and must never reach the browser.
+   */
+  HTB_APP_TOKEN: z.string().min(20, "HTB_APP_TOKEN looks too short to be a token").optional(),
 });
 
 export type ServerEnv = z.infer<typeof serverSchema>;
@@ -42,6 +50,7 @@ export function getServerEnv(): ServerEnv {
     NODE_ENV: process.env.NODE_ENV,
     ANALYTICS_SALT: process.env.ANALYTICS_SALT,
     REVALIDATE_SECRET: process.env.REVALIDATE_SECRET,
+    HTB_APP_TOKEN: process.env.HTB_APP_TOKEN,
   });
 
   if (!parsed.success) {

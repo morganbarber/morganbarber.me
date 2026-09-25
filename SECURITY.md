@@ -27,7 +27,7 @@ A public portfolio with no user accounts and no authenticated area. The realisti
 5. **Supply chain** — a vulnerable transitive dependency.
 6. **Leakage of the admin credential** — the local dashboard holds a service-role key that bypasses all row-level security. See control 14.
 
-Notably *not* in the model: session hijacking, privilege escalation between users, or payment fraud. There are no sessions, no users and no payments. Controls are sized accordingly — no control here exists to satisfy a checklist.
+Notably _not_ in the model: session hijacking, privilege escalation between users, or payment fraud. There are no sessions, no users and no payments. Controls are sized accordingly — no control here exists to satisfy a checklist.
 
 ---
 
@@ -57,7 +57,7 @@ character) and a UI-redressing one, so it is worth closing.
 `style` attributes — 37 on the home page alone. Attribute styles cannot contain
 selectors, so they carry none of that risk.
 
-Each response gets a fresh 128-bit nonce from `crypto.getRandomValues`. `'strict-dynamic'` means a script loaded *by* a nonce-approved script inherits trust — which is how Next loads its chunks — while an injected `<script src>` from a markup injection does not. That removes the need to enumerate chunk URLs and makes the policy resistant to XSS rather than merely restrictive.
+Each response gets a fresh 128-bit nonce from `crypto.getRandomValues`. `'strict-dynamic'` means a script loaded _by_ a nonce-approved script inherits trust — which is how Next loads its chunks — while an injected `<script src>` from a markup injection does not. That removes the need to enumerate chunk URLs and makes the policy resistant to XSS rather than merely restrictive.
 
 `base-uri 'none'` matters more than it looks: without it, an injected `<base>` tag redirects every relative script URL on the page to an attacker's host, which defeats a `'self'`-based policy entirely.
 
@@ -65,7 +65,7 @@ Each response gets a fresh 128-bit nonce from `crypto.getRandomValues`. `'strict
 
 The trade-off is documented in `apps/portfolio/app/layout.tsx`: a per-request nonce requires per-request HTML, so pages render dynamically. The data behind them is cached instead — see the README.
 
-**Violation reporting.** `POST /api/csp-report` collects reports in both formats browsers send (the legacy `report-uri` body and the Reporting API array), paired with a `Reporting-Endpoints` header so `report-to` resolves. Without it a CSP failure is invisible: the page quietly loses a script and nobody finds out until a user reports a broken feature. It is also the only signal that an injection attempt was *blocked*.
+**Violation reporting.** `POST /api/csp-report` collects reports in both formats browsers send (the legacy `report-uri` body and the Reporting API array), paired with a `Reporting-Endpoints` header so `report-to` resolves. Without it a CSP failure is invisible: the page quietly loses a script and nobody finds out until a user reports a broken feature. It is also the only signal that an injection attempt was _blocked_.
 
 The endpoint is unusual in that browsers post to it cross-origin and unauthenticated, so it cannot use the same-origin check the analytics endpoint does. It is therefore capped at 8 KB, rate-limited to 20/min per source, filters out browser-extension noise, and **logs rather than stores** — an unauthenticated endpoint that writes to the database is a free disk-filling primitive.
 
@@ -73,17 +73,17 @@ The endpoint is unusual in that browsers post to it cross-origin and unauthentic
 
 ### 2. Transport and isolation headers
 
-| Header | Value | Why |
-| --- | --- | --- |
-| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains; preload` | Two years. Omitted in development, where pinning localhost to HTTPS would break the dev server in that browser profile. |
-| `X-Frame-Options` | `DENY` | Clickjacking, for browsers predating `frame-ancestors`. |
-| `X-Content-Type-Options` | `nosniff` | Stops a response being reinterpreted as script. |
-| `Referrer-Policy` | `strict-origin-when-cross-origin` | Never leaks a path or query string off-site. |
-| `Permissions-Policy` | ~22 features denied | Deny-by-default; only `fullscreen=(self)` is allowed. |
-| `Cross-Origin-Opener-Policy` | `same-origin` | Process isolation; severs `window.opener`. |
-| `Cross-Origin-Resource-Policy` | `same-origin` | Blocks cross-origin reads of this document. |
-| `Origin-Agent-Cluster` | `?1` | Requests a dedicated agent cluster. |
-| `X-Powered-By` | *removed* | Hands a scanner nothing about the stack. |
+| Header                         | Value                                          | Why                                                                                                                     |
+| ------------------------------ | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `Strict-Transport-Security`    | `max-age=63072000; includeSubDomains; preload` | Two years. Omitted in development, where pinning localhost to HTTPS would break the dev server in that browser profile. |
+| `X-Frame-Options`              | `DENY`                                         | Clickjacking, for browsers predating `frame-ancestors`.                                                                 |
+| `X-Content-Type-Options`       | `nosniff`                                      | Stops a response being reinterpreted as script.                                                                         |
+| `Referrer-Policy`              | `strict-origin-when-cross-origin`              | Never leaks a path or query string off-site.                                                                            |
+| `Permissions-Policy`           | ~22 features denied                            | Deny-by-default; only `fullscreen=(self)` is allowed.                                                                   |
+| `Cross-Origin-Opener-Policy`   | `same-origin`                                  | Process isolation; severs `window.opener`.                                                                              |
+| `Cross-Origin-Resource-Policy` | `same-origin`                                  | Blocks cross-origin reads of this document.                                                                             |
+| `Origin-Agent-Cluster`         | `?1`                                           | Requests a dedicated agent cluster.                                                                                     |
+| `X-Powered-By`                 | _removed_                                      | Hands a scanner nothing about the stack.                                                                                |
 
 ### 3. Database authority
 
@@ -114,17 +114,17 @@ Every external input is validated twice — once at the edge in Zod, once in SQL
 
 - **Server Actions** (contact form) — Next verifies the Origin header automatically.
 - **Route Handlers** (analytics, revalidate) — get no automatic check, so `isSameOrigin()` applies one explicitly, preferring `Sec-Fetch-Site` because page script cannot forge it.
-- **Content-Type allowlist** on `/api/analytics`, as a second independent control. A cross-origin form can POST without a CORS preflight, but *only* as `text/plain`, `application/x-www-form-urlencoded` or `multipart/form-data`. Requiring a JSON content type forces any cross-origin caller through a preflight the browser will refuse. `sendBeacon` sends a JSON-typed Blob, so legitimate traffic is unaffected.
+- **Content-Type allowlist** on `/api/analytics`, as a second independent control. A cross-origin form can POST without a CORS preflight, but _only_ as `text/plain`, `application/x-www-form-urlencoded` or `multipart/form-data`. Requiring a JSON content type forces any cross-origin caller through a preflight the browser will refuse. `sendBeacon` sends a JSON-typed Blob, so legitimate traffic is unaffected.
 - **Server Action origins** are pinned explicitly in `next.config.ts` (`allowedOrigins`). Next already compares Origin against Host, but behind a proxy that rewrites Host that check can be satisfied by a request that did not come from the site.
 
 ### 7. Rate limiting
 
 Two layers, because each covers the other's weakness:
 
-| Layer | Scope | Purpose |
-| --- | --- | --- |
+| Layer                                    | Scope               | Purpose                                                                                                      |
+| ---------------------------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------ |
 | In-process (`@repo/security/rate-limit`) | One server instance | Absorbs floods with no network hop. Key-space capped at 10,000 entries so a key flood cannot exhaust memory. |
-| Database (`consume_rate_limit`) | Global | The authoritative ceiling, holding across instances, restarts and regions. |
+| Database (`consume_rate_limit`)          | Global              | The authoritative ceiling, holding across instances, restarts and regions.                                   |
 
 Limits: analytics 60/min per visitor (240/hour in SQL); contact 3 per 10 min per visitor, 5/hour and 50/hour site-wide in SQL; revalidate 10/min per IP; CSP reports 20/min per source.
 
@@ -161,13 +161,13 @@ Keeping Next at one version took two fixes. An over-broad peer-dependency range 
 
 ### 12. Database resource limits
 
-RLS controls *which rows* the publishable key can see. It says nothing about how many, or how long a query may run — so two gaps remained, both closed at the role level in `supabase/migrations/0002_role_limits.sql`:
+RLS controls _which rows_ the publishable key can see. It says nothing about how many, or how long a query may run — so two gaps remained, both closed at the role level in `supabase/migrations/0002_role_limits.sql`:
 
-| Setting | `anon` | Closes |
-| --- | --- | --- |
-| `pgrst.db_max_rows` | 500 | `select=*` with no limit returning the entire table. The app always passes a limit, but the key is public — anyone can call PostgREST directly and ignore it. |
-| `statement_timeout` | 5s | A pathological filter (an expensive regex, a large offset, a costly sort) holding a connection for as long as Postgres allows. With a small pool, a handful of those is an outage. |
-| `idle_in_transaction_session_timeout` | 10s | A half-finished request holding locks indefinitely. |
+| Setting                               | `anon` | Closes                                                                                                                                                                             |
+| ------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pgrst.db_max_rows`                   | 500    | `select=*` with no limit returning the entire table. The app always passes a limit, but the key is public — anyone can call PostgREST directly and ignore it.                      |
+| `statement_timeout`                   | 5s     | A pathological filter (an expensive regex, a large offset, a costly sort) holding a connection for as long as Postgres allows. With a small pool, a handful of those is an outage. |
+| `idle_in_transaction_session_timeout` | 10s    | A half-finished request holding locks indefinitely.                                                                                                                                |
 
 Role settings apply to every connection that authenticates as the role, including ones that never touch this codebase — which is the point. `service_role` is deliberately excluded: the admin dashboard's aggregation and the retention job legitimately run longer.
 
@@ -195,12 +195,12 @@ Two properties matter:
 deployed. Four independent guards keep it that way; each would have to fail for
 the key to be exposed.
 
-| Guard | Where | Fails closed because |
-| --- | --- | --- |
-| Platform detection | `@repo/supabase/admin` → `assertAdminRuntime()` | The variables it reads (`VERCEL`, `NETLIFY`, `FLY_APP_NAME`, …) are set by the *host*, so it cannot be satisfied by a missing config value |
-| Localhost-only | `apps/admin/proxy.ts` | Non-local `Host` → 403, covering a reverse proxy or tunnel that defeats the `127.0.0.1` bind |
-| Password gate | `apps/admin/lib/auth.ts` | HMAC-signed httpOnly sameSite=strict cookie, constant-time comparison, delay on failure |
-| `server-only` | every privileged module | A stray client import is a build error, not a runtime leak |
+| Guard              | Where                                           | Fails closed because                                                                                                                       |
+| ------------------ | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Platform detection | `@repo/supabase/admin` → `assertAdminRuntime()` | The variables it reads (`VERCEL`, `NETLIFY`, `FLY_APP_NAME`, …) are set by the _host_, so it cannot be satisfied by a missing config value |
+| Localhost-only     | `apps/admin/proxy.ts`                           | Non-local `Host` → 403, covering a reverse proxy or tunnel that defeats the `127.0.0.1` bind                                               |
+| Password gate      | `apps/admin/lib/auth.ts`                        | HMAC-signed httpOnly sameSite=strict cookie, constant-time comparison, delay on failure                                                    |
+| `server-only`      | every privileged module                         | A stray client import is a build error, not a runtime leak                                                                                 |
 
 Two further properties matter:
 
@@ -216,7 +216,7 @@ The `SUPABASE_SERVICE_ROLE_KEY` variable has no `NEXT_PUBLIC_` prefix, and the
 app validates that it really is a secret key — a publishable key pasted there
 fails loudly instead of producing confusing RLS denials.
 
-Login is rate-limited with an escalating lockout (5 attempts, then 30 s → 2 min → 10 min → 1 hour), checked *before* the password is verified. The previous 400 ms delay was per-request and so gave N parallel requests N guesses per window; `lib/login-guard.test.ts` asserts that twenty concurrent attempts are all refused.
+Login is rate-limited with an escalating lockout (5 attempts, then 30 s → 2 min → 10 min → 1 hour), checked _before_ the password is verified. The previous 400 ms delay was per-request and so gave N parallel requests N guesses per window; `lib/login-guard.test.ts` asserts that twenty concurrent attempts are all refused.
 
 The stored verifier is scrypt (N=16384, r=8, p=1), per NIST SP 800-63B §5.1.1.2 — `npm run admin:hash-password` generates it. Plaintext `ADMIN_PASSWORD` still works but warns.
 

@@ -34,7 +34,15 @@ export type ContactMessage = Tables<"contact_messages">;
  */
 export type BlogPostSummary = Pick<
   BlogPost,
-  "id" | "slug" | "title" | "summary" | "date" | "tag" | "reading_minutes" | "created_at"
+  | "id"
+  | "slug"
+  | "title"
+  | "summary"
+  | "date"
+  | "tag"
+  | "reading_minutes"
+  | "created_at"
+  | "updated_at"
 >;
 
 export type ProjectSummary = Pick<
@@ -48,6 +56,7 @@ export type ProjectSummary = Pick<
   | "link"
   | "sort_order"
   | "created_at"
+  | "updated_at"
 >;
 
 export type ExperienceSummary = Pick<

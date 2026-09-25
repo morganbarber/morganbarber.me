@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import MagneticButton from "@repo/ui/magnetic-button";
 import { getProject, getProjectIds } from "@repo/data/content";
-import { getSiteUrl } from "@repo/config/env";
 import Prose from "@/components/prose";
+import Breadcrumbs from "@/components/breadcrumbs";
+import StructuredData from "@/components/structured-data";
+import { pageMetadata, readableTitle } from "@/lib/seo";
+import { breadcrumbNode, graph, projectNode } from "@/lib/structured-data";
 import { isSafeExternalUrl } from "@repo/security/url";
 
 type Props = {
@@ -20,31 +22,45 @@ export async function generateStaticParams() {
   return ids.map((id) => ({ id }));
 }
 
+/**
+ * Project descriptions are written as one-liners for the listing ("A network
+ * intrusion detection system built with Python and Scapy." — 65 characters),
+ * which is half the length Google shows in a snippet. The remaining space is
+ * filled with facts already on the page: the category, the author and the
+ * stack, all words someone might actually search for.
+ */
+function projectDescription(project: { description: string; category: string; tags: string[] }) {
+  const base = project.description.trim().replace(/\.?$/, ".");
+  if (base.length >= 120) return base;
+  const stack = project.tags
+    .slice(0, 4)
+    .map((t) => readableTitle(t))
+    .join(", ");
+  return `${base} A ${readableTitle(project.category).toLowerCase()} project by Morgan Barber${
+    stack ? ` using ${stack}` : ""
+  }, with a write-up and source code.`;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  if (!ID_PATTERN.test(id)) return { title: "Project Not Found" };
+  if (!ID_PATTERN.test(id)) return { title: "Project Not Found", robots: { index: false } };
 
   const { data: project } = await getProject(id);
   if (!project) return { title: "Project Not Found", robots: { index: false } };
 
-  const url = `${getSiteUrl()}/projects/${project.id}`;
-
-  return {
-    title: project.title,
-    description: project.description,
-    alternates: { canonical: url },
-    openGraph: {
-      title: project.title,
-      description: project.description,
-      type: "article",
-      url,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: project.title,
-      description: project.description,
-    },
-  };
+  const title = readableTitle(project.title);
+  return pageMetadata({
+    // "Project Orion — Network Security Project" says what it is in results,
+    // where a bare codename does not.
+    title: `${title} — ${readableTitle(project.category)} Project`,
+    description: projectDescription(project),
+    path: `/projects/${project.id}`,
+    type: "article",
+    ownImage: true,
+    publishedTime: project.created_at,
+    modifiedTime: project.updated_at,
+    tags: project.tags,
+  });
 }
 
 export default async function ProjectPage({ params }: Props) {
@@ -60,17 +76,32 @@ export default async function ProjectPage({ params }: Props) {
 
   return (
     <main className="min-h-screen pt-32 pb-24 px-6 max-w-3xl mx-auto">
-      <Link
-        href="/projects"
-        className="inline-flex items-center text-muted-foreground hover:text-primary mb-8 transition-colors focus-visible:outline-2 focus-visible:outline-primary"
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" /> BACK TO PROJECTS
-      </Link>
+      <StructuredData
+        data={graph(
+          projectNode(project),
+          breadcrumbNode([
+            { name: "Home", path: "/" },
+            { name: "Projects", path: "/projects" },
+            { name: readableTitle(project.title), path: `/projects/${project.id}` },
+          ]),
+        )}
+      />
+
+      <Breadcrumbs
+        items={[
+          { name: "Home", href: "/" },
+          { name: "Projects", href: "/projects" },
+          { name: readableTitle(project.title) },
+        ]}
+      />
 
       <article>
         <header className="mb-10 border-b border-muted pb-8">
           <div className="flex flex-wrap items-center gap-4 text-sm font-mono text-primary mb-6">
-            <span className="text-muted-foreground">{"// "}{project.id}</span>
+            <span className="text-muted-foreground">
+              {"// "}
+              {project.id}
+            </span>
             <span className="px-2 py-1 bg-primary/10 rounded text-xs">{project.category}</span>
             <span className="px-2 py-1 border border-muted rounded text-xs text-muted-foreground">
               {project.status}

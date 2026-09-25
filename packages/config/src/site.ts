@@ -6,6 +6,13 @@ export const SITE_CONFIG = {
   location: "Longmont, CO",
   role: "Aspiring Cybersecurity Specialist",
   roleSubtitle: "16 Year Old Aspiring Cybersecurity Professional",
+  /**
+   * The home page's meta description: who, where, what — within the ~155
+   * characters Google shows. Leads with the name because name searches are the
+   * query this site most needs to win.
+   */
+  seoDescription:
+    "Morgan Barber, aspiring cybersecurity specialist in Longmont, CO. CompTIA Security+ certified, focused on network security, threat analysis and system hardening.",
   shortDescription:
     "Aspiring Cybersecurity Specialist focused on Network Security, Threat Analysis, and System Hardening.",
   description:
@@ -39,7 +46,66 @@ export const STACK = [
 export const MARQUEE_TEXT =
   "NETWORK SECURITY // THREAT ANALYSIS // COMPTIA SECURITY+ // SYSTEM HARDENING // PYTHON // ";
 
+/**
+ * HackTheBox profile, shown in its own section on the home page.
+ *
+ * Two identifiers, because HackTheBox uses two:
+ *
+ *   • `profileId` — the numeric account ID, from app.hackthebox.com/users/<id>.
+ *     Used for the stats API. The section is hidden until it is set.
+ *   • `publicProfileUrl` — the shareable page on profile.hackthebox.com. This
+ *     is where visitors are linked: app.hackthebox.com is HTB's logged-in app,
+ *     so a visitor without an account would hit a sign-in wall there.
+ *
+ * `fallback` is what the section shows when live stats are unavailable — no
+ * `HTB_APP_TOKEN` configured, or HackTheBox unreachable. With a token set,
+ * live values replace these automatically (refreshed every 6 hours). Any field
+ * left null is simply not shown.
+ */
+export const HACKTHEBOX: {
+  profileId: number | null;
+  publicProfileUrl: string | null;
+  username: string | null;
+  fallback: {
+    rank: string | null;
+    ranking: number | null;
+    points: number | null;
+    userOwns: number | null;
+    systemOwns: number | null;
+    respects: number | null;
+  };
+  /** Short line under the heading. */
+  tagline: string;
+} = {
+  profileId: 2623084,
+  publicProfileUrl: "https://profile.hackthebox.com/profile/019eafa8-fe0f-72e2-b308-40ed904de31a",
+  username: "MorganBarber",
+  fallback: {
+    rank: null,
+    ranking: null,
+    points: null,
+    userOwns: null,
+    systemOwns: null,
+    respects: null,
+  },
+  tagline:
+    "Hands-on offensive practice: enumerating, exploiting and escalating on live lab machines.",
+};
+
+/**
+ * Where visitors are sent: the public profile page when configured, otherwise
+ * the app URL built from the numeric ID. Null until an ID is configured.
+ */
+export function hackTheBoxProfileUrl(): string | null {
+  if (!HACKTHEBOX.profileId) return null;
+  return HACKTHEBOX.publicProfileUrl ?? `https://app.hackthebox.com/users/${HACKTHEBOX.profileId}`;
+}
+
+const htbUrl = hackTheBoxProfileUrl();
+
+/** The HackTheBox entry appears only once a profile ID is configured. */
 export const SOCIAL_LINKS: SocialLink[] = [
   { name: "GITHUB", url: "https://github.com/morganbarber" },
   { name: "LINKEDIN", url: "https://linkedin.com/in/MorganEthanBarber" },
+  ...(htbUrl ? [{ name: "HACKTHEBOX", url: htbUrl }] : []),
 ];

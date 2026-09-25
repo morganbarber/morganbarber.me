@@ -1,0 +1,51 @@
+/*
+  Accessibility and interaction baseline shared by every app. Import after
+  tokens.css.
+*/
+
+/*
+  A visible focus ring on every interactive element. Without it, keyboard
+  navigation on a dark theme is close to invisible; :focus-visible means mouse
+  users never see it.
+*/
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--primary);
+  color: var(--background);
+}
+
+/* Form controls need an explicit dark scheme or some browsers paint a light
+   autofill background. */
+input,
+textarea,
+select {
+  color-scheme: dark;
+}
+
+/*
+  Global reduced-motion honouring — the backstop for every animation that does
+  not check `prefers-reduced-motion` itself.
+
+  Durations are near-zero rather than `none` so animationend/transitionend still
+  fire and state machines do not stall. Delays are zeroed because entrance
+  animations hold content hidden until the delay elapses (fill-mode both).
+*/
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

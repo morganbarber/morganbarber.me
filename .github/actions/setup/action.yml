@@ -1,0 +1,37 @@
+name: Setup
+description: >-
+  Node (version from .nvmrc), a clean `npm ci`, and the Turborepo local cache.
+  Shared by every job so installs are identical everywhere.
+
+inputs:
+  turbo-cache:
+    description: Restore and save the .turbo cache directory.
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      with:
+        node-version-file: .nvmrc
+        cache: npm
+
+    - name: Install dependencies
+      shell: bash
+      # --ignore-scripts: dependency install scripts are the main supply-chain
+      # execution vector. `prepare` (husky) is skipped too, which is correct in
+      # CI — there are no local commits to hook.
+      run: npm ci --ignore-scripts --no-audit --no-fund
+
+    - name: Turborepo cache
+      if: inputs.turbo-cache == 'true'
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      with:
+        path: .turbo/cache
+        # Keyed per commit, restored from the newest prefix match: each run
+        # reuses whatever the last run on this branch (or main) produced.
+        key: turbo-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
+        restore-keys: |
+          turbo-${{ runner.os }}-${{ github.ref_name }}-
+          turbo-${{ runner.os }}-main-

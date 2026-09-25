@@ -47,6 +47,9 @@ coverage
 # SST — local state holds resolved values for every managed variable
 .sst
 .env.sst
+# SST writes one into every workspace to type `Resource` links. Nothing in this
+# repo uses Resource, and SST regenerates them on every deploy.
+sst-env.d.ts
 
 # editors / OS
 .DS_Store

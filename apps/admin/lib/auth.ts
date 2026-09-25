@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cookies } from "next/headers";
+import { hmacSha256Hex as hmac, timingSafeEqual } from "@repo/security/crypto";
 
 /**
  * Session handling for the admin dashboard.
@@ -136,37 +137,6 @@ export function isAuthConfigured(): boolean {
   }
 }
 
-async function hmac(message: string, secret: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"],
-  );
-  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(message));
-  return [...new Uint8Array(signature)]
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
-}
-
-/** Constant-time string comparison. */
-function timingSafeEqual(a: string, b: string): boolean {
-  const encoder = new TextEncoder();
-  const bufA = encoder.encode(a);
-  const bufB = encoder.encode(b);
-
-  // Fold the length difference into the result rather than returning early, so
-  // unequal lengths take the same path as equal ones.
-  let mismatch = bufA.length ^ bufB.length;
-  const max = Math.max(bufA.length, bufB.length);
-  for (let i = 0; i < max; i++) {
-    mismatch |= (bufA[i] ?? 0) ^ (bufB[i] ?? 0);
-  }
-  return mismatch === 0;
-}
-
 export async function verifyPassword(candidate: string): Promise<boolean> {
   const credential = getCredential();
 
@@ -174,9 +144,8 @@ export async function verifyPassword(candidate: string): Promise<boolean> {
     // scrypt is deliberately slow and memory-hard, so each guess costs the
     // attacker real resources — which is the entire point of a KDF and the
     // reason a plain hash would not do.
-    const { scrypt: nodeScrypt, timingSafeEqual: nodeTimingSafeEqual } = await import(
-      "node:crypto"
-    );
+    const { scrypt: nodeScrypt, timingSafeEqual: nodeTimingSafeEqual } =
+      await import("node:crypto");
 
     const salt = Buffer.from(credential.salt, "base64");
     const expected = Buffer.from(credential.hash, "base64");
@@ -197,9 +166,7 @@ export async function verifyPassword(candidate: string): Promise<boolean> {
       );
     });
 
-    return (
-      derived.length === expected.length && nodeTimingSafeEqual(derived, expected)
-    );
+    return derived.length === expected.length && nodeTimingSafeEqual(derived, expected);
   }
 
   // Plaintext fallback. Both sides are HMACed before comparison so the compare

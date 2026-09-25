@@ -38,13 +38,21 @@ const nextConfig: NextConfig = {
   // file dependencies from the wrong directory and bloats the output bundle.
   outputFileTracingRoot: path.join(__dirname, "../../"),
 
-
   typescript: {
     // Never true. A type error that reaches production is a runtime error.
     ignoreBuildErrors: false,
   },
 
   experimental: {
+    /*
+      `inlineCss` is deliberately NOT enabled, though it measured ~0.3 s better
+      LCP in Lighthouse. Next emits the inlined stylesheet as a <style> tag
+      WITHOUT the CSP nonce (verified in the built HTML), so the strict,
+      nonce-based style-src blocks it and the site renders unstyled. Enabling it
+      would mean reverting style-src to 'unsafe-inline'. Revisit if Next starts
+      nonce-ing inlined CSS — check:headers now fails if any <style> lacks one.
+    */
+
     // Rewrites `import { X } from "lucide-react"` to a direct deep import, so a
     // page using three icons does not pull the whole icon set into dev compiles.
     optimizePackageImports: ["lucide-react", "framer-motion"],
@@ -131,6 +139,9 @@ const nextConfig: NextConfig = {
       // RFC 9116 places security.txt under /.well-known/; the bare path is a
       // common guess, so it is redirected rather than 404'd.
       { source: "/security.txt", destination: "/.well-known/security.txt", permanent: true },
+      // Browsers and some crawlers request /favicon.ico directly, ignoring
+      // <link rel="icon">. Without this they receive the 31 KB 404 page.
+      { source: "/favicon.ico", destination: "/icon.svg", permanent: true },
     ];
   },
 };

@@ -13,16 +13,16 @@ export default function ContactPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div>
           <GlitchHeading
-              as="h1"
-              lines={["CONTACT", "FORM"]}
-              className="text-5xl md:text-7xl leading-none"
-              lineClassName={[undefined, "text-transparent text-stroke"]}
-              wrapperClassName={"mb-8"}
+            as="h1"
+            lines={["CONTACT", "FORM"]}
+            className="text-5xl md:text-7xl leading-none"
+            lineClassName={[undefined, "text-transparent text-stroke"]}
+            wrapperClassName={"mb-8"}
           />
 
           <p className="font-mono text-muted-foreground max-w-md mb-8">
-            Open to internships, collaboration and security research conversations.
-            Response time: &lt; 24 hours.
+            Open to internships, collaboration and security research conversations. Response time:
+            &lt; 24 hours.
           </p>
 
           <div className="font-mono text-lg">

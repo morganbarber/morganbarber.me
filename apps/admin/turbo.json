@@ -1,0 +1,30 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "passThroughEnv": [
+        "ADMIN_PASSWORD",
+        "ADMIN_PASSWORD_HASH",
+        "ADMIN_SESSION_SECRET",
+        "PORTFOLIO_URL"
+      ]
+    },
+    "dev": {
+      "passThroughEnv": [
+        "ADMIN_PASSWORD",
+        "ADMIN_PASSWORD_HASH",
+        "ADMIN_SESSION_SECRET",
+        "PORTFOLIO_URL"
+      ]
+    },
+    "lint": {
+      "passThroughEnv": [
+        "ADMIN_PASSWORD",
+        "ADMIN_PASSWORD_HASH",
+        "ADMIN_SESSION_SECRET",
+        "PORTFOLIO_URL"
+      ]
+    }
+  }
+}

@@ -22,7 +22,45 @@ Supabase's newer `sb_publishable_…` keys and the legacy `anon` JWTs are both
 accepted; set `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` or
 `NEXT_PUBLIC_SUPABASE_ANON_KEY` and the app resolves whichever is present.
 
-### Admin dashboard
+### SEO
+
+Every page is built through `apps/portfolio/lib/seo.ts` (`pageMetadata()`), and
+structured data through `lib/structured-data.ts`. Verified with Lighthouse on a
+production build: **SEO 100, Accessibility 100, Best Practices 100** on every
+page tested, Performance 96–99.
+
+| Area            | Implementation                                                                                                                                                                                                                                          |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Titles          | ≤ 60 chars; the " \| Morgan Barber" suffix is dropped when it would push past that. Stored ALL-CAPS titles are converted to title case for `<title>` only (acronyms and deliberate mixed case like `IoT` preserved)                                     |
+| Descriptions    | Snippet-length (~155 chars) and unique per page; short project blurbs are enriched with category and stack                                                                                                                                              |
+| Canonicals      | Absolute `https://morganbarber.me/...` on every page                                                                                                                                                                                                    |
+| Social previews | Generated 1200×630 images in Oswald: a site default plus one per post and project with its own title, category and tags                                                                                                                                 |
+| Structured data | One linked `@graph`: `WebSite` + `Person` (with `sameAs` to GitHub, LinkedIn, HackTheBox) on every page; `ProfilePage`, `AboutPage` (with credentials), `Blog`/`BlogPosting`, `CollectionPage`, `SoftwareSourceCode` and `BreadcrumbList` per page type |
+| Breadcrumbs     | Visible on detail pages, matching the `BreadcrumbList` markup                                                                                                                                                                                           |
+| Sitemap         | Every published post and project, with accurate `lastmod` from `updated_at`                                                                                                                                                                             |
+| Feeds           | RSS at `/blog/feed.xml` (advertised site-wide); `/llms.txt` summary for AI assistants                                                                                                                                                                   |
+| Icons           | SVG favicon, 180px Apple icon, web manifest                                                                                                                                                                                                             |
+| Crawlers        | The intro animation is skipped for bots and for visitors arriving from a search engine. Previews are `noindex` and disallowed in robots.txt                                                                                                             |
+| Core Web Vitals | Above-the-fold content animates with CSS from first paint rather than waiting for JavaScript; CLS < 0.01                                                                                                                                                |
+
+`npm run check:seo -- <url>` audits every URL in the sitemap and fails on a
+regression. CI runs it on every push.
+
+### Two traps worth knowing
+
+- **Metadata merges shallowly.** A page setting `openGraph` replaces the
+  layout's entire `openGraph` object. Always go through `pageMetadata()`.
+- **An explicit `openGraph.images` overrides a route's `opengraph-image.tsx`**,
+  contrary to the documented precedence. Routes with their own image pass
+  `ownImage: true`.
+
+After deploying, submit `https://morganbarber.me/sitemap.xml` in
+[Google Search Console](https://search.google.com/search-console) and
+[Bing Webmaster Tools](https://www.bing.com/webmasters).
+
+---
+
+## Admin dashboard
 
 ```bash
 cp apps/admin/.env.example apps/admin/.env.local
@@ -44,7 +82,9 @@ Database setup lives in **[`apps/portfolio/supabase/README.md`](apps/portfolio/s
 
 Shared logic lives in packages so the public site and the admin dashboard use
 the same validation, the same security primitives and the same database types —
-rather than two copies that drift.
+rather than two copies that drift. See **[docs/architecture.md](docs/architecture.md)**
+for the dependency graph and request lifecycle, and **[docs/adr/](docs/adr/)** for
+why things are the way they are.
 
 ```
 apps/
@@ -52,8 +92,7 @@ apps/
     app/                  routes, route handlers, error boundaries
     actions/contact.ts    contact form Server Action
     components/           page and section components
-    proxy.ts              edge proxy: CSP nonce, headers, probe filtering
-    scripts/              check-supabase.mjs, check-headers.mjs
+    proxy.ts              request policy: probe filtering, CSP nonce, headers
     supabase/             schema.sql, seed.sql, migrations/
   admin/                  local content dashboard (NEVER deployed)
     app/                  dashboard, CRUD, analytics, message inbox
@@ -62,49 +101,58 @@ apps/
 
 packages/
   config/                 validated env (public + server) and site constants
-  security/               CSP builder, rate limiting, request helpers, URL safety
+  security/               proxy primitives, CSP, crypto, rate limiting, audit log
   data/                   content queries (cached, fail-soft) + admin CRUD + schemas
   supabase/               typed browser, server and admin clients
   types/                  database types and domain projections
-  ui/                     shared components
-  eslint-config/          flat ESLint config
-  typescript-config/      shared tsconfig
+  ui/                     shared React components
+  tailwind-config/        design tokens and base CSS
+  eslint-config/          flat ESLint configs
+  typescript-config/      shared tsconfig bases
+
+tooling/
+  checks/                 check-supabase, check-headers, check-seo, check-deps
+
+docs/
+  architecture.md         system context, package graph, CI overview
+  adr/                    architecture decision records
+  SECURITY-AUDIT.md       NIST / OWASP audit
 ```
 
-### Why these package boundaries
-
-| Package | Holds | Imported by |
-| --- | --- | --- |
-| `@repo/config` | Env parsing and site constants | everything |
-| `@repo/security` | CSP, rate limits, CSRF/bot/IP helpers | both proxies, API routes, actions |
-| `@repo/data` | Every database read and write | both apps |
-| `@repo/supabase` | Client construction only | `@repo/data` |
-| `@repo/types` | Generated database types | everything |
+Every package has its own README describing its exports.
 
 The rule that matters: **`@repo/data/admin` and `@repo/supabase/admin` are the
 only modules that touch the service-role key, and nothing in `apps/portfolio`
-imports them.**
+imports them.** CI enforces it.
 
 ---
 
 ## Commands
 
-| Command | What it does |
-| --- | --- |
-| `npm run dev` | Portfolio dev server (localhost:3000) |
-| `npm run dev:admin` | Admin dashboard (127.0.0.1:3100) |
-| `npm run build` | Production build |
-| `npm run type-check` | TypeScript across every workspace |
-| `npm run lint` | ESLint across every workspace |
-| `npm run check:supabase` | Diagnose the database end to end |
-| `npm run check:headers` | Verify security headers against a running server |
-| `npm run audit:security` | Fail on any high/critical dependency advisory |
-| `npm run test` | Security-primitive tests (Node built-in runner) |
-| `npm run verify` | type-check + lint + test + audit |
-| `npm run admin:hash-password` | Generate a scrypt `ADMIN_PASSWORD_HASH` |
-| `npm run sst:install` | Download the Vercel provider (once, before first deploy) |
-| `npm run deploy` | `sst deploy --stage production` |
-| `npm run deploy:preview` | Deploy a preview stage |
+| Command                       | What it does                                                    |
+| ----------------------------- | --------------------------------------------------------------- |
+| `npm run dev`                 | Portfolio dev server (localhost:3000)                           |
+| `npm run dev:admin`           | Admin dashboard (127.0.0.1:3100)                                |
+| `npm run build`               | Production build of the site                                    |
+| `npm run build:all`           | Build every app                                                 |
+| `npm run type-check`          | TypeScript across every workspace                               |
+| `npm run lint`                | ESLint across every workspace                                   |
+| `npm run format`              | Prettier, write (`format:check` to verify only)                 |
+| `npm test`                    | Unit tests (Node built-in runner)                               |
+| `npm run test:coverage`       | Tests with coverage thresholds; LCOV to `coverage/lcov.info`    |
+| `npm run verify`              | format + types + lint + coverage + audit — run before pushing   |
+| `npm run check:supabase`      | Diagnose the database end to end                                |
+| `npm run check:headers`       | Verify security headers and CSP nonces against a running server |
+| `npm run check:seo`           | Audit every sitemap URL's metadata, structured data and assets  |
+| `npm run check:deps`          | Fail on undeclared `@repo/*` imports                            |
+| `npm run audit:security`      | Fail on any high/critical dependency advisory                   |
+| `npm run admin:hash-password` | Generate a scrypt `ADMIN_PASSWORD_HASH`                         |
+| `npm run sst:install`         | Download the Vercel provider (once, before first deploy)        |
+| `npm run deploy`              | `sst deploy --stage production`                                 |
+| `npm run deploy:preview`      | Deploy a preview stage                                          |
+
+`npm install` installs a pre-commit hook (husky + lint-staged) that formats and
+lints staged files. Contribution workflow: **[CONTRIBUTING.md](CONTRIBUTING.md)**.
 
 Verifying headers against a real server:
 
@@ -113,6 +161,19 @@ npm run build && npm start
 npm run check:headers                            # localhost:3000
 npm run check:headers -- https://morganbarber.me # production
 ```
+
+### Continuous integration
+
+| Workflow       | Runs on          | What it gates                                                                                                       |
+| -------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `ci.yml`       | push, PR         | format, lint, types, workflow lint, tests + coverage, boundaries, build, smoke (headers + SEO against a real build) |
+| `security.yml` | push, PR, weekly | npm audit + signatures, SBOM, dependency review, gitleaks, secret-file scans                                        |
+| `codeql.yml`   | push, PR, weekly | CodeQL `security-extended`                                                                                          |
+| `pr-title.yml` | PR               | Conventional Commit PR titles                                                                                       |
+
+Actions are pinned by SHA and kept current by Dependabot. There is deliberately
+no deploy workflow: SST state is local
+([ADR 0004](docs/adr/0004-sst-local-state-vercel.md)).
 
 ---
 
@@ -132,7 +193,7 @@ Every query degrades to empty data and logs, rather than throwing. A portfolio s
 
 ### Analytics
 
-Page views go to `POST /api/analytics` via `sendBeacon`, scheduled during idle time, de-duplicated per URL. Do Not Track and Global Privacy Control are honoured client-side *and* server-side. What gets stored is a salted IP hash, the path, and a parsed device/OS/browser — never a raw address, a raw user agent, a full referrer, or a query string. See the privacy notes in the Supabase README.
+Page views go to `POST /api/analytics` via `sendBeacon`, scheduled during idle time, de-duplicated per URL. Do Not Track and Global Privacy Control are honoured client-side _and_ server-side. What gets stored is a salted IP hash, the path, and a parsed device/OS/browser — never a raw address, a raw user agent, a full referrer, or a query string. See the privacy notes in the Supabase README.
 
 ---
 
@@ -188,12 +249,12 @@ API.
 
 ### What it does
 
-| Screen | Purpose |
-| --- | --- |
-| Dashboard | Row counts per table, and how many are still drafts |
-| Content → * | Create, edit, delete and publish/unpublish any row |
-| Analytics | 30-day traffic: pages, referrers, devices, recent hits |
-| Messages | Contact inbox with read/archive/spam states |
+| Screen       | Purpose                                                |
+| ------------ | ------------------------------------------------------ |
+| Dashboard    | Row counts per table, and how many are still drafts    |
+| Content → \* | Create, edit, delete and publish/unpublish any row     |
+| Analytics    | 30-day traffic: pages, referrers, devices, recent hits |
+| Messages     | Contact inbox with read/archive/spam states            |
 
 All five content types share one form component, generated from the field
 definitions in `apps/admin/lib/resources.ts`. Adding a column to the site means
@@ -232,12 +293,12 @@ trade-off is that `.sst/` holds the state and should be backed up, and
 
 ### What the config manages
 
-| Resource | Notes |
-| --- | --- |
-| `vercel.Project` | Monorepo build (`rootDirectory: apps/portfolio`, turbo-filtered build), Node 22, functions in `iad1` near Supabase |
+| Resource                            | Notes                                                                                                                                      |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `vercel.Project`                    | Monorepo build (`rootDirectory: apps/portfolio`, turbo-filtered build), Node 22, functions in `iad1` near Supabase                         |
 | `vercel.ProjectEnvironmentVariable` | One per variable; `ANALYTICS_SALT` and `REVALIDATE_SECRET` are marked `sensitive` so they cannot be read back through the dashboard or API |
-| `vercel.Deployment` | Uploads the repo (minus `.vercelignore`) and builds it |
-| `vercel.ProjectDomain` | Production only, with a 308 from the apex/www counterpart |
+| `vercel.Deployment`                 | Uploads the repo (minus `.vercelignore`) and builds it                                                                                     |
+| `vercel.ProjectDomain`              | Production only, with a 308 from the apex/www counterpart                                                                                  |
 
 Security posture set on the project:
 
@@ -252,11 +313,11 @@ secret key in the publishable slot, and a production stage with no
 
 ### Keeping the admin app out
 
-| Layer | Mechanism |
-| --- | --- |
-| Upload | `.vercelignore` excludes `apps/admin` entirely — the code never leaves your machine |
-| Build | The build command is turbo-filtered to `portfolio-web`, so the admin app is not in the graph |
-| Runtime | `assertAdminRuntime()` throws when it detects `VERCEL` and other platform variables |
+| Layer   | Mechanism                                                                                    |
+| ------- | -------------------------------------------------------------------------------------------- |
+| Upload  | `.vercelignore` excludes `apps/admin` entirely — the code never leaves your machine          |
+| Build   | The build command is turbo-filtered to `portfolio-web`, so the admin app is not in the graph |
+| Runtime | `assertAdminRuntime()` throws when it detects `VERCEL` and other platform variables          |
 
 CI adds a fourth: the `boundaries` job fails if `apps/portfolio` ever imports a
 service-role module.

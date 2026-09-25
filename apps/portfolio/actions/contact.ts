@@ -32,14 +32,8 @@ const PER_VISITOR_LIMIT = 3;
 const PER_VISITOR_WINDOW_MS = 10 * 60_000;
 
 const schema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "Name is required")
-    .max(120, "Name is too long"),
-  email: z
-    .union([z.literal(""), z.email("That email address is not valid").max(254)])
-    .optional(),
+  name: z.string().trim().min(1, "Name is required").max(120, "Name is too long"),
+  email: z.union([z.literal(""), z.email("That email address is not valid").max(254)]).optional(),
   message: z
     .string()
     .trim()
@@ -177,10 +171,7 @@ export async function submitContactForm(
 
     return SILENT_SUCCESS;
   } catch (error) {
-    console.error(
-      "[contact] unreachable:",
-      error instanceof Error ? error.message : String(error),
-    );
+    console.error("[contact] unreachable:", error instanceof Error ? error.message : String(error));
     return {
       status: "error",
       message: "The contact channel is temporarily unavailable. Please email me directly.",

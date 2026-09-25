@@ -18,8 +18,8 @@ export default async function LoginPage() {
         <LoginForm />
 
         <p className="mt-6 text-xs text-muted-foreground text-center leading-relaxed">
-          This dashboard holds the Supabase service-role key and only accepts
-          requests from localhost. It is not deployed.
+          This dashboard holds the Supabase service-role key and only accepts requests from
+          localhost. It is not deployed.
         </p>
       </div>
     </main>

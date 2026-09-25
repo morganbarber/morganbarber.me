@@ -1,33 +1,35 @@
 {
-    "name": "@repo/data",
-    "version": "0.0.0",
-    "private": true,
-    "type": "module",
-    "exports": {
-        "./content": "./src/content.ts",
-        "./admin": "./src/admin.ts",
-        "./schemas": "./src/schemas.ts"
-    },
-    "scripts": {
-        "lint": "eslint .",
-        "type-check": "tsc --noEmit"
-    },
-    "dependencies": {
-        "@repo/config": "*",
-        "@repo/supabase": "*",
-        "@repo/types": "*",
-        "server-only": "^0.0.1",
-        "zod": "^4.6.5"
-    },
-    "devDependencies": {
-        "@repo/eslint-config": "*",
-        "@repo/typescript-config": "*",
-        "@types/node": "^20",
-        "eslint": "^9",
-        "next": ">=16.3.5",
-        "typescript": "^5"
-    },
-    "peerDependencies": {
-        "next": ">=16.3.5"
-    }
+  "name": "@repo/data",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./content": "./src/content.ts",
+    "./admin": "./src/admin.ts",
+    "./schemas": "./src/schemas.ts",
+    "./hackthebox": "./src/hackthebox.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test src/*.test.ts"
+  },
+  "dependencies": {
+    "@repo/config": "*",
+    "@repo/supabase": "*",
+    "@repo/types": "*",
+    "server-only": "^0.0.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "@types/node": "^20",
+    "eslint": "^9",
+    "next": ">=16.3.5",
+    "typescript": "^5"
+  },
+  "peerDependencies": {
+    "next": ">=16.3.5"
+  }
 }

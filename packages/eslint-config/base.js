@@ -105,9 +105,9 @@ export const baseConfig = [
     },
   },
 
-  // Config and script files are Node-only and may log freely.
+  // Config files, scripts and CLI entry points are Node-only and print by design.
   {
-    files: ["**/*.config.{js,mjs,ts}", "**/scripts/**/*.{js,mjs}"],
+    files: ["**/*.config.{js,mjs,ts}", "**/scripts/**/*.{js,mjs}", "**/bin/**/*.{js,mjs}"],
     languageOptions: { globals: globals.node },
     rules: {
       "no-console": "off",

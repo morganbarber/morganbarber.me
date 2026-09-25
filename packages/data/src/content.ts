@@ -37,6 +37,8 @@ export const CACHE_TAGS = {
   experience: "experience",
   education: "education",
   certifications: "certifications",
+  // Owned by ./hackthebox.ts; listed here so POST /api/revalidate can purge it.
+  hackthebox: "hackthebox",
 } as const;
 
 /** Content changes rarely; an hour of staleness is imperceptible and cheap. */
@@ -91,8 +93,9 @@ async function safeQuery<T>(
 function describeError(error: unknown): string {
   if (error && typeof error === "object") {
     const candidate = error as { message?: unknown; code?: unknown; name?: unknown };
-    const parts = [candidate.code, candidate.name, candidate.message]
-      .filter((part): part is string => typeof part === "string" && part.length > 0);
+    const parts = [candidate.code, candidate.name, candidate.message].filter(
+      (part): part is string => typeof part === "string" && part.length > 0,
+    );
     if (parts.length) return parts.join(" / ").slice(0, 300);
   }
   return String(error).slice(0, 300);
@@ -102,12 +105,49 @@ function describeError(error: unknown): string {
  * `unstable_cache` requires a function free of request-scoped APIs, which is
  * why these use `createStaticClient()` rather than the cookie-aware client.
  */
-function cached<Args extends unknown[], T>(
+/**
+ * Thrown inside the cached function to stop a degraded result being stored.
+ * unstable_cache only persists values that resolve; a rejection is not cached.
+ */
+class DegradedResult<T> extends Error {
+  constructor(readonly result: T) {
+    super("degraded query result");
+  }
+}
+
+/**
+ * Caches successful reads only.
+ *
+ * Previously the fallback from a failed read (an empty array) was cached like
+ * any other value, for the full hour. One brief Supabase outage during a crawl
+ * therefore served an empty blog, sitemap and RSS feed for an hour afterwards —
+ * long enough for a search engine to record the pages as gone. Now a degraded
+ * result is returned to the caller but never stored, so the next request
+ * retries the database instead of replaying the failure.
+ */
+function cached<Args extends unknown[], T extends QueryResult<unknown>>(
   keyParts: string[],
   tags: string[],
   fn: (...args: Args) => Promise<T>,
-) {
-  return unstable_cache(fn, keyParts, { revalidate: REVALIDATE_SECONDS, tags });
+): (...args: Args) => Promise<T> {
+  const store = unstable_cache(
+    async (...args: Args): Promise<T> => {
+      const result = await fn(...args);
+      if (result.degraded) throw new DegradedResult(result);
+      return result;
+    },
+    keyParts,
+    { revalidate: REVALIDATE_SECONDS, tags },
+  );
+
+  return async (...args: Args): Promise<T> => {
+    try {
+      return await store(...args);
+    } catch (error) {
+      if (error instanceof DegradedResult) return error.result as T;
+      throw error;
+    }
+  };
 }
 
 // -----------------------------------------------------------------------------
@@ -124,7 +164,7 @@ export const getBlogPosts = cached(
       (signal) =>
         supabase
           .from("blog_posts")
-          .select("id, slug, title, summary, date, tag, reading_minutes, created_at")
+          .select("id, slug, title, summary, date, tag, reading_minutes, created_at, updated_at")
           .eq("published", true)
           .order("date", { ascending: false })
           .limit(Math.min(limit, MAX_ROWS))
@@ -190,7 +230,9 @@ export const getProjects = cached(
       (signal) =>
         supabase
           .from("projects")
-          .select("id, title, description, category, status, tags, link, sort_order, created_at")
+          .select(
+            "id, title, description, category, status, tags, link, sort_order, created_at, updated_at",
+          )
           .eq("published", true)
           .order("sort_order", { ascending: true })
           .order("created_at", { ascending: false })
@@ -327,7 +369,6 @@ export async function getHomePageData() {
     projects: projects.data,
     experience: experience.data,
     education: education.data,
-    degraded:
-      posts.degraded || projects.degraded || experience.degraded || education.degraded,
+    degraded: posts.degraded || projects.degraded || experience.degraded || education.degraded,
   };
 }

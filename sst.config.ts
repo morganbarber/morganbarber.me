@@ -95,6 +95,7 @@ export default $config({
     const siteUrl = required("NEXT_PUBLIC_SITE_URL");
     const analyticsSalt = optional("ANALYTICS_SALT");
     const revalidateSecret = optional("REVALIDATE_SECRET");
+    const htbToken = optional("HTB_APP_TOKEN");
 
     /**
      * A secret key in the publishable slot would be compiled into the
@@ -219,8 +220,7 @@ export default $config({
 
     env("SupabaseKey", "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", supabaseKey, {
       sensitive: false,
-      comment:
-        "Supabase publishable key. Public by design; all authority lives in RLS policies.",
+      comment: "Supabase publishable key. Public by design; all authority lives in RLS policies.",
     });
 
     env("SiteUrl", "NEXT_PUBLIC_SITE_URL", siteUrl, {
@@ -231,8 +231,14 @@ export default $config({
     if (analyticsSalt) {
       env("AnalyticsSalt", "ANALYTICS_SALT", analyticsSalt, {
         sensitive: true,
-        comment:
-          "Salts the SHA-256 of visitor IPs. Rotating it resets unique-visitor attribution.",
+        comment: "Salts the SHA-256 of visitor IPs. Rotating it resets unique-visitor attribution.",
+      });
+    }
+
+    if (htbToken) {
+      env("HtbAppToken", "HTB_APP_TOKEN", htbToken, {
+        sensitive: true,
+        comment: "HackTheBox App Token for live profile stats. Credential for the HTB account.",
       });
     }
 

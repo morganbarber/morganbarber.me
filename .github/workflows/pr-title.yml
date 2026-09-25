@@ -1,0 +1,50 @@
+name: PR title
+
+# Pull requests are squash-merged, so the PR title becomes the commit message on
+# main. Enforcing Conventional Commits here keeps history scannable and makes a
+# changelog derivable from it — without a commit-msg hook on every machine.
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  conventional:
+    name: Conventional Commits
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: amannn/action-semantic-pull-request@0723387faaf9b38adef4775cd42cfd5155ed6017 # v5.5.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            perf
+            refactor
+            docs
+            test
+            build
+            ci
+            chore
+            security
+            revert
+          scopes: |
+            portfolio
+            admin
+            config
+            data
+            security
+            supabase
+            types
+            ui
+            tailwind-config
+            eslint-config
+            typescript-config
+            checks
+            deps
+            infra
+          requireScope: false

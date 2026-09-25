@@ -110,13 +110,14 @@ export default async function ResourceListPage({
                 const livePath = resource.publicPath?.(row);
 
                 return (
-                  <tr key={id} className="border-b border-border last:border-b-0 hover:bg-surface/60">
+                  <tr
+                    key={id}
+                    className="border-b border-border last:border-b-0 hover:bg-surface/60"
+                  >
                     {resource.listColumns.map((column) => {
                       const value = row[column.field];
                       const display =
-                        value === null || value === undefined || value === ""
-                          ? "—"
-                          : String(value);
+                        value === null || value === undefined || value === "" ? "—" : String(value);
 
                       return (
                         <td key={column.field} className="px-4 py-3 align-top">

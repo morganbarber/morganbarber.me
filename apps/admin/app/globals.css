@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "@repo/tailwind-config/tokens.css";
+@import "@repo/tailwind-config/base.css";
 
 /*
   Admin dashboard styling.
@@ -10,28 +12,11 @@
 
 @theme {
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-
-  --color-background: var(--background);
-  --color-surface: var(--surface);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-primary: var(--primary);
-  --color-danger: var(--danger);
-  --color-border: var(--border);
 }
 
+/* A slightly lifted background so the surface panels read as raised. */
 :root {
-  color-scheme: dark;
-
   --background: #0a0a0a;
-  --surface: #121212;
-  --foreground: #ededed;
-  --muted: #1a1a1a;
-  --muted-foreground: #9a9a9a;
-  --primary: #00ff41;
-  --danger: #ff003c;
-  --border: #2a2a2a;
 }
 
 body {
@@ -39,30 +24,4 @@ body {
   color: var(--foreground);
   font-family: var(--font-mono);
   font-size: 14px;
-}
-
-:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-
-::selection {
-  background: var(--primary);
-  color: var(--background);
-}
-
-/* Inputs need an explicit dark scheme or some browsers paint a light autofill. */
-input,
-textarea,
-select {
-  color-scheme: dark;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
 }

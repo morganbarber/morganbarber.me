@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!--
+    Terminal-prompt monogram. Drawn with strokes rather than <text> so it
+    renders identically everywhere — Google rasterises favicons for search
+    results, and a text-based SVG would depend on whatever font it has.
+    48×48 viewBox because Google asks for favicons in multiples of 48px.
+  -->
+  <rect width="48" height="48" rx="8" fill="#050505"/>
+  <polyline points="12,15 22,24 12,33" fill="none" stroke="#00ff41" stroke-width="4" stroke-linecap="square" stroke-linejoin="miter"/>
+  <line x1="25" y1="33" x2="37" y2="33" stroke="#00ff41" stroke-width="4" stroke-linecap="square"/>
+</svg>

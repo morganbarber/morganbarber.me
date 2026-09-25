@@ -1,0 +1,17 @@
+# Review routing. With branch protection's "Require review from Code Owners",
+# changes to these paths cannot merge without the listed owner's approval.
+# Later rules take precedence over earlier ones.
+
+*                                   @morganbarber
+
+# Security-critical surfaces: listed explicitly so that if more maintainers are
+# added to the default rule, these still route to whoever owns security.
+/packages/security/                 @morganbarber
+/packages/supabase/src/admin.ts     @morganbarber
+/packages/config/src/server-env.ts  @morganbarber
+/apps/*/proxy.ts                    @morganbarber
+/apps/portfolio/supabase/           @morganbarber
+/apps/admin/                        @morganbarber
+/.github/                           @morganbarber
+/sst.config.ts                      @morganbarber
+/.vercelignore                      @morganbarber

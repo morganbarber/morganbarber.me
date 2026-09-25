@@ -2,12 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import {
-  createRow,
-  deleteRow,
-  setPublished,
-  updateRow,
-} from "@repo/data/admin";
+import { createRow, deleteRow, setPublished, updateRow } from "@repo/data/admin";
 import { fieldErrors, formDataToObject } from "@repo/data/schemas";
 import { auditLog } from "@repo/security/audit";
 import { isAuthenticated } from "@/lib/auth";
@@ -128,11 +123,7 @@ export async function deleteResource(slug: string, id: string): Promise<void> {
   redirect(`/content/${slug}`);
 }
 
-export async function togglePublished(
-  slug: string,
-  id: string,
-  published: boolean,
-): Promise<void> {
+export async function togglePublished(slug: string, id: string, published: boolean): Promise<void> {
   await requireAuth();
 
   const resource = getResource(slug);

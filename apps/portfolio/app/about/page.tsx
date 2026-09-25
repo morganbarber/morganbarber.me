@@ -1,21 +1,33 @@
 import type { Metadata } from "next";
 import AboutContent from "./content";
+import StructuredData from "@/components/structured-data";
 import { getCertifications } from "@repo/data/content";
-import { getSiteUrl } from "@repo/config/env";
+import { pageMetadata } from "@/lib/seo";
+import { aboutPageNode, breadcrumbNode, graph } from "@/lib/structured-data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "About",
   description:
-    "Morgan Barber — aspiring cybersecurity specialist. Core competencies, certifications and background.",
-  alternates: { canonical: `${getSiteUrl()}/about` },
-  openGraph: {
-    title: "About | Morgan Barber",
-    description: "Background, core competencies and certifications.",
-    url: `${getSiteUrl()}/about`,
-  },
-};
+    "About Morgan Barber, an aspiring cybersecurity specialist from Longmont, Colorado: core competencies, CompTIA certifications and hands-on security background.",
+  path: "/about",
+  type: "profile",
+});
 
 export default async function About() {
   const { data: certifications } = await getCertifications();
-  return <AboutContent certifications={certifications} />;
+
+  return (
+    <>
+      <StructuredData
+        data={graph(
+          aboutPageNode(certifications),
+          breadcrumbNode([
+            { name: "Home", path: "/" },
+            { name: "About", path: "/about" },
+          ]),
+        )}
+      />
+      <AboutContent certifications={certifications} />
+    </>
+  );
 }

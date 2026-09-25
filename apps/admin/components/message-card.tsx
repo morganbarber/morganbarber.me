@@ -59,13 +59,21 @@ export default function MessageCard({ message }: { message: ContactMessage }) {
         ) : null}
 
         {message.status !== "archived" ? (
-          <StatusButton id={message.id} status="archived" icon={<Archive className="h-3.5 w-3.5" />}>
+          <StatusButton
+            id={message.id}
+            status="archived"
+            icon={<Archive className="h-3.5 w-3.5" />}
+          >
             Archive
           </StatusButton>
         ) : null}
 
         {message.status !== "spam" ? (
-          <StatusButton id={message.id} status="spam" icon={<ShieldAlert className="h-3.5 w-3.5" />}>
+          <StatusButton
+            id={message.id}
+            status="spam"
+            icon={<ShieldAlert className="h-3.5 w-3.5" />}
+          >
             Spam
           </StatusButton>
         ) : null}

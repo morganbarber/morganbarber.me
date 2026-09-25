@@ -4,11 +4,11 @@ Everything the database needs, in the order it needs doing.
 
 ## Files
 
-| File | Purpose |
-| --- | --- |
-| `schema.sql` | Complete schema: tables, indexes, RLS policies, functions, grants. Idempotent — safe to re-run. |
-| `seed.sql` | Sample content. Idempotent — updates rows in place rather than duplicating. |
-| `migrations/` | Incremental changes for a database that already exists. |
+| File          | Purpose                                                                                         |
+| ------------- | ----------------------------------------------------------------------------------------------- |
+| `schema.sql`  | Complete schema: tables, indexes, RLS policies, functions, grants. Idempotent — safe to re-run. |
+| `seed.sql`    | Sample content. Idempotent — updates rows in place rather than duplicating.                     |
+| `migrations/` | Incremental changes for a database that already exists.                                         |
 
 ## First-time setup
 
@@ -22,7 +22,7 @@ Everything the database needs, in the order it needs doing.
    npm run check:supabase
    ```
 
-   That script checks the environment, DNS, the REST endpoint, every table, every function, and — importantly — that the private tables are *not* readable with the public key. It tells you which step failed rather than leaving you to guess.
+   That script checks the environment, DNS, the REST endpoint, every table, every function, and — importantly — that the private tables are _not_ readable with the public key. It tells you which step failed rather than leaving you to guess.
 
 With the CLI instead of the dashboard:
 
@@ -49,17 +49,17 @@ The anon key is public — it ships in the JavaScript bundle of every page. So `
 
 **Functions**
 
-| Function | Callable by | Does |
-| --- | --- | --- |
-| `track_event(...)` | `anon` | Records one analytics event. Clamps every field; 240/hour per visitor. |
-| `submit_contact_message(...)` | `anon` | Stores a contact message. 5/hour per visitor, 50/hour site-wide. Returns `ok` / `invalid` / `rate_limited`. |
-| `health_check()` | `anon` | Liveness probe. Returns a timestamp, no data. |
-| `consume_rate_limit(...)` | *nobody* | Internal token bucket. |
-| `prune_old_data()` | `service_role` | Deletes analytics older than 180 days. |
+| Function                      | Callable by    | Does                                                                                                        |
+| ----------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------- |
+| `track_event(...)`            | `anon`         | Records one analytics event. Clamps every field; 240/hour per visitor.                                      |
+| `submit_contact_message(...)` | `anon`         | Stores a contact message. 5/hour per visitor, 50/hour site-wide. Returns `ok` / `invalid` / `rate_limited`. |
+| `health_check()`              | `anon`         | Liveness probe. Returns a timestamp, no data.                                                               |
+| `consume_rate_limit(...)`     | _nobody_       | Internal token bucket.                                                                                      |
+| `prune_old_data()`            | `service_role` | Deletes analytics older than 180 days.                                                                      |
 
 Every `SECURITY DEFINER` function sets `search_path = ''` and fully qualifies each identifier. Without that, anyone able to create objects in a schema on the search path could shadow a function or table name and have it run with the definer's privileges — a well-known Postgres privilege-escalation pattern.
 
-### What is deliberately *not* stored
+### What is deliberately _not_ stored
 
 - **Raw IP addresses.** Only a salted SHA-256, truncated to 32 hex characters. The salt lives in `ANALYTICS_SALT` on the server, never in the database, so a database dump alone cannot be reversed to addresses.
 - **Raw user-agent strings.** Only the parsed device type, OS and browser. A full UA string is a strong fingerprint and adds nothing analytically.

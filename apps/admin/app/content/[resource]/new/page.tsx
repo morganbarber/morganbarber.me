@@ -23,10 +23,7 @@ export default async function NewResourcePage({
   const { schema: _schema, publicPath: _publicPath, ...serialisable } = resource;
 
   return (
-    <Shell
-      title={`New ${resource.singular.toLowerCase()}`}
-      description={resource.description}
-    >
+    <Shell title={`New ${resource.singular.toLowerCase()}`} description={resource.description}>
       <ResourceForm resource={serialisable} />
     </Shell>
   );

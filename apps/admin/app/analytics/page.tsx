@@ -41,8 +41,8 @@ export default async function AnalyticsPage() {
 
           {data.totalViews === 0 ? (
             <p className="rounded border border-border bg-surface p-10 text-center text-muted-foreground">
-              No traffic recorded yet. Visits are tracked once the site is running and the
-              visitor has not enabled Do Not Track.
+              No traffic recorded yet. Visits are tracked once the site is running and the visitor
+              has not enabled Do Not Track.
             </p>
           ) : (
             <>
@@ -68,11 +68,21 @@ export default async function AnalyticsPage() {
                   <table className="w-full border-collapse text-left">
                     <thead className="bg-surface">
                       <tr>
-                        <th scope="col" className="px-4 py-2.5 border-b border-border">When</th>
-                        <th scope="col" className="px-4 py-2.5 border-b border-border">Path</th>
-                        <th scope="col" className="px-4 py-2.5 border-b border-border">Device</th>
-                        <th scope="col" className="px-4 py-2.5 border-b border-border">Browser</th>
-                        <th scope="col" className="px-4 py-2.5 border-b border-border">Country</th>
+                        <th scope="col" className="px-4 py-2.5 border-b border-border">
+                          When
+                        </th>
+                        <th scope="col" className="px-4 py-2.5 border-b border-border">
+                          Path
+                        </th>
+                        <th scope="col" className="px-4 py-2.5 border-b border-border">
+                          Device
+                        </th>
+                        <th scope="col" className="px-4 py-2.5 border-b border-border">
+                          Browser
+                        </th>
+                        <th scope="col" className="px-4 py-2.5 border-b border-border">
+                          Country
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -82,9 +92,15 @@ export default async function AnalyticsPage() {
                             {new Date(row.created_at).toLocaleString()}
                           </td>
                           <td className="px-4 py-2.5">{row.path}</td>
-                          <td className="px-4 py-2.5 text-muted-foreground">{row.device_type ?? "—"}</td>
-                          <td className="px-4 py-2.5 text-muted-foreground">{row.browser ?? "—"}</td>
-                          <td className="px-4 py-2.5 text-muted-foreground">{row.geo_country ?? "—"}</td>
+                          <td className="px-4 py-2.5 text-muted-foreground">
+                            {row.device_type ?? "—"}
+                          </td>
+                          <td className="px-4 py-2.5 text-muted-foreground">
+                            {row.browser ?? "—"}
+                          </td>
+                          <td className="px-4 py-2.5 text-muted-foreground">
+                            {row.geo_country ?? "—"}
+                          </td>
                         </tr>
                       ))}
                     </tbody>

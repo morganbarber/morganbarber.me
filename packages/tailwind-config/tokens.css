@@ -1,0 +1,54 @@
+/*
+  Design tokens shared by every app in the monorepo.
+
+  One palette, defined once. The apps previously each declared their own copy
+  and had already drifted (a different grey, and the same red under two names).
+  Import this before any app-specific CSS:
+
+    @import "tailwindcss";
+    @import "@repo/tailwind-config/tokens.css";
+
+  An app may override a value in its own :root (the admin uses a slightly
+  lifted background for surface contrast) but should not invent new names.
+*/
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  /* Alias of secondary, for UI states ("delete", "error") where the name reads
+     better than the brand colour. */
+  --color-danger: var(--secondary);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+}
+
+:root {
+  color-scheme: dark;
+
+  --background: #050505;
+  --foreground: #ededed;
+  --surface: #121212;
+  --border: #2a2a2a;
+
+  /* Matrix green */
+  --primary: #00ff41;
+  /* Cyber red */
+  --secondary: #ff003c;
+  /* Hyper blue */
+  --accent: #2e00f5;
+
+  --muted: #1a1a1a;
+  /*
+    #8a8a8a on #050505 is ~7.4:1 — comfortably past WCAG AA (4.5:1) for body
+    text. Lighthouse flags anything dimmer, and it is harder to read on a phone
+    in daylight.
+  */
+  --muted-foreground: #8a8a8a;
+}

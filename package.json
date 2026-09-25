@@ -1,42 +1,62 @@
 {
-    "name": "portfolio-monorepo",
-    "version": "1.0.0",
-    "private": true,
-    "scripts": {
-        "dev": "turbo dev --filter=portfolio-web",
-        "build": "turbo build --filter=portfolio-web",
-        "lint": "turbo lint",
-        "type-check": "turbo type-check",
-        "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
-        "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
-        "check:supabase": "npm run check:supabase --workspace portfolio-web",
-        "check:headers": "npm run check:headers --workspace portfolio-web",
-        "audit:security": "npm audit --audit-level=high",
-        "verify": "npm run type-check && npm run lint && npm run test && npm run audit:security",
-        "clean": "rm -rf node_modules .turbo apps/*/.next apps/*/.turbo packages/*/.turbo packages/*/dist",
-        "dev:admin": "turbo dev --filter=@repo/admin",
-        "dev:all": "turbo dev",
-        "build:all": "turbo build",
-        "sst:install": "sst install",
-        "deploy": "sst deploy --stage production",
-        "deploy:preview": "sst deploy --stage preview",
-        "sst:remove": "sst remove",
-        "admin:hash-password": "npm run admin:hash-password --workspace @repo/admin",
-        "test": "turbo test"
-    },
-    "devDependencies": {
-        "prettier": "^3.4.2",
-        "sst": "^4.17.1",
-        "turbo": "^2.3.3"
-    },
-    "packageManager": "npm@10.8.2",
-    "workspaces": [
-        "apps/*",
-        "packages/*"
+  "name": "portfolio-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.12.0",
+    "npm": ">=10.9.0"
+  },
+  "scripts": {
+    "admin:hash-password": "npm run admin:hash-password --workspace @repo/admin",
+    "audit:security": "npm audit --audit-level=high",
+    "build": "turbo build --filter=portfolio-web",
+    "build:all": "turbo build",
+    "check:headers": "npm run check:headers --workspace portfolio-web",
+    "check:seo": "npm run check:seo --workspace portfolio-web",
+    "check:supabase": "npm run check:supabase --workspace portfolio-web",
+    "clean": "rm -rf node_modules .turbo apps/*/.next apps/*/.turbo packages/*/.turbo packages/*/dist",
+    "deploy": "sst deploy --stage production",
+    "deploy:preview": "sst deploy --stage preview",
+    "dev": "turbo dev --filter=portfolio-web",
+    "dev:admin": "turbo dev --filter=@repo/admin",
+    "dev:all": "turbo dev",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "turbo lint",
+    "prepare": "husky",
+    "sst:install": "sst install",
+    "sst:remove": "sst remove",
+    "test": "turbo test",
+    "test:coverage": "node --experimental-strip-types --test --experimental-test-coverage --test-coverage-exclude='**/*.test.ts' --test-coverage-exclude='**/node_modules/**' --test-coverage-lines=80 --test-coverage-branches=80 --test-coverage-functions=65 --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info 'packages/*/src/*.test.ts' 'apps/*/lib/*.test.ts'",
+    "type-check": "turbo type-check",
+    "verify": "npm run format:check && npm run type-check && npm run lint && npm run test:coverage && npm run audit:security",
+    "check:deps": "node tooling/checks/bin/check-deps.mjs"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.4.2",
+    "sst": "^4.17.1",
+    "turbo": "^2.3.3"
+  },
+  "packageManager": "npm@10.9.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "tooling/*"
+  ],
+  "overrides": {
+    "next": "^16.3.5",
+    "sharp": "^0.35.5",
+    "postcss": "^8.5.23"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs,cjs}": [
+      "prettier --write",
+      "eslint --flag v10_config_lookup_from_file --fix --no-warn-ignored"
     ],
-    "overrides": {
-        "next": "^16.3.5",
-        "sharp": "^0.35.5",
-        "postcss": "^8.5.23"
-    }
+    "*.{json,md,css,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
 }

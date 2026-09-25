@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { CACHE_TAGS } from "@repo/data/content";
 import { getServerEnv } from "@repo/config/server-env";
-import { rateLimit, timingSafeEqual } from "@repo/security/rate-limit";
+import { timingSafeEqual } from "@repo/security/crypto";
+import { rateLimit } from "@repo/security/rate-limit";
 import { clientIp } from "@repo/security/request";
 import { auditLog } from "@repo/security/audit";
 
@@ -113,11 +114,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   const fromTable = parsed.data.table ? TABLE_TO_TAG[parsed.data.table] : undefined;
 
   // With no hint, refresh everything — the safe default for a manual call.
-  const tags = explicit
-    ? [explicit]
-    : fromTable
-      ? [fromTable]
-      : Object.values(CACHE_TAGS);
+  const tags = explicit ? [explicit] : fromTable ? [fromTable] : Object.values(CACHE_TAGS);
 
   // Next 16 requires a cache-life profile. `{ expire: 0 }` means "treat every
   // entry as already stale", i.e. purge now.

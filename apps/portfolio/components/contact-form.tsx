@@ -3,10 +3,7 @@
 import { useActionState, useEffect, useRef } from "react";
 import { useFormStatus } from "react-dom";
 import { CheckCircle2, AlertTriangle, Loader2 } from "lucide-react";
-import {
-  initialContactState,
-  submitContactForm,
-} from "@/actions/contact";
+import { initialContactState, submitContactForm } from "@/actions/contact";
 
 /**
  * Contact form.
@@ -105,10 +102,7 @@ export default function ContactForm() {
       </div>
 
       <div className="space-y-2">
-        <label
-          htmlFor="name"
-          className="font-mono text-xs uppercase tracking-widest text-primary"
-        >
+        <label htmlFor="name" className="font-mono text-xs uppercase tracking-widest text-primary">
           Identity <span aria-hidden="true">*</span>
         </label>
         <input
@@ -131,10 +125,7 @@ export default function ContactForm() {
       </div>
 
       <div className="space-y-2">
-        <label
-          htmlFor="email"
-          className="font-mono text-xs uppercase tracking-widest text-primary"
-        >
+        <label htmlFor="email" className="font-mono text-xs uppercase tracking-widest text-primary">
           Return Address
         </label>
         <input

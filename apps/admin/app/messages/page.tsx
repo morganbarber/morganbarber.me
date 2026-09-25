@@ -64,8 +64,7 @@ function Group({
   return (
     <section>
       <h2 className="font-bold mb-3">
-        {title}{" "}
-        <span className="text-muted-foreground font-normal">({messages.length})</span>
+        {title} <span className="text-muted-foreground font-normal">({messages.length})</span>
       </h2>
       <ul className="space-y-3 list-none m-0 p-0">
         {messages.map((message) => (

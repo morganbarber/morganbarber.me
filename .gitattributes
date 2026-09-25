@@ -1,0 +1,13 @@
+# Normalise line endings so a Windows checkout does not produce whole-file diffs.
+* text=auto eol=lf
+
+# Binary assets: never diffed or normalised.
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.pdf binary
+
+# Generated; collapsed in GitHub diffs.
+package-lock.json linguist-generated=true -diff

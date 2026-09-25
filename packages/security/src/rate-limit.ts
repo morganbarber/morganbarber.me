@@ -48,11 +48,7 @@ export interface RateLimitResult {
   retryAfter: number;
 }
 
-export function rateLimit(
-  key: string,
-  limit: number,
-  windowMs: number,
-): RateLimitResult {
+export function rateLimit(key: string, limit: number, windowMs: number): RateLimitResult {
   const now = Date.now();
 
   // Amortised cleanup: sweeping ~1% of calls keeps the map bounded without
@@ -85,10 +81,7 @@ export function rateLimit(
 }
 
 /** Standard rate-limit headers for a response. */
-export function rateLimitHeaders(
-  result: RateLimitResult,
-  limit: number,
-): Record<string, string> {
+export function rateLimitHeaders(result: RateLimitResult, limit: number): Record<string, string> {
   const headers: Record<string, string> = {
     "RateLimit-Limit": String(limit),
     "RateLimit-Remaining": String(result.remaining),
@@ -96,26 +89,4 @@ export function rateLimitHeaders(
   };
   if (!result.allowed) headers["Retry-After"] = String(result.retryAfter);
   return headers;
-}
-
-/**
- * Constant-time string comparison.
- *
- * Used for the revalidation secret. A plain `===` short-circuits on the first
- * differing byte, which leaks the length of the matching prefix to anyone who
- * can measure response time precisely enough.
- */
-export function timingSafeEqual(a: string, b: string): boolean {
-  const encoder = new TextEncoder();
-  const bufA = encoder.encode(a);
-  const bufB = encoder.encode(b);
-
-  // Compare lengths without branching out early, then fold the length
-  // difference into the result so unequal lengths always fail.
-  let mismatch = bufA.length ^ bufB.length;
-  const max = Math.max(bufA.length, bufB.length);
-  for (let i = 0; i < max; i++) {
-    mismatch |= (bufA[i] ?? 0) ^ (bufB[i] ?? 0);
-  }
-  return mismatch === 0;
 }

@@ -38,8 +38,8 @@ export default function GlobalError({
             SYSTEM HALTED
           </h1>
           <p style={{ color: "#888", lineHeight: 1.7 }}>
-            The application failed to start. If this persists, the server
-            configuration is most likely at fault.
+            The application failed to start. If this persists, the server configuration is most
+            likely at fault.
           </p>
           {error.digest ? (
             <p style={{ color: "#555", fontSize: "0.75rem", wordBreak: "break-all" }}>

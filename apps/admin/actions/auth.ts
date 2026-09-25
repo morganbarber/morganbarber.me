@@ -43,10 +43,7 @@ async function loginSource(): Promise<string> {
   return clientIp(headerList) ?? "local";
 }
 
-export async function login(
-  _prevState: LoginState,
-  formData: FormData,
-): Promise<LoginState> {
+export async function login(_prevState: LoginState, formData: FormData): Promise<LoginState> {
   const source = await loginSource();
 
   if (!isAuthConfigured()) {

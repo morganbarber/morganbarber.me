@@ -1,4 +1,5 @@
 import { getSupabaseUrl } from "@repo/config/env";
+import { randomBase64 } from "./crypto";
 
 /**
  * Security response headers, including a nonce-based Content Security Policy.
@@ -9,11 +10,8 @@ import { getSupabaseUrl } from "@repo/config/env";
 
 /** Cryptographically random, base64-encoded nonce for this single response. */
 export function generateNonce(): string {
-  const bytes = new Uint8Array(16);
-  crypto.getRandomValues(bytes);
-  let binary = "";
-  for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary);
+  // 128 bits: the CSP spec asks for at least that much entropy.
+  return randomBase64(16);
 }
 
 /**
@@ -85,12 +83,8 @@ export function buildCsp({ nonce, isDev }: CspOptions): string {
       styles cannot contain selectors, so they carry none of the exfiltration
       risk a `<style>` element does.
     */
-    "style-src": isDev
-      ? ["'self'", "'unsafe-inline'"]
-      : ["'self'", `'nonce-${nonce}'`],
-    "style-src-elem": isDev
-      ? ["'self'", "'unsafe-inline'"]
-      : ["'self'", `'nonce-${nonce}'`],
+    "style-src": isDev ? ["'self'", "'unsafe-inline'"] : ["'self'", `'nonce-${nonce}'`],
+    "style-src-elem": isDev ? ["'self'", "'unsafe-inline'"] : ["'self'", `'nonce-${nonce}'`],
     "style-src-attr": ["'unsafe-inline'"],
 
     // next/font self-hosts the Google fonts at build time, so no external
@@ -297,8 +291,7 @@ export function securityHeaders({
 
   if (!isDev && !isLocalHost) {
     // Two years, subdomains included, preload-eligible.
-    headers["Strict-Transport-Security"] =
-      "max-age=63072000; includeSubDomains; preload";
+    headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains; preload";
   }
 
   return headers;

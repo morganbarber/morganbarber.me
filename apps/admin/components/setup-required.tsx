@@ -18,16 +18,17 @@ export default function SetupRequired() {
         </div>
 
         <p className="text-muted-foreground leading-relaxed">
-          The dashboard needs Supabase&apos;s <strong className="text-foreground">service-role</strong>{" "}
-          key. The publishable key the public site uses is deliberately barred
-          from writing content or reading analytics, so it cannot drive an admin
-          tool.
+          The dashboard needs Supabase&apos;s{" "}
+          <strong className="text-foreground">service-role</strong> key. The publishable key the
+          public site uses is deliberately barred from writing content or reading analytics, so it
+          cannot drive an admin tool.
         </p>
 
         <ol className="mt-5 space-y-3 text-muted-foreground list-none p-0">
           <Step n={1}>
-            Supabase dashboard → <strong className="text-foreground">Project Settings → API Keys</strong> →
-            copy the <code className="text-foreground">service_role</code> / secret key.
+            Supabase dashboard →{" "}
+            <strong className="text-foreground">Project Settings → API Keys</strong> → copy the{" "}
+            <code className="text-foreground">service_role</code> / secret key.
           </Step>
           <Step n={2}>
             Paste it into <code className="text-foreground">apps/admin/.env.local</code> as{" "}
@@ -37,10 +38,9 @@ export default function SetupRequired() {
         </ol>
 
         <p className="mt-6 pt-5 border-t border-border text-xs text-muted-foreground leading-relaxed">
-          That key bypasses every row-level security policy, which is why it has
-          no <code>NEXT_PUBLIC_</code> prefix and never reaches the browser. This
-          app refuses to start on a hosting platform and only accepts requests
-          from localhost.
+          That key bypasses every row-level security policy, which is why it has no{" "}
+          <code>NEXT_PUBLIC_</code> prefix and never reaches the browser. This app refuses to start
+          on a hosting platform and only accepts requests from localhost.
         </p>
       </div>
     </main>

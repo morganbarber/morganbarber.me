@@ -55,7 +55,9 @@ function describeError(error: unknown): string {
   }
 }
 
-async function run<T>(operation: () => PromiseLike<{ data: T | null; error: unknown }>): Promise<AdminResult<T>> {
+async function run<T>(
+  operation: () => PromiseLike<{ data: T | null; error: unknown }>,
+): Promise<AdminResult<T>> {
   try {
     const { data, error } = await operation();
     if (error) return { data: null, error: describeError(error) };
@@ -135,7 +137,9 @@ export async function listCertifications(): Promise<AdminResult<Certification[]>
 }
 
 export async function getCertification(id: number): Promise<AdminResult<Certification>> {
-  return run(() => createAdminClient().from("certifications").select("*").eq("id", id).maybeSingle());
+  return run(() =>
+    createAdminClient().from("certifications").select("*").eq("id", id).maybeSingle(),
+  );
 }
 
 // -----------------------------------------------------------------------------
@@ -165,10 +169,7 @@ function looseTable(table: EditableTable): any {
   return createAdminClient().from(table) as any;
 }
 
-export async function createRow(
-  table: EditableTable,
-  values: Row,
-): Promise<AdminResult<Row>> {
+export async function createRow(table: EditableTable, values: Row): Promise<AdminResult<Row>> {
   return run(() => looseTable(table).insert(values).select().maybeSingle());
 }
 
@@ -273,7 +274,11 @@ export async function getAnalyticsSummary(days = 30): Promise<AdminResult<Analyt
 
 export async function listContactMessages(): Promise<AdminResult<ContactMessage[]>> {
   return run(() =>
-    createAdminClient().from("contact_messages").select("*").order("created_at", { ascending: false }).limit(500),
+    createAdminClient()
+      .from("contact_messages")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(500),
   );
 }
 
@@ -282,7 +287,12 @@ export async function setContactStatus(
   status: ContactMessage["status"],
 ): Promise<AdminResult<Row>> {
   return run(() =>
-    createAdminClient().from("contact_messages").update({ status }).eq("id", id).select().maybeSingle(),
+    createAdminClient()
+      .from("contact_messages")
+      .update({ status })
+      .eq("id", id)
+      .select()
+      .maybeSingle(),
   );
 }
 

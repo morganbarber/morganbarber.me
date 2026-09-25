@@ -108,7 +108,10 @@ export default function ResourceForm({ resource, row, id }: ResourceFormProps) {
 
         if (field.type === "checkbox") {
           return (
-            <div key={field.name} className="flex items-start gap-3 rounded border border-border bg-surface p-4">
+            <div
+              key={field.name}
+              className="flex items-start gap-3 rounded border border-border bg-surface p-4"
+            >
               <input
                 type="checkbox"
                 id={field.name}
@@ -155,7 +158,11 @@ export default function ResourceForm({ resource, row, id }: ResourceFormProps) {
             </label>
 
             {field.type === "textarea" || field.type === "markdown" ? (
-              <textarea {...shared} rows={field.rows ?? 6} className={`${shared.className} resize-y font-mono`} />
+              <textarea
+                {...shared}
+                rows={field.rows ?? 6}
+                className={`${shared.className} resize-y font-mono`}
+              />
             ) : field.type === "number" ? (
               <input {...shared} type="number" inputMode="numeric" />
             ) : field.type === "date" ? (
