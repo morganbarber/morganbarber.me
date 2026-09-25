@@ -29,6 +29,18 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "react"
         update-types: ["version-update:semver-major"]
+      # Types must describe the runtime (Node 22, see .nvmrc), not the newest
+      # Node: @types/node 26 would type-check APIs that do not exist in prod.
+      # Bump this together with .nvmrc and the engines field.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # ESLint and @eslint/js release in lockstep; a major of one without the
+      # other (and without the plugins supporting it) breaks every lint run.
+      # ESLint majors are a deliberate migration.
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@eslint/js"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: /

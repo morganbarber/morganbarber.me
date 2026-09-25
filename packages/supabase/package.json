@@ -22,7 +22,7 @@
     "@repo/eslint-config": "*",
     "@repo/types": "*",
     "@repo/typescript-config": "*",
-    "@types/node": "^20",
+    "@types/node": "^22",
     "eslint": "^9",
     "eslint-config-prettier": "^10.1.8",
     "eslint-config-turbo": "^2.11.3",
