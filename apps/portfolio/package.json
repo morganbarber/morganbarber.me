@@ -22,7 +22,7 @@
     "@repo/types": "*",
     "@repo/typescript-config": "*",
     "@repo/ui": "*",
-    "@supabase/ssr": "^0.8.0",
+    "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.90.1",
     "framer-motion": "^12.26.2",
     "lucide-react": "^0.562.0",
