@@ -66,13 +66,17 @@ export const HACKTHEBOX: {
   profileId: number | null;
   publicProfileUrl: string | null;
   username: string | null;
+  /**
+   * Shown only when the live API is unavailable (no HTB_APP_TOKEN, or HTB is
+   * down). Leave a field null — or 0 — to hide it; only real stats render.
+   */
   fallback: {
     rank: string | null;
-    ranking: number | null;
     points: number | null;
     userOwns: number | null;
     systemOwns: number | null;
-    respects: number | null;
+    challengesSolved: number | null;
+    sherlocksSolved: number | null;
   };
   /** Short line under the heading. */
   tagline: string;
@@ -81,12 +85,12 @@ export const HACKTHEBOX: {
   publicProfileUrl: "https://profile.hackthebox.com/profile/019eafa8-fe0f-72e2-b308-40ed904de31a",
   username: "MorganBarber",
   fallback: {
-    rank: null,
-    ranking: null,
-    points: null,
-    userOwns: null,
-    systemOwns: null,
-    respects: null,
+    rank: "Script Kiddie",
+    points: 10,
+    userOwns: 14,
+    systemOwns: 12,
+    challengesSolved: 8,
+    sherlocksSolved: 1,
   },
   tagline:
     "Hands-on offensive practice: enumerating, exploiting and escalating on live lab machines.",

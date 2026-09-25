@@ -1,9 +1,17 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
-import { z } from "zod";
 import { HACKTHEBOX, hackTheBoxProfileUrl } from "@repo/config/site";
 import { getServerEnv } from "@repo/config/server-env";
+import {
+  count,
+  parseBasicProfile,
+  parseProgress,
+  topFocusAreas,
+  type BasicProfile,
+  type FocusArea,
+  type Progress,
+} from "./hackthebox-parse";
 
 /**
  * HackTheBox profile stats.
@@ -12,7 +20,8 @@ import { getServerEnv } from "@repo/config/server-env";
  * HTB's v4 API rejects unauthenticated requests — verified: the profile route
  * answers 401 "Unauthenticated", not 404 — so there is no token-free live path.
  *
- * Fetched on the server and cached for six hours:
+ * Three endpoints — basic profile, challenge progress, Sherlock progress —
+ * fetched on the server and cached for six hours:
  *
  *   • The token is a credential for the HTB account. Fetching server-side keeps
  *     it off the client entirely.
@@ -20,7 +29,7 @@ import { getServerEnv } from "@repo/config/server-env";
  *     mean adding labs.hackthebox.com to connect-src/img-src — and, under COEP,
  *     trusting that host's CORP headers too.
  *   • Rank changes over days, not seconds. Six hours keeps the section current
- *     while making at most four upstream calls a day, which matters for an
+ *     while making at most a dozen upstream calls a day, which matters for an
  *     undocumented API with unpublished rate limits.
  *
  * Fail-soft like the rest of the data layer: any failure — no token, network
@@ -38,70 +47,21 @@ const MAX_RESPONSE_BYTES = 64 * 1024;
 
 export const HACKTHEBOX_CACHE_TAG = "hackthebox";
 
-export interface HackTheBoxStats {
+/**
+ * What the portfolio shows. Every count is null unless it is a real, positive
+ * number (see hackthebox-parse.ts) — the UI renders only non-null values.
+ */
+export interface HackTheBoxStats extends BasicProfile {
   /** "live" when fetched from HTB, "static" when from the config fallback. */
   source: "live" | "static";
-  username: string | null;
   profileUrl: string;
-  rank: string | null;
-  /** Global leaderboard position. */
-  ranking: number | null;
-  points: number | null;
-  userOwns: number | null;
-  systemOwns: number | null;
-  userBloods: number | null;
-  systemBloods: number | null;
-  respects: number | null;
-  /** Percentage progress through the current rank, 0–100. */
-  rankProgress: number | null;
-  nextRank: string | null;
-  country: string | null;
+  challengesSolved: number | null;
+  sherlocksSolved: number | null;
+  /** Individual Sherlock questions answered. */
+  sherlockTasks: number | null;
+  /** Categories with at least one solve, most-solved first. */
+  focusAreas: FocusArea[];
 }
-
-/**
- * HTB's response, parsed defensively.
- *
- * The API is undocumented and has changed shape before, so every field is
- * optional and coerced: a renamed or retyped field degrades to "not shown"
- * rather than failing the whole parse. Numbers sometimes arrive as strings
- * (rank_ownership is "12.34"), hence the coercion.
- */
-const optionalNumber = z
-  .union([z.number(), z.string()])
-  .optional()
-  .nullable()
-  .transform((value) => {
-    if (value === null || value === undefined || value === "") return null;
-    const n = typeof value === "number" ? value : Number(value);
-    return Number.isFinite(n) ? n : null;
-  });
-
-const optionalText = z
-  .string()
-  .max(120)
-  .optional()
-  .nullable()
-  .transform((value) => (value ? value : null));
-
-const profileSchema = z.object({
-  profile: z
-    .object({
-      name: optionalText,
-      rank: optionalText,
-      ranking: optionalNumber,
-      points: optionalNumber,
-      user_owns: optionalNumber,
-      system_owns: optionalNumber,
-      user_bloods: optionalNumber,
-      system_bloods: optionalNumber,
-      respects: optionalNumber,
-      current_rank_progress: optionalNumber,
-      rank_ownership: optionalNumber,
-      next_rank: optionalText,
-      country_name: optionalText,
-    })
-    .passthrough(),
-});
 
 function staticStats(profileUrl: string): HackTheBoxStats {
   const f = HACKTHEBOX.fallback;
@@ -110,35 +70,30 @@ function staticStats(profileUrl: string): HackTheBoxStats {
     username: HACKTHEBOX.username,
     profileUrl,
     rank: f.rank,
-    ranking: f.ranking,
-    points: f.points,
-    userOwns: f.userOwns,
-    systemOwns: f.systemOwns,
-    userBloods: null,
-    systemBloods: null,
-    respects: f.respects,
-    rankProgress: null,
     nextRank: null,
-    country: null,
+    rankProgress: null,
+    points: count(f.points),
+    userOwns: count(f.userOwns),
+    systemOwns: count(f.systemOwns),
+    memberSince: null,
+    challengesSolved: count(f.challengesSolved),
+    sherlocksSolved: count(f.sherlocksSolved),
+    sherlockTasks: null,
+    focusAreas: [],
   };
 }
 
-/** Clamps a percentage into range; HTB has returned values outside 0–100. */
-function percent(value: number | null): number | null {
-  if (value === null) return null;
-  return Math.min(100, Math.max(0, Math.round(value)));
-}
-
-async function fetchLiveStats(
-  profileId: number,
-  token: string,
-  profileUrl: string,
-): Promise<HackTheBoxStats | null> {
+/**
+ * One authenticated GET, returning parsed JSON or null. Never throws, never
+ * logs a response body (an auth failure can echo request details, and the
+ * profile body contains personal data).
+ */
+async function fetchJson(path: string, token: string): Promise<unknown> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
   try {
-    const response = await fetch(`${API_BASE}/user/profile/basic/${profileId}`, {
+    const response = await fetch(`${API_BASE}${path}`, {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: "application/json",
@@ -152,8 +107,9 @@ async function fetchLiveStats(
     });
 
     if (!response.ok) {
-      // Status only: the body of an auth failure can echo request details.
-      console.error(`[hackthebox] profile request failed: HTTP ${response.status}`);
+      console.error(
+        `[hackthebox] ${path.split("/")[3] ?? "request"} failed: HTTP ${response.status}`,
+      );
       return null;
     }
 
@@ -162,30 +118,7 @@ async function fetchLiveStats(
       console.error("[hackthebox] response exceeded size limit; ignoring");
       return null;
     }
-
-    const parsed = profileSchema.safeParse(JSON.parse(text));
-    if (!parsed.success) {
-      console.error("[hackthebox] unexpected response shape; using fallback");
-      return null;
-    }
-
-    const p = parsed.data.profile;
-    return {
-      source: "live",
-      username: p.name ?? HACKTHEBOX.username,
-      profileUrl,
-      rank: p.rank,
-      ranking: p.ranking,
-      points: p.points,
-      userOwns: p.user_owns,
-      systemOwns: p.system_owns,
-      userBloods: p.user_bloods,
-      systemBloods: p.system_bloods,
-      respects: p.respects,
-      rankProgress: percent(p.current_rank_progress),
-      nextRank: p.next_rank,
-      country: p.country_name,
-    };
+    return JSON.parse(text) as unknown;
   } catch (error) {
     console.error(
       "[hackthebox] unreachable:",
@@ -197,25 +130,48 @@ async function fetchLiveStats(
   }
 }
 
-const cachedLiveStats = unstable_cache(
-  async (profileId: number, profileUrl: string): Promise<HackTheBoxStats | null> => {
-    let token: string | undefined;
-    try {
-      token = getServerEnv().HTB_APP_TOKEN;
-    } catch {
-      return null;
-    }
-    if (!token) return null;
+function token(): string | null {
+  try {
+    return getServerEnv().HTB_APP_TOKEN ?? null;
+  } catch {
+    return null;
+  }
+}
 
-    const live = await fetchLiveStats(profileId, token, profileUrl);
-    // A failed fetch must not be cached: throwing keeps unstable_cache from
-    // storing it, so the next request retries instead of showing the static
-    // fallback for six hours after one transient HTB error.
-    if (!live) throw new Error("hackthebox fetch failed");
-    return live;
+/**
+ * Each endpoint is cached separately, and a failure THROWS inside the cache
+ * boundary so it is never stored (ADR 0005): one transient error on the
+ * challenges endpoint costs a retry, not six hours of a missing tile — and
+ * cannot evict the profile data that did load.
+ */
+const cacheOptions = { revalidate: 6 * 60 * 60, tags: [HACKTHEBOX_CACHE_TAG] };
+
+const cachedBasic = unstable_cache(
+  async (profileId: number): Promise<BasicProfile> => {
+    const t = token();
+    if (!t) throw new Error("no token");
+    const parsed = parseBasicProfile(await fetchJson(`/user/profile/basic/${profileId}`, t));
+    if (!parsed) throw new Error("hackthebox profile unavailable");
+    return parsed;
   },
-  ["hackthebox", "profile"],
-  { revalidate: 6 * 60 * 60, tags: [HACKTHEBOX_CACHE_TAG] },
+  ["hackthebox", "basic"],
+  cacheOptions,
+);
+
+const cachedProgress = unstable_cache(
+  async (profileId: number, kind: FocusArea["kind"]): Promise<Progress> => {
+    const t = token();
+    if (!t) throw new Error("no token");
+    const segment = kind === "Sherlocks" ? "sherlocks" : "challenges";
+    const parsed = parseProgress(
+      await fetchJson(`/user/profile/progress/${segment}/${profileId}`, t),
+      kind,
+    );
+    if (!parsed) throw new Error(`hackthebox ${segment} unavailable`);
+    return parsed;
+  },
+  ["hackthebox", "progress"],
+  cacheOptions,
 );
 
 /**
@@ -233,6 +189,25 @@ export async function getHackTheBoxStats(): Promise<HackTheBoxStats | null> {
   }
 
   const profileUrl = hackTheBoxProfileUrl() ?? `https://app.hackthebox.com/users/${profileId}`;
-  const live = await cachedLiveStats(profileId, profileUrl).catch(() => null);
-  return live ?? staticStats(profileUrl);
+
+  const [basic, challenges, sherlocks] = await Promise.all([
+    cachedBasic(profileId).catch(() => null),
+    cachedProgress(profileId, "Challenges").catch(() => null),
+    cachedProgress(profileId, "Sherlocks").catch(() => null),
+  ]);
+
+  // The profile is the anchor: without it there is no rank or machine data,
+  // and a section of only challenge counts would misrepresent the account.
+  if (!basic) return staticStats(profileUrl);
+
+  return {
+    ...basic,
+    username: basic.username ?? HACKTHEBOX.username,
+    source: "live",
+    profileUrl,
+    challengesSolved: challenges?.solved ?? null,
+    sherlocksSolved: sherlocks?.solved ?? null,
+    sherlockTasks: sherlocks?.tasks ?? null,
+    focusAreas: topFocusAreas([challenges, sherlocks]),
+  };
 }
