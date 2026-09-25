@@ -22,14 +22,7 @@ import {
  */
 
 export type FieldType =
-  | "text"
-  | "textarea"
-  | "markdown"
-  | "number"
-  | "checkbox"
-  | "date"
-  | "tags"
-  | "url";
+  "text" | "textarea" | "markdown" | "number" | "checkbox" | "date" | "tags" | "url";
 
 export interface FieldDef {
   name: string;
