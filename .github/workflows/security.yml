@@ -73,6 +73,11 @@ jobs:
     name: Secret scan
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
+      # On pull_request, gitleaks-action lists the PR's commits via the API to
+      # scope the scan; without this every PR fails "Resource not accessible".
+      pull-requests: read
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
