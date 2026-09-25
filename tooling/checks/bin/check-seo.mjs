@@ -144,11 +144,17 @@ await check("/manifest.webmanifest", "manifest+json");
 await check("/sitemap.xml", "xml", (x) => {
   const urls = (x.match(/<loc>/g) ?? []).length;
   if (urls < 6) return `only ${urls} urls`;
-  if (!x.includes("<lastmod>")) return "no lastmod";
-  return true;
+  // Only content-backed entries (posts, projects) carry a real modification
+  // date; pages whose content lives in code deliberately omit it. A build with
+  // no database (CI) has no such entries, so there is nothing to require.
+  const content = [...x.matchAll(/<url>([\s\S]*?)<\/url>/g)]
+    .map((m) => m[1])
+    .filter((entry) => /<loc>[^<]*\/(blog|projects)\/[^/<]+<\/loc>/.test(entry));
+  const undated = content.filter((entry) => !entry.includes("<lastmod>")).length;
+  return undated === 0 ? true : `${undated} content urls without lastmod`;
 });
 await check("/robots.txt", "text/plain", (x) =>
-  x.includes("Sitemap: https://morganbarber.me/sitemap.xml") ? true : "no sitemap line",
+  x.includes(`Sitemap: ${SITE}/sitemap.xml`) ? true : "no sitemap line",
 );
 await check("/blog/feed.xml", "rss+xml", (x) =>
   x.includes("<channel>") && x.includes('rel="self"') ? true : "invalid feed",
