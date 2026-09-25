@@ -22,7 +22,7 @@
     "dev:all": "turbo dev",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "turbo lint",
+    "lint": "turbo lint && eslint .",
     "prepare": "husky",
     "sst:install": "sst install",
     "sst:remove": "sst remove",
@@ -33,6 +33,8 @@
     "check:deps": "node tooling/checks/bin/check-deps.mjs"
   },
   "devDependencies": {
+    "@repo/eslint-config": "*",
+    "eslint": "^9",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "prettier": "^3.4.2",
