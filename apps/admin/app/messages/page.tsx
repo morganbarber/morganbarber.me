@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { AlertTriangle, Mail } from "lucide-react";
+import { TriangleAlert, Mail } from "lucide-react";
 import { listContactMessages } from "@repo/data/admin";
 import { isAuthenticated } from "@/lib/auth";
 import Shell from "@/components/shell";
@@ -32,7 +32,7 @@ export default async function MessagesPage() {
     >
       {error ? (
         <div className="flex items-start gap-2 rounded border border-danger/40 bg-danger/5 px-4 py-3 text-danger">
-          <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" aria-hidden="true" />
+          <TriangleAlert className="h-4 w-4 mt-0.5 shrink-0" aria-hidden="true" />
           <span>{error}</span>
         </div>
       ) : !messages || messages.length === 0 ? (

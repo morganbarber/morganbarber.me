@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import { useFormStatus } from "react-dom";
-import { CheckCircle2, AlertTriangle, Loader2 } from "lucide-react";
+import { CircleCheck, TriangleAlert, LoaderCircle } from "lucide-react";
 import { initialContactState, submitContactForm } from "@/actions/contact";
 
 /**
@@ -31,7 +31,7 @@ function SubmitButton() {
     >
       {pending ? (
         <span className="flex items-center justify-center gap-2">
-          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+          <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
           TRANSMITTING...
         </span>
       ) : (
@@ -188,12 +188,12 @@ export default function ContactForm() {
       >
         {state.status === "success" ? (
           <span className="flex items-center gap-2 text-primary">
-            <CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <CircleCheck className="h-4 w-4 shrink-0" aria-hidden="true" />
             {state.message}
           </span>
         ) : state.status === "error" ? (
           <span className="flex items-center gap-2 text-secondary">
-            <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <TriangleAlert className="h-4 w-4 shrink-0" aria-hidden="true" />
             {state.message}
           </span>
         ) : null}

@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
-import { AlertTriangle, CheckCircle2, Loader2 } from "lucide-react";
+import { TriangleAlert, CircleCheck, LoaderCircle } from "lucide-react";
 import { saveResource } from "@/actions/content";
 import { initialFormState, type FormState } from "@/lib/form-state";
 import type { FieldDef, ResourceDef } from "@/lib/resources";
@@ -39,7 +39,7 @@ function SubmitButton({ isEdit }: { isEdit: boolean }) {
     >
       {pending ? (
         <>
-          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+          <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
           Saving…
         </>
       ) : isEdit ? (
@@ -91,9 +91,9 @@ export default function ResourceForm({ resource, row, id }: ResourceFormProps) {
           }`}
         >
           {state.status === "success" ? (
-            <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0" aria-hidden="true" />
+            <CircleCheck className="h-4 w-4 mt-0.5 shrink-0" aria-hidden="true" />
           ) : (
-            <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" aria-hidden="true" />
+            <TriangleAlert className="h-4 w-4 mt-0.5 shrink-0" aria-hidden="true" />
           )}
           <span>{state.message}</span>
         </div>

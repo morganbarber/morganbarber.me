@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { AlertTriangle } from "lucide-react";
+import { TriangleAlert } from "lucide-react";
 
 /**
  * Unlike the public site's error boundary, this one shows the actual message.
@@ -25,7 +25,7 @@ export default function Error({
     <main className="min-h-screen flex items-center justify-center p-6">
       <div className="max-w-lg w-full rounded border border-danger/40 bg-danger/5 p-6">
         <div className="flex items-start gap-3">
-          <AlertTriangle className="h-5 w-5 text-danger shrink-0 mt-0.5" aria-hidden="true" />
+          <TriangleAlert className="h-5 w-5 text-danger shrink-0 mt-0.5" aria-hidden="true" />
           <div className="min-w-0">
             <h1 className="font-bold text-danger">Something went wrong</h1>
             <p className="mt-2 whitespace-pre-wrap break-words text-muted-foreground">

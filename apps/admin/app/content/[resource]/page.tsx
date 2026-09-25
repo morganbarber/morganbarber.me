@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { AlertTriangle, ExternalLink, Plus } from "lucide-react";
+import { TriangleAlert, ExternalLink, Plus } from "lucide-react";
 import {
   listBlogPosts,
   listCertifications,
@@ -66,7 +66,7 @@ export default async function ResourceListPage({
     >
       {error ? (
         <div className="flex items-start gap-2 rounded border border-danger/40 bg-danger/5 px-4 py-3 text-danger">
-          <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" aria-hidden="true" />
+          <TriangleAlert className="h-4 w-4 mt-0.5 shrink-0" aria-hidden="true" />
           <span>{error}</span>
         </div>
       ) : !rows || rows.length === 0 ? (

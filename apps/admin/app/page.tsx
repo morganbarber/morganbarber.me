@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { AlertTriangle, ArrowRight, Eye, EyeOff, Inbox } from "lucide-react";
+import { TriangleAlert, ArrowRight, Eye, EyeOff, Inbox } from "lucide-react";
 import { getContentCounts, listContactMessages } from "@repo/data/admin";
 import { hasServiceRoleKey } from "@repo/config/server-env";
 import { isAuthenticated } from "@/lib/auth";
@@ -35,7 +35,7 @@ export default async function DashboardPage() {
     >
       {error ? (
         <div className="mb-6 flex items-start gap-2 rounded border border-danger/40 bg-danger/5 px-4 py-3 text-danger">
-          <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" aria-hidden="true" />
+          <TriangleAlert className="h-4 w-4 mt-0.5 shrink-0" aria-hidden="true" />
           <div>
             <p className="font-bold">Could not reach the database</p>
             <p className="text-sm mt-1">{error}</p>

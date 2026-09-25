@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { AlertTriangle, Loader2 } from "lucide-react";
+import { TriangleAlert, LoaderCircle } from "lucide-react";
 import { login } from "@/actions/auth";
 import { initialLoginState, type LoginState } from "@/lib/form-state";
 
@@ -16,7 +16,7 @@ function SubmitButton() {
     >
       {pending ? (
         <>
-          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+          <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
           Checking…
         </>
       ) : (
@@ -52,7 +52,7 @@ export default function LoginForm() {
 
       {state.status === "error" ? (
         <p id="login-error" role="alert" className="flex items-start gap-2 text-danger text-xs">
-          <AlertTriangle className="h-4 w-4 shrink-0 mt-px" aria-hidden="true" />
+          <TriangleAlert className="h-4 w-4 shrink-0 mt-px" aria-hidden="true" />
           <span>{state.message}</span>
         </p>
       ) : null}
