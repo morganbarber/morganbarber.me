@@ -1,0 +1,17 @@
+# gitleaks configuration — picked up automatically by gitleaks-action.
+# Default rules stay on. Only exact, known-fake fixture VALUES are allowlisted —
+# never paths: a path entry would hide a real key committed to the same file.
+#
+# Single-table [allowlist] form because CI's gitleaks (8.24.x) predates the
+# [[allowlists]] array, and ignores `condition` here (entries are OR'd).
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Known-fake test fixtures"
+regexTarget = "match"
+regexes = [
+  # packages/config/src/env.test.ts — fake Supabase secret for isSecretKey()
+  '''0123456789abcdef''',
+]
