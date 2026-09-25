@@ -23,6 +23,6 @@
     "@repo/typescript-config": "*",
     "@types/node": "^22",
     "eslint": "^9",
-    "typescript": "^5"
+    "typescript": "^7"
   }
 }
