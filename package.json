@@ -36,7 +36,7 @@
     "@repo/eslint-config": "*",
     "eslint": "^9",
     "husky": "^9.1.7",
-    "lint-staged": "^16.4.0",
+    "lint-staged": "^17.5.1",
     "prettier": "^3.9.8",
     "sst": "^4.17.1",
     "turbo": "^2.11.3"
