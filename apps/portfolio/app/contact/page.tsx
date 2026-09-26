@@ -12,7 +12,7 @@ import { breadcrumbNode, contactPageNode, graph } from "@/lib/structured-data";
 export const metadata: Metadata = pageMetadata({
   title: "Contact",
   description:
-    "Contact Morgan Barber about cybersecurity internships, collaboration or security research. Email or use the secure contact form — replies within 24 hours.",
+    "Contact Morgan Barber about penetration testing or red team internships, collaboration or security research. Email or use the secure contact form.",
   path: "/contact",
 });
 

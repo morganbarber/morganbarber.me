@@ -11,9 +11,9 @@ export const alt = `${SITE_CONFIG.name} — ${SITE_CONFIG.role}`;
 
 export default async function Image() {
   return renderOgImage({
-    eyebrow: "Cybersecurity portfolio",
+    eyebrow: "Ethical hacking portfolio",
     title: SITE_CONFIG.name,
-    subtitle: "Network security · Threat analysis · System hardening",
+    subtitle: "Penetration testing · Web exploitation · Privilege escalation",
     chips: ["Security+", "Python", "Linux"],
   });
 }

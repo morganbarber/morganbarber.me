@@ -16,7 +16,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
   // a crawler that caches a broken preview keeps showing it.
   return renderOgImage({
     eyebrow: post?.tag ? `Blog · ${post.tag}` : "Blog",
-    title: post?.title ?? "Cybersecurity blog",
+    title: post?.title ?? "Offensive security blog",
     subtitle: post?.summary ?? null,
     chips: post?.reading_minutes ? [`${post.reading_minutes} min read`] : [],
   });

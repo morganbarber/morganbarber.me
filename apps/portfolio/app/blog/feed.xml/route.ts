@@ -48,9 +48,9 @@ export async function GET(): Promise<Response> {
   const body = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>${xml(`${SITE_CONFIG.name} — Cybersecurity Blog`)}</title>
+    <title>${xml(`${SITE_CONFIG.name} — Offensive Security Blog`)}</title>
     <link>${absoluteUrl("/blog")}</link>
-    <description>${xml("Cybersecurity research and write-ups: threat analysis, network defence and security automation.")}</description>
+    <description>${xml("Offensive security write-ups: HackTheBox machines, web exploitation, privilege escalation and tooling.")}</description>
     <language>en-us</language>
     <lastBuildDate>${lastBuild}</lastBuildDate>
     <atom:link href="${absoluteUrl("/blog/feed.xml")}" rel="self" type="application/rss+xml"/>

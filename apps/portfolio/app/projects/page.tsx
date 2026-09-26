@@ -6,9 +6,9 @@ import { pageMetadata } from "@/lib/seo";
 import { breadcrumbNode, graph, projectsIndexNode } from "@/lib/structured-data";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Cybersecurity Projects",
+  title: "Security Projects",
   description:
-    "Cybersecurity projects by Morgan Barber: a Python network intrusion detection system, an end-to-end encrypted chat app and a web vulnerability scanner.",
+    "Security projects by Morgan Barber: a Python web vulnerability scanner, a network intrusion detection system and an end-to-end encrypted chat app.",
   path: "/projects",
 });
 

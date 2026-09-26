@@ -8,7 +8,7 @@ import { aboutPageNode, breadcrumbNode, graph } from "@/lib/structured-data";
 export const metadata: Metadata = pageMetadata({
   title: "About",
   description:
-    "About Morgan Barber, an aspiring cybersecurity specialist from Longmont, Colorado: core competencies, CompTIA certifications and hands-on security background.",
+    "About Morgan Barber, a 16-year-old ethical hacker and aspiring red teamer from Longmont, Colorado: offensive skills, toolkit and CompTIA certifications.",
   path: "/about",
   type: "profile",
 });

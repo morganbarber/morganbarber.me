@@ -18,8 +18,8 @@ export default function BlogPage({ posts }: { posts: BlogPostSummary[] }) {
       {/* Descriptive intro: gives search engines (and first-time readers) a
                 statement of what this index covers, rather than a bare list. */}
       <p className="max-w-2xl font-mono text-muted-foreground leading-relaxed mb-16">
-        Cybersecurity research and write-ups: threat analysis, network defence, zero-trust
-        architecture and security automation with Python.
+        Offensive security write-ups: retired HackTheBox machines, web exploitation, privilege
+        escalation and the Python tools I build along the way.
       </p>
 
       <div className="grid gap-12">

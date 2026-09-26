@@ -8,7 +8,7 @@ import { breadcrumbNode, experiencePageNode, graph } from "@/lib/structured-data
 export const metadata: Metadata = pageMetadata({
   title: "Experience & Education",
   description:
-    "Morgan Barber's cybersecurity work history and education, including the SVVSD Innovation Center cybersecurity pathway and hands-on technical roles.",
+    "Morgan Barber's work history and education: a NIST-based security audit internship, AIMS cybersecurity coursework and hands-on technical roles.",
   path: "/experience",
   type: "profile",
 });

@@ -6,9 +6,9 @@ import { pageMetadata } from "@/lib/seo";
 import { blogIndexNode, breadcrumbNode, graph } from "@/lib/structured-data";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Cybersecurity Blog",
+  title: "Offensive Security Blog",
   description:
-    "Cybersecurity research and write-ups by Morgan Barber: threat analysis, network defence, zero-trust architecture and security automation with Python.",
+    "Offensive security write-ups by Morgan Barber: retired HackTheBox machines, web exploitation, privilege escalation and hacking tools built in Python.",
   path: "/blog",
 });
 

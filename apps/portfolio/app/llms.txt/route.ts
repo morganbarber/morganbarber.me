@@ -26,10 +26,10 @@ export async function GET(): Promise<Response> {
     "",
     "## Pages",
     "",
-    `- [About](${absoluteUrl("/about")}): background, core competencies and certifications`,
+    `- [About](${absoluteUrl("/about")}): background, offensive skills and certifications`,
     `- [Experience](${absoluteUrl("/experience")}): work history and education`,
     `- [Projects](${absoluteUrl("/projects")}): security tools and experiments`,
-    `- [Blog](${absoluteUrl("/blog")}): cybersecurity research and write-ups`,
+    `- [Blog](${absoluteUrl("/blog")}): offensive security write-ups`,
     `- [Contact](${absoluteUrl("/contact")}): email and contact form`,
   ];
 

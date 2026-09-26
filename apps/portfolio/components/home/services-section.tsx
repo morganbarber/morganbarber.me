@@ -20,7 +20,7 @@ export default function ServicesSection() {
           </div>
           <GlitchHeading
             as="h2"
-            lines={["SECURITY", "SERVICES"]}
+            lines={["OFFENSIVE", "SECURITY"]}
             className="text-4xl md:text-6xl"
             lineClassName={[undefined, "text-transparent text-stroke"]}
           />
@@ -29,7 +29,7 @@ export default function ServicesSection() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-muted border border-muted">
           {SERVICES.map((service, i) => (
             <motion.div
-              key={i}
+              key={service.title}
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -42,11 +42,9 @@ export default function ServicesSection() {
                 </span>
               </div>
               <h3 className="text-2xl font-bold uppercase mb-4 group-hover:text-primary transition-colors">
-                {service}
+                {service.title}
               </h3>
-              <p className="text-sm text-muted-foreground">
-                Specialized focus on securing and optimizing {service.toLowerCase()} environments.
-              </p>
+              <p className="text-sm text-muted-foreground">{service.description}</p>
             </motion.div>
           ))}
         </div>

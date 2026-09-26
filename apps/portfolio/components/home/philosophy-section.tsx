@@ -16,11 +16,11 @@ export default function PhilosophySection() {
       >
         <p className="mb-4 text-xs opacity-50">ABOUT ME</p>
         <h2 className="text-4xl md:text-6xl font-bold uppercase mb-6 text-foreground leading-none">
-          ASPIRING
+          THINK LIKE
           <br />
-          CYBERSECURITY
+          AN ATTACKER
           <br />
-          SPECIALIST
+          <span className="text-primary">ACT ETHICALLY</span>
         </h2>
       </motion.div>
       <motion.div
@@ -31,8 +31,8 @@ export default function PhilosophySection() {
         className="text-muted-foreground leading-relaxed text-lg lg:text-xl"
       >
         <p className="mb-6">
-          I possess a strong foundation in information security principles and hands-on technical
-          problem solving.
+          Attackers only need one way in. I train to find it first — legally, with permission, and
+          with the goal of getting it closed.
         </p>
         <p className="mb-8">{SITE_CONFIG.description}</p>
         <Link href="/about">

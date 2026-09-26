@@ -14,7 +14,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
 
   return renderOgImage({
     eyebrow: project ? `Project · ${project.category}` : "Project",
-    title: project?.title ?? "Cybersecurity projects",
+    title: project?.title ?? "Security projects",
     subtitle: project?.description ?? null,
     chips: project?.tags.slice(0, 4) ?? [],
   });
