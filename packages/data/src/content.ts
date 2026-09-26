@@ -6,6 +6,7 @@ import type {
   BlogPost,
   BlogPostSummary,
   CertificationSummary,
+  CompetitionSummary,
   EducationSummary,
   ExperienceSummary,
   Project,
@@ -37,6 +38,7 @@ export const CACHE_TAGS = {
   experience: "experience",
   education: "education",
   certifications: "certifications",
+  competitions: "competitions",
   // Owned by ./hackthebox.ts; listed here so POST /api/revalidate can purge it.
   hackthebox: "hackthebox",
 } as const;
@@ -350,6 +352,38 @@ export const getCertifications = cached(
   },
 );
 
+// -----------------------------------------------------------------------------
+// Competitions
+// -----------------------------------------------------------------------------
+
+/**
+ * CTFs and cyber competitions. Until migrations/0003_competitions.sql has been
+ * run the table does not exist; that degrades to an empty list like any other
+ * failure, and the sections that render it hide themselves.
+ */
+export const getCompetitions = cached(
+  ["competitions", "list"],
+  [CACHE_TAGS.competitions],
+  async (): Promise<QueryResult<CompetitionSummary[]>> => {
+    const supabase = createStaticClient();
+    return safeQuery(
+      "getCompetitions",
+      (signal) =>
+        supabase
+          .from("competitions")
+          .select(
+            "id, name, organizer, format, period, result, team, description, link, sort_order",
+          )
+          .eq("published", true)
+          .order("sort_order", { ascending: true })
+          .order("id", { ascending: true })
+          .limit(MAX_ROWS)
+          .abortSignal(signal),
+      [],
+    );
+  },
+);
+
 /**
  * Everything the home page needs, in one parallel fan-out.
  *
@@ -357,11 +391,12 @@ export const getCertifications = cached(
  * cache; `Promise.all` makes the cold path as fast as its slowest query.
  */
 export async function getHomePageData() {
-  const [posts, projects, experience, education] = await Promise.all([
+  const [posts, projects, experience, education, competitions] = await Promise.all([
     getBlogPosts(3),
     getProjects(3),
     getExperience(),
     getEducation(),
+    getCompetitions(),
   ]);
 
   return {
@@ -369,6 +404,9 @@ export async function getHomePageData() {
     projects: projects.data,
     experience: experience.data,
     education: education.data,
+    competitions: competitions.data,
+    // Competitions are excluded: until its migration runs, the table is
+    // missing by design, and that must not flag the whole page as degraded.
     degraded: posts.degraded || projects.degraded || experience.degraded || education.degraded,
   };
 }

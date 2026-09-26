@@ -5,6 +5,7 @@ import type {
   Analytics,
   BlogPost,
   Certification,
+  Competition,
   ContactMessage,
   Education,
   Experience,
@@ -140,6 +141,20 @@ export async function getCertification(id: number): Promise<AdminResult<Certific
   return run(() =>
     createAdminClient().from("certifications").select("*").eq("id", id).maybeSingle(),
   );
+}
+
+export async function listCompetitions(): Promise<AdminResult<Competition[]>> {
+  return run(() =>
+    createAdminClient()
+      .from("competitions")
+      .select("*")
+      .order("sort_order", { ascending: true })
+      .order("id", { ascending: true }),
+  );
+}
+
+export async function getCompetition(id: number): Promise<AdminResult<Competition>> {
+  return run(() => createAdminClient().from("competitions").select("*").eq("id", id).maybeSingle());
 }
 
 // -----------------------------------------------------------------------------
@@ -310,6 +325,7 @@ export async function getContentCounts(): Promise<
     "experience",
     "education",
     "certifications",
+    "competitions",
   ];
 
   try {

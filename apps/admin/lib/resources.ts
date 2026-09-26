@@ -2,6 +2,7 @@ import type { ZodType } from "zod";
 import {
   blogPostSchema,
   certificationSchema,
+  competitionSchema,
   educationSchema,
   experienceSchema,
   projectSchema,
@@ -301,6 +302,72 @@ export const RESOURCES: ResourceDef[] = [
     ],
     schema: certificationSchema,
     publicPath: () => "/about",
+  },
+
+  {
+    table: "competitions",
+    slug: "competitions",
+    label: "Competitions",
+    singular: "Competition",
+    description:
+      "CTFs and cyber competitions, shown on the home page and the experience page. Empty fields are hidden on the site.",
+    idField: "id",
+    listColumns: [
+      { field: "name", label: "Name", primary: true },
+      { field: "format", label: "Format" },
+      { field: "period", label: "When" },
+      { field: "result", label: "Result" },
+      { field: "sort_order", label: "Order" },
+    ],
+    fields: [
+      { name: "name", label: "Name", type: "text", required: true, placeholder: "picoCTF" },
+      {
+        name: "organizer",
+        label: "Organizer",
+        type: "text",
+        placeholder: "Carnegie Mellon University",
+      },
+      {
+        name: "format",
+        label: "Format",
+        type: "text",
+        required: true,
+        placeholder: "Jeopardy-style CTF",
+        help: "Short label, e.g. Jeopardy-style CTF, Attack-defense CTF, Cyber defense.",
+      },
+      {
+        name: "period",
+        label: "When",
+        type: "text",
+        placeholder: "2025",
+        help: "A year, season or range — shown as written.",
+      },
+      {
+        name: "result",
+        label: "Result",
+        type: "text",
+        placeholder: "Top 10% · 2,450 points",
+        help: "Placement, score or award. Leave empty to show participation only.",
+      },
+      { name: "team", label: "Team", type: "text", placeholder: "Team name, or leave empty" },
+      { name: "description", label: "Description", type: "textarea", rows: 4, required: true },
+      {
+        name: "link",
+        label: "Link",
+        type: "url",
+        placeholder: "https://picoctf.org",
+        help: "Competition site or your scoreboard entry. Must start with http:// or https://.",
+      },
+      {
+        name: "sort_order",
+        label: "Sort order",
+        type: "number",
+        help: "Lower numbers appear first.",
+      },
+      { name: "published", label: "Published", type: "checkbox" },
+    ],
+    schema: competitionSchema,
+    publicPath: () => "/experience",
   },
 ];
 

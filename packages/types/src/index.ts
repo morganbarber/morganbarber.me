@@ -22,6 +22,7 @@ export type Project = Tables<"projects">;
 export type Experience = Tables<"experience">;
 export type Education = Tables<"education">;
 export type Certification = Tables<"certifications">;
+export type Competition = Tables<"competitions">;
 export type Analytics = Tables<"analytics">;
 export type ContactMessage = Tables<"contact_messages">;
 
@@ -72,6 +73,20 @@ export type EducationSummary = Pick<
 export type CertificationSummary = Pick<
   Certification,
   "id" | "name" | "file_url" | "issuer" | "issued_on" | "sort_order" | "created_at"
+>;
+
+export type CompetitionSummary = Pick<
+  Competition,
+  | "id"
+  | "name"
+  | "organizer"
+  | "format"
+  | "period"
+  | "result"
+  | "team"
+  | "description"
+  | "link"
+  | "sort_order"
 >;
 
 export interface SocialLink {

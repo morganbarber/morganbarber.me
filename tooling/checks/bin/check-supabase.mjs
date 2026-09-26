@@ -86,7 +86,16 @@ const fileEnv = {
 };
 const env = { ...fileEnv, ...process.env };
 
-const TABLES = ["blog_posts", "projects", "experience", "education", "certifications"];
+const TABLES = [
+  "blog_posts",
+  "projects",
+  "experience",
+  "education",
+  "certifications",
+  "competitions",
+];
+/** Tables added after the initial schema: a missing one names its migration. */
+const ADDED_BY_MIGRATION = { competitions: "supabase/migrations/0003_competitions.sql" };
 /** Tables the anon key must NOT be able to read. */
 const FORBIDDEN_TABLES = ["analytics", "contact_messages", "rate_limit_buckets"];
 
@@ -279,7 +288,10 @@ for (const table of TABLES) {
     });
 
     if (response.status === 404) {
-      fail(table, "table does not exist — run supabase/schema.sql");
+      fail(
+        table,
+        `table does not exist — run ${ADDED_BY_MIGRATION[table] ?? "supabase/schema.sql"}`,
+      );
       continue;
     }
     if (response.status === 401 || response.status === 403) {

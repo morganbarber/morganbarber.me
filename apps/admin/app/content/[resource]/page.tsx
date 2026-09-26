@@ -4,6 +4,7 @@ import { TriangleAlert, ExternalLink, Plus } from "lucide-react";
 import {
   listBlogPosts,
   listCertifications,
+  listCompetitions,
   listEducation,
   listExperience,
   listProjects,
@@ -33,6 +34,8 @@ async function loadRows(resource: ResourceDef): Promise<AdminResult<Record<strin
       return listEducation() as unknown as Promise<AdminResult<Record<string, unknown>[]>>;
     case "certifications":
       return listCertifications() as unknown as Promise<AdminResult<Record<string, unknown>[]>>;
+    case "competitions":
+      return listCompetitions() as unknown as Promise<AdminResult<Record<string, unknown>[]>>;
   }
 }
 

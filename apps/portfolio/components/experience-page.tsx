@@ -1,12 +1,15 @@
 import GlitchText from "@repo/ui/glitch-text";
-import type { EducationSummary, ExperienceSummary } from "@repo/types";
+import type { CompetitionSummary, EducationSummary, ExperienceSummary } from "@repo/types";
+import CompetitionCard from "@/components/competition-card";
 
 export default function ExperiencePage({
   experience,
   education,
+  competitions,
 }: {
   experience: ExperienceSummary[];
   education: EducationSummary[];
+  competitions: CompetitionSummary[];
 }) {
   return (
     <main className="min-h-screen pt-32 px-6 max-w-7xl mx-auto">
@@ -64,6 +67,22 @@ export default function ExperiencePage({
           </div>
         </div>
       </div>
+
+      {competitions.length > 0 ? (
+        <section className="mt-24 pb-32" aria-labelledby="competitions-heading">
+          <h2
+            id="competitions-heading"
+            className="text-2xl font-bold mb-8 text-primary font-mono uppercase tracking-widest"
+          >
+            {"// COMPETITIONS & CTFS"}
+          </h2>
+          <div className="enter-rise grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-muted border border-muted">
+            {competitions.map((competition) => (
+              <CompetitionCard key={competition.id} competition={competition} />
+            ))}
+          </div>
+        </section>
+      ) : null}
     </main>
   );
 }

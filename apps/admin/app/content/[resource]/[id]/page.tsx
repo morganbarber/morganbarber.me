@@ -4,6 +4,7 @@ import { ExternalLink } from "lucide-react";
 import {
   getBlogPost,
   getCertification,
+  getCompetition,
   getEducation,
   getExperience,
   getProject,
@@ -44,6 +45,10 @@ async function loadRow(
     case "certifications":
       return Number.isFinite(numericId)
         ? asRecord(getCertification(numericId))
+        : { data: null, error: "Invalid id" };
+    case "competitions":
+      return Number.isFinite(numericId)
+        ? asRecord(getCompetition(numericId))
         : { data: null, error: "Invalid id" };
   }
 }

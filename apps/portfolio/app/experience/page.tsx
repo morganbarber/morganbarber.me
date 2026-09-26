@@ -1,21 +1,25 @@
 import type { Metadata } from "next";
 import ExperiencePage from "@/components/experience-page";
 import StructuredData from "@/components/structured-data";
-import { getEducation, getExperience } from "@repo/data/content";
+import { getCompetitions, getEducation, getExperience } from "@repo/data/content";
 import { pageMetadata } from "@/lib/seo";
 import { breadcrumbNode, experiencePageNode, graph } from "@/lib/structured-data";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Experience & Education",
+  title: "Experience, Education & Competitions",
   description:
-    "Morgan Barber's work history and education: a NIST-based security audit internship, AIMS cybersecurity coursework and hands-on technical roles.",
+    "Morgan Barber's work history, education and competitions: a NIST-based security audit internship, AIMS cybersecurity coursework, CTFs and CyberPatriot.",
   path: "/experience",
   type: "profile",
 });
 
 export default async function Experience() {
   // Independent reads: fan out rather than awaiting in sequence.
-  const [experience, education] = await Promise.all([getExperience(), getEducation()]);
+  const [experience, education, competitions] = await Promise.all([
+    getExperience(),
+    getEducation(),
+    getCompetitions(),
+  ]);
 
   return (
     <>
@@ -28,7 +32,11 @@ export default async function Experience() {
           ]),
         )}
       />
-      <ExperiencePage experience={experience.data} education={education.data} />
+      <ExperiencePage
+        experience={experience.data}
+        education={education.data}
+        competitions={competitions.data}
+      />
     </>
   );
 }

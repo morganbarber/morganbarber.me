@@ -32,6 +32,21 @@ psql "$SUPABASE_DB_URL" -f supabase/schema.sql
 psql "$SUPABASE_DB_URL" -f supabase/seed.sql
 ```
 
+## Upgrading an existing database
+
+`schema.sql` always describes the full current schema, so a fresh project needs
+nothing else. A database created from an older `schema.sql` catches up by
+running each migration it has not seen, in order, in the SQL Editor:
+
+| Migration                 | Adds                                                             |
+| ------------------------- | ---------------------------------------------------------------- |
+| `0001_harden_from_legacy` | RLS, grants and write functions for a pre-hardening database     |
+| `0002_role_limits`        | Row-count and statement-timeout caps on the public roles         |
+| `0003_competitions`       | The `competitions` table (CTFs, CyberPatriot…) with starter rows |
+
+All are idempotent. `npm run check:supabase` names the migration for any table
+that is missing.
+
 ## Security model
 
 The anon key is public — it ships in the JavaScript bundle of every page. So `anon` is treated as an untrusted role, and all authority lives in the database:

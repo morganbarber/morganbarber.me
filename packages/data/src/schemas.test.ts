@@ -4,6 +4,7 @@ import { describe, it } from "node:test";
 import {
   blogPostSchema,
   certificationSchema,
+  competitionSchema,
   formDataToObject,
   projectSchema,
   slugSchema,
@@ -113,6 +114,36 @@ describe("certificationSchema.file_url", () => {
       certificationSchema.safeParse({ name: "x", file_url: "javascript:alert(1)" }).success,
       false,
     );
+  });
+});
+
+describe("competitionSchema", () => {
+  const base = { name: "picoCTF", format: "Jeopardy-style CTF", description: "CMU's CTF." };
+
+  it("accepts the minimum and turns empty optional fields into null", () => {
+    const parsed = competitionSchema.parse({ ...base, period: "", result: "  ", link: "" });
+    assert.equal(parsed.period, null);
+    assert.equal(parsed.result, null);
+    assert.equal(parsed.link, null);
+    assert.equal(parsed.team, null);
+    assert.equal(parsed.published, false, "unchecked box is absent from FormData");
+    assert.equal(parsed.sort_order, 0);
+  });
+
+  it("requires name, format and description", () => {
+    for (const field of ["name", "format", "description"] as const) {
+      assert.equal(competitionSchema.safeParse({ ...base, [field]: " " }).success, false, field);
+    }
+  });
+
+  it("allows only http(s) links, matching competitions_link_scheme", () => {
+    assert.equal(
+      competitionSchema.safeParse({ ...base, link: "https://picoctf.org" }).success,
+      true,
+    );
+    for (const link of ["javascript:alert(1)", "data:text/html,x", "//evil.example"]) {
+      assert.equal(competitionSchema.safeParse({ ...base, link }).success, false, link);
+    }
   });
 });
 

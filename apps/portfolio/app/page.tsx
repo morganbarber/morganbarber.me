@@ -19,7 +19,7 @@ export default async function Home() {
   // Independent reads, fetched together: the HackTheBox call is cached for six
   // hours but a cold miss is a network round trip that should not queue
   // behind the database.
-  const [{ posts, projects, experience, education }, hackTheBox] = await Promise.all([
+  const [{ posts, projects, experience, education, competitions }, hackTheBox] = await Promise.all([
     getHomePageData(),
     getHackTheBoxStats(),
   ]);
@@ -33,6 +33,7 @@ export default async function Home() {
         experience={experience}
         education={education}
         hackTheBox={hackTheBox}
+        competitions={competitions}
       />
     </>
   );

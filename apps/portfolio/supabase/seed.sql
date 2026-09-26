@@ -204,4 +204,19 @@ on conflict (degree, school) do update set
   published  = excluded.published,
   sort_order = excluded.sort_order;
 
+-- Competitions. Results, years and teams are filled in from the admin
+-- dashboard; `do nothing` so re-seeding never overwrites them.
+insert into public.competitions (name, organizer, format, description, link, sort_order)
+values
+  ('picoCTF', 'Carnegie Mellon University', 'Jeopardy-style CTF',
+   'Carnegie Mellon''s capture-the-flag competition: web exploitation, cryptography, reverse engineering, forensics and binary exploitation challenges.',
+   'https://picoctf.org', 10),
+  ('Lockheed Martin CYBERQUEST', 'Lockheed Martin', 'Capture the flag',
+   'Lockheed Martin''s cyber competition for high school teams, solving security challenges alongside Lockheed Martin cyber professionals.',
+   null, 20),
+  ('CyberPatriot', 'Air & Space Forces Association', 'Cyber defense',
+   'The national youth cyber defense competition: teams find and fix vulnerabilities in Windows and Linux systems under time pressure.',
+   'https://www.uscyberpatriot.org', 30)
+on conflict (name) do nothing;
+
 commit;

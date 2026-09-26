@@ -164,11 +164,26 @@ export const certificationSchema = z.object({
   sort_order: sortOrder,
 });
 
+export const competitionSchema = z.object({
+  name: z.string().trim().min(1, "Name is required").max(200),
+  organizer: optionalText(200),
+  format: z.string().trim().min(1, "Format is required").max(100),
+  period: optionalText(100),
+  result: optionalText(200),
+  team: optionalText(200),
+  description: z.string().trim().min(1, "Description is required").max(5000),
+  /** Matches `competitions_link_scheme`. */
+  link: externalUrlSchema.optional().transform((value) => (value ? value : null)),
+  published: checkbox,
+  sort_order: sortOrder,
+});
+
 export type BlogPostInput = z.infer<typeof blogPostSchema>;
 export type ProjectInput = z.infer<typeof projectSchema>;
 export type ExperienceInput = z.infer<typeof experienceSchema>;
 export type EducationInput = z.infer<typeof educationSchema>;
 export type CertificationInput = z.infer<typeof certificationSchema>;
+export type CompetitionInput = z.infer<typeof competitionSchema>;
 
 /** Every table the admin dashboard can edit. */
 export const EDITABLE_TABLES = [
@@ -177,6 +192,7 @@ export const EDITABLE_TABLES = [
   "experience",
   "education",
   "certifications",
+  "competitions",
 ] as const;
 
 export type EditableTable = (typeof EDITABLE_TABLES)[number];
@@ -187,6 +203,7 @@ export const TABLE_SCHEMAS = {
   experience: experienceSchema,
   education: educationSchema,
   certifications: certificationSchema,
+  competitions: competitionSchema,
 } as const;
 
 /**

@@ -216,6 +216,56 @@ export interface Database {
         Relationships: [];
       };
 
+      /** CTFs and cyber competitions (migrations/0003_competitions.sql). */
+      competitions: {
+        Row: {
+          id: number;
+          name: string;
+          organizer: string | null;
+          format: string;
+          period: string | null;
+          result: string | null;
+          team: string | null;
+          description: string;
+          link: string | null;
+          sort_order: number;
+          published: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          name: string;
+          organizer?: string | null;
+          format: string;
+          period?: string | null;
+          result?: string | null;
+          team?: string | null;
+          description: string;
+          link?: string | null;
+          sort_order?: number;
+          published?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: number;
+          name?: string;
+          organizer?: string | null;
+          format?: string;
+          period?: string | null;
+          result?: string | null;
+          team?: string | null;
+          description?: string;
+          link?: string | null;
+          sort_order?: number;
+          published?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+
       /**
        * Not readable or writable with the anon key: RLS has no policy for it and
        * no grants are issued. Writes go through the `track_event` function.

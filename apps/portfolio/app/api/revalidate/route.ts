@@ -39,6 +39,7 @@ const TABLE_TO_TAG: Record<string, string> = {
   experience: CACHE_TAGS.experience,
   education: CACHE_TAGS.education,
   certifications: CACHE_TAGS.certifications,
+  competitions: CACHE_TAGS.competitions,
 };
 
 export async function POST(request: Request): Promise<NextResponse> {
