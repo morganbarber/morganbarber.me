@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Node **22.12+** (`nvm use` reads `.nvmrc`) and npm **10.9+**. `engine-strict`
+- Node **22.22.1+** (`nvm use` reads `.nvmrc`) and npm **10.9+**. `engine-strict`
   is on, so older versions fail at install.
 - A Supabase project for anything touching data — see
   [`apps/portfolio/supabase/README.md`](apps/portfolio/supabase/README.md).
