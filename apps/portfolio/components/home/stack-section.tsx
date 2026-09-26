@@ -15,12 +15,12 @@ export default function StackSection() {
           className="mb-16 text-right md:text-left" // Align right on mobile for style
         >
           <div className="flex items-center gap-4 mb-4 justify-end md:justify-start">
-            <span className="font-mono text-sm tracking-widest text-primary">TECHNOLOGIES</span>
+            <span className="font-mono text-sm tracking-widest text-primary">ARSENAL</span>
             <div className="h-px bg-primary w-12" />
           </div>
           <GlitchHeading
             as="h2"
-            lines={["TECHNICAL", "STACK"]}
+            lines={["OFFENSIVE", "TOOLKIT"]}
             className="text-4xl md:text-6xl"
             lineClassName={[undefined, "text-transparent text-stroke"]}
           />
@@ -29,7 +29,7 @@ export default function StackSection() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {STACK.map((tech, i) => (
             <motion.div
-              key={i}
+              key={tech}
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}

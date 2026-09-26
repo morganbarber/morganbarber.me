@@ -1,4 +1,4 @@
-import { SITE_CONFIG, SOCIAL_LINKS } from "@repo/config/site";
+import { SITE_CONFIG, SKILL_GROUPS, SOCIAL_LINKS } from "@repo/config/site";
 import type {
   BlogPost,
   BlogPostSummary,
@@ -56,17 +56,8 @@ export function personNode(): Node {
       addressRegion: "CO",
       addressCountry: "US",
     },
-    knowsAbout: [
-      "Cybersecurity",
-      "Network Security",
-      "Threat Analysis",
-      "System Hardening",
-      "Penetration Testing",
-      "Incident Response",
-      "Vulnerability Assessment",
-      "Python",
-      "Linux",
-    ],
+    // Derived from the About page's skills so the two cannot drift apart.
+    knowsAbout: ["Ethical Hacking", "Red Teaming", ...SKILL_GROUPS.flatMap((g) => g.skills)],
     // sameAs is how search engines reconcile this site with the owner's other
     // profiles — GitHub, LinkedIn and HackTheBox all describe the same person.
     sameAs: SOCIAL_LINKS.map((link) => link.url),
@@ -163,7 +154,7 @@ export function blogIndexNode(posts: BlogPostSummary[]): Node {
     "@type": "Blog",
     "@id": `${absoluteUrl("/blog")}#blog`,
     url: absoluteUrl("/blog"),
-    name: `${SITE_CONFIG.name} — Cybersecurity Blog`,
+    name: `${SITE_CONFIG.name} — Offensive Security Blog`,
     isPartOf: websiteRef,
     author: personRef,
     publisher: personRef,

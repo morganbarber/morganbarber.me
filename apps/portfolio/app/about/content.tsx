@@ -1,17 +1,8 @@
 import GlitchText from "@repo/ui/glitch-text";
 import { Download } from "lucide-react";
 
+import { SITE_CONFIG, SKILL_GROUPS } from "@repo/config/site";
 import type { CertificationSummary } from "@repo/types";
-const skills = [
-  "PYTHON SCRIPTING",
-  "VULNERABILITY ASSESSMENT",
-  "SYSTEM HARDENING",
-  "NETWORK SECURITY",
-  "THREAT ANALYSIS",
-  "LOG ANALYSIS",
-  "COMMUNICATION",
-  "IT OPERATIONS",
-];
 
 export default function AboutContent({
   certifications,
@@ -28,37 +19,51 @@ export default function AboutContent({
             <p>
               Name: MORGAN BARBER
               <br />
-              Role: Aspiring Cybersecurity Specialist
+              Role: {SITE_CONFIG.role}
               <br />
               Status: ACTIVE
               <br />
               Location: Longmont, CO
             </p>
             <p>
-              I am an aspiring cybersecurity specialist with a strong foundation in information
-              security principles and hands-on technical problem solving.
+              I&apos;m an ethical hacker working toward a career in red teaming. I learn by doing:
+              rooting HackTheBox machines, working through challenges and Sherlocks, and writing
+              Python tools to automate what I do by hand.
             </p>
             <p>
-              My approach involves identifying vulnerabilities and collaborating with technical
-              teams to strengthen organizational security posture. I have a keen attention to detail
-              in vulnerability assessments and security log analysis.
+              My focus is the attack path — reconnaissance, web exploitation and privilege
+              escalation — backed by CompTIA Security+ and Network+ fundamentals. I only test what
+              I&apos;m authorized to test, and I write up findings so they get fixed, not just
+              found.
             </p>
           </div>
 
           <div className="space-y-12">
             <div>
               <h2 className="text-2xl font-bold mb-6 border-b border-primary pb-2 uppercase text-primary">
-                Core Competencies
+                Skills
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {skills.map((skill, index) => (
-                  <div
-                    key={index}
-                    className="border border-muted p-4 hover:bg-primary hover:text-background transition-colors cursor-crosshair"
-                  >
-                    <span className="text-xs opacity-50 block mb-1">0{index + 1}</span>
-                    <span className="font-bold tracking-wider">{skill}</span>
-                  </div>
+              <div className="space-y-8">
+                {SKILL_GROUPS.map((group, g) => (
+                  <section key={group.title} aria-labelledby={`skills-${g}`}>
+                    <h3
+                      id={`skills-${g}`}
+                      className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-3"
+                    >
+                      <span className="text-primary">0{g + 1}</span> {"// "}
+                      {group.title}
+                    </h3>
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {group.skills.map((skill) => (
+                        <li
+                          key={skill}
+                          className="border border-muted p-4 font-bold uppercase tracking-wider hover:bg-primary hover:text-background transition-colors cursor-crosshair"
+                        >
+                          {skill}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
                 ))}
               </div>
             </div>

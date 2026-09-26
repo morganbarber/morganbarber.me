@@ -4,47 +4,122 @@ export const SITE_CONFIG = {
   name: "Morgan Barber",
   email: "morgan@morganbarber.me",
   location: "Longmont, CO",
-  role: "Aspiring Cybersecurity Specialist",
-  roleSubtitle: "16 Year Old Aspiring Cybersecurity Professional",
+  role: "Ethical Hacker & Aspiring Red Teamer",
+  roleSubtitle: "16 Year Old Ethical Hacker // Aspiring Red Teamer",
   /**
    * The home page's meta description: who, where, what — within the ~155
    * characters Google shows. Leads with the name because name searches are the
    * query this site most needs to win.
    */
   seoDescription:
-    "Morgan Barber, aspiring cybersecurity specialist in Longmont, CO. CompTIA Security+ certified, focused on network security, threat analysis and system hardening.",
+    "Morgan Barber, 16-year-old ethical hacker and aspiring red teamer in Longmont, CO. CompTIA Security+ certified, sharpening offensive skills on HackTheBox.",
   shortDescription:
-    "Aspiring Cybersecurity Specialist focused on Network Security, Threat Analysis, and System Hardening.",
+    "Ethical hacker and aspiring red teamer focused on penetration testing, web exploitation and privilege escalation.",
   description:
-    "I possess a strong foundation in information security principles and hands-on technical problem solving. My focus is on developing expertise in network security, threat analysis, and system hardening, identifying vulnerabilities to strengthen organizational security postures.",
+    "I build offensive security skills the hands-on way: enumerating, exploiting and escalating privileges on HackTheBox lab machines, and writing my own tooling in Python. Everything I do is authorized and in scope, and every finding ends in a fix.",
 } as const;
 
-export const SERVICES = [
-  "PENETRATION TESTING",
-  "INFRASTRUCTURE HARDENING",
-  "MALWARE ANALYSIS",
-  "INCIDENT RESPONSE",
-  "CLOUD SECURITY",
-  "SECURE CODE REVIEW",
+export interface Capability {
+  title: string;
+  description: string;
+}
+
+/** Home page "capabilities" grid — ordered the way an engagement runs. */
+export const SERVICES: readonly Capability[] = [
+  {
+    title: "PENETRATION TESTING",
+    description:
+      "Scoped, methodical testing from first scan to final report, with findings written so they can actually be fixed.",
+  },
+  {
+    title: "RECON & ENUMERATION",
+    description:
+      "Mapping the attack surface before touching it: ports, services, directories, subdomains and public information.",
+  },
+  {
+    title: "WEB EXPLOITATION",
+    description:
+      "Finding and proving OWASP Top 10 flaws — injection, broken access control, authentication bypasses — with Burp Suite.",
+  },
+  {
+    title: "PRIVILEGE ESCALATION",
+    description:
+      "Turning a foothold into root or SYSTEM on Linux and Windows through misconfigurations, weak permissions and vulnerable services.",
+  },
+  {
+    title: "VULNERABILITY ASSESSMENT",
+    description:
+      "Auditing systems against frameworks like NIST — the work I did reviewing my school district's security.",
+  },
+  {
+    title: "OFFENSIVE TOOLING",
+    description:
+      "Writing Python to automate the repetitive parts of an attack, like my own web vulnerability scanner.",
+  },
+];
+
+/** Home page toolkit grid, most-used first. */
+export const STACK = [
+  "KALI LINUX",
+  "NMAP",
+  "BURP SUITE",
+  "METASPLOIT",
+  "PYTHON",
+  "BASH",
+  "FFUF",
+  "NETCAT",
+  "SQLMAP",
+  "HASHCAT",
+  "WIRESHARK",
+  "LINPEAS",
 ] as const;
 
-export const STACK = [
-  "PYTHON",
-  "RUST",
-  "TYPESCRIPT",
-  "NEXT.JS",
-  "TAILWIND",
-  "LINUX",
-  "WIRESHARK",
-  "METASPLOIT",
-  "DOCKER",
-  "GIT",
-  "BASH",
-  "SQL",
-] as const;
+export interface SkillGroup {
+  title: string;
+  skills: readonly string[];
+}
+
+/**
+ * About page skills, grouped and ordered by importance to offensive work:
+ * the attack path first, then the tools that carry it out, then the
+ * foundations underneath. Also feeds `knowsAbout` in the structured data.
+ */
+export const SKILL_GROUPS: readonly SkillGroup[] = [
+  {
+    title: "Offensive",
+    skills: [
+      "Penetration Testing",
+      "Reconnaissance & Enumeration",
+      "Web Application Exploitation",
+      "Linux Privilege Escalation",
+      "Windows Privilege Escalation",
+      "Password Attacks",
+    ],
+  },
+  {
+    title: "Tooling & Scripting",
+    skills: [
+      "Python Scripting",
+      "Bash Scripting",
+      "Burp Suite",
+      "Nmap",
+      "Metasploit",
+      "Kali Linux",
+    ],
+  },
+  {
+    title: "Foundations",
+    skills: [
+      "Networking & Protocols",
+      "Linux & Windows Internals",
+      "Vulnerability Assessment",
+      "Report Writing",
+    ],
+  },
+];
 
 export const MARQUEE_TEXT =
-  "NETWORK SECURITY // THREAT ANALYSIS // COMPTIA SECURITY+ // SYSTEM HARDENING // PYTHON // ";
+  "ETHICAL HACKING // RED TEAMING // PENETRATION TESTING // HACKTHEBOX // PRIVILEGE ESCALATION // COMPTIA SECURITY+ // ";
 
 /**
  * HackTheBox profile, shown in its own section on the home page.
@@ -93,7 +168,7 @@ export const HACKTHEBOX: {
     sherlocksSolved: 1,
   },
   tagline:
-    "Hands-on offensive practice: enumerating, exploiting and escalating on live lab machines.",
+    "Where the red-team skills get built: enumerating, exploiting and escalating on live lab machines.",
 };
 
 /**
