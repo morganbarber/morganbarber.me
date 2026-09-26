@@ -5,7 +5,7 @@ export const SITE_CONFIG = {
   email: "morgan@morganbarber.me",
   location: "Longmont, CO",
   role: "Ethical Hacker & Aspiring Red Teamer",
-  roleSubtitle: "16 Year Old Ethical Hacker // Aspiring Red Teamer",
+  roleSubtitle: "16 Year Old Cybersecurity Specialist // Aspiring Red Teamer",
   /**
    * The home page's meta description: who, where, what — within the ~155
    * characters Google shows. Leads with the name because name searches are the
@@ -14,9 +14,9 @@ export const SITE_CONFIG = {
   seoDescription:
     "Morgan Barber, 16-year-old ethical hacker and aspiring red teamer in Longmont, CO. CompTIA Security+ certified, sharpening offensive skills on HackTheBox.",
   shortDescription:
-    "Ethical hacker and aspiring red teamer focused on penetration testing, web exploitation and privilege escalation.",
+    "Cybersecurity specialist and aspiring red teamer focused on penetration testing, web exploitation and privilege escalation, grounded in system hardening and defense.",
   description:
-    "I build offensive security skills the hands-on way: enumerating, exploiting and escalating privileges on HackTheBox lab machines, and writing my own tooling in Python. Everything I do is authorized and in scope, and every finding ends in a fix.",
+    "I build offensive security skills the hands-on way: enumerating, exploiting and escalating privileges on HackTheBox lab machines, and writing my own tooling in Python. A background in defense — system hardening, network security and CyberPatriot — means I know what I'm up against and how findings get fixed. Everything I do is authorized and in scope.",
 } as const;
 
 export interface Capability {
@@ -80,9 +80,9 @@ export interface SkillGroup {
 }
 
 /**
- * About page skills, grouped and ordered by importance to offensive work:
- * the attack path first, then the tools that carry it out, then the
- * foundations underneath. Also feeds `knowsAbout` in the structured data.
+ * About page skills, grouped and ordered by importance: the attack path
+ * first, then the tools that carry it out, the foundations underneath, and
+ * the defensive side last. Also feeds `knowsAbout` in the structured data.
  */
 export const SKILL_GROUPS: readonly SkillGroup[] = [
   {
@@ -116,10 +116,14 @@ export const SKILL_GROUPS: readonly SkillGroup[] = [
       "Report Writing",
     ],
   },
+  {
+    title: "Defensive",
+    skills: ["System Hardening", "Network Defense", "Threat Analysis", "Log Analysis"],
+  },
 ];
 
 export const MARQUEE_TEXT =
-  "ETHICAL HACKING // RED TEAMING // PENETRATION TESTING // HACKTHEBOX // PRIVILEGE ESCALATION // COMPTIA SECURITY+ // ";
+  "ETHICAL HACKING // RED TEAMING // PENETRATION TESTING // CAPTURE THE FLAG // HACKTHEBOX // SYSTEM HARDENING // COMPTIA SECURITY+ // ";
 
 /**
  * HackTheBox profile, shown in its own section on the home page.

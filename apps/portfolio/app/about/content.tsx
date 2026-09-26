@@ -36,6 +36,11 @@ export default function AboutContent({
               I&apos;m authorized to test, and I write up findings so they get fixed, not just
               found.
             </p>
+            <p>
+              I compete too: picoCTF and Lockheed Martin CYBERQUEST on the offensive side, and
+              CyberPatriot on defense, hardening Windows and Linux systems against the clock.
+              Knowing how systems are defended makes me a better attacker, and the other way around.
+            </p>
           </div>
 
           <div className="space-y-12">
