@@ -1,6 +1,6 @@
 import GlitchText from "@repo/ui/glitch-text";
 import type { CompetitionSummary, EducationSummary, ExperienceSummary } from "@repo/types";
-import CompetitionCard from "@/components/competition-card";
+import CompetitionScoreboard from "@/components/competition-scoreboard";
 
 export default function ExperiencePage({
   experience,
@@ -45,26 +45,24 @@ export default function ExperiencePage({
           <h2 className="text-2xl font-bold mb-8 text-primary font-mono uppercase tracking-widest">
             {"// ACADEMIC RECORDS"}
           </h2>
-          <div className="space-y-12">
+          <ol className="border-t border-muted">
             {education.map((edu, index) => (
-              <div
+              <li
                 key={edu.id}
-                className="enter-rise border border-muted p-6 hover:bg-muted/5 transition-colors"
+                className="enter-rise border-b border-muted py-8"
                 style={{ animationDelay: `${0.2 + index * 0.2}s` }}
               >
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl md:text-2xl font-bold uppercase leading-tight">
-                    {edu.degree}
-                  </h3>
-                  <span className="font-mono text-xs text-primary border border-primary px-2 py-1">
-                    {edu.period}
-                  </span>
-                </div>
-                <div className="text-lg text-muted-foreground mb-4 uppercase">{edu.school}</div>
-                <p className="text-muted-foreground leading-relaxed text-sm">{edu.details}</p>
-              </div>
+                <span className="block font-sans text-3xl font-bold uppercase leading-none tracking-tight text-transparent text-stroke">
+                  {edu.period}
+                </span>
+                <h3 className="mt-4 text-xl md:text-2xl font-bold uppercase leading-tight">
+                  {edu.degree}
+                </h3>
+                <div className="mt-1 text-lg text-muted-foreground uppercase">{edu.school}</div>
+                <p className="mt-4 text-muted-foreground leading-relaxed text-sm">{edu.details}</p>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </div>
 
@@ -76,10 +74,8 @@ export default function ExperiencePage({
           >
             {"// COMPETITIONS & CTFS"}
           </h2>
-          <div className="enter-rise grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-muted border border-muted">
-            {competitions.map((competition) => (
-              <CompetitionCard key={competition.id} competition={competition} />
-            ))}
+          <div className="enter-rise">
+            <CompetitionScoreboard competitions={competitions} />
           </div>
         </section>
       ) : null}

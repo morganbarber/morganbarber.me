@@ -67,13 +67,26 @@ function Label({ children }: { children: React.ReactNode }) {
 
 export default function HackTheBoxSection({ stats }: { stats: HackTheBoxStats }) {
   const since = formatSince(stats.memberSince);
-  const hasMachines = stats.systemOwns !== null || stats.userOwns !== null;
 
-  const solves = [
+  /** Every count, in one row: machines lead (larger), then solves. Nulls are dropped. */
+  const figures = [
+    stats.systemOwns !== null && {
+      label: "Root / system owns",
+      value: stats.systemOwns,
+      detail: null,
+      major: true,
+    },
+    stats.userOwns !== null && {
+      label: "User / foothold owns",
+      value: stats.userOwns,
+      detail: null,
+      major: true,
+    },
     stats.challengesSolved !== null && {
       label: "Challenges solved",
       value: stats.challengesSolved,
       detail: null,
+      major: false,
     },
     stats.sherlocksSolved !== null && {
       label: stats.sherlocksSolved === 1 ? "Sherlock solved" : "Sherlocks solved",
@@ -82,11 +95,12 @@ export default function HackTheBoxSection({ stats }: { stats: HackTheBoxStats })
         stats.sherlockTasks !== null
           ? `${number.format(stats.sherlockTasks)} tasks answered`
           : null,
+      major: false,
     },
   ].filter((item) => item !== false);
 
   const hasRank = stats.rank !== null;
-  const hasActivity = hasMachines || solves.length > 0 || stats.focusAreas.length > 0;
+  const hasActivity = figures.length > 0 || stats.focusAreas.length > 0;
 
   return (
     <section className="bg-background py-24 lg:py-32 border-t border-muted">
@@ -126,116 +140,82 @@ export default function HackTheBoxSection({ stats }: { stats: HackTheBoxStats })
         </div>
 
         {hasRank || hasActivity ? (
-          <div className="grid lg:grid-cols-12 gap-px bg-muted border border-muted">
+          <div className="grid lg:grid-cols-12 gap-14 lg:gap-16">
             {hasRank ? (
-              <div className="lg:col-span-5 bg-background flex flex-col">
-                <div className="flex items-center gap-2 border-b border-muted px-6 py-3 font-mono text-xs text-muted-foreground">
-                  <span className="h-2 w-2 bg-primary" aria-hidden="true" />
-                  <span className="truncate">
-                    ~/htb/{stats.username ?? "profile"} <span className="text-primary">$</span> rank
-                  </span>
+              <div className="lg:col-span-5 flex flex-col gap-8">
+                <p className="font-mono text-xs text-muted-foreground truncate">
+                  ~/htb/{stats.username ?? "profile"} <span className="text-primary">$</span> whoami
+                  --rank
+                </p>
+
+                <div className="flex flex-col gap-3">
+                  <Label>Current rank</Label>
+                  <p className="font-sans font-bold uppercase leading-[0.9] text-6xl md:text-7xl text-primary">
+                    {stats.rank}
+                  </p>
                 </div>
 
-                <div className="p-6 md:p-8 flex flex-col gap-8 flex-1">
+                {stats.rankProgress !== null && stats.nextRank ? (
                   <div className="flex flex-col gap-3">
-                    <Label>Current rank</Label>
-                    <p className="font-sans font-bold uppercase leading-none text-4xl md:text-5xl text-primary">
-                      {stats.rank}
-                    </p>
-                  </div>
-
-                  {stats.rankProgress !== null && stats.nextRank ? (
-                    <div className="flex flex-col gap-3">
-                      <div className="flex justify-between gap-4">
-                        <Label>Next: {stats.nextRank}</Label>
-                        <span className="font-mono text-xs tabular-nums text-primary">
-                          {stats.rankProgress}%
-                        </span>
-                      </div>
-                      <SegmentBar
-                        value={stats.rankProgress}
-                        label={`Progress from ${stats.rank} to ${stats.nextRank}`}
-                      />
+                    <div className="flex justify-between gap-4">
+                      <Label>Next: {stats.nextRank}</Label>
+                      <span className="font-mono text-xs tabular-nums text-primary">
+                        {stats.rankProgress}%
+                      </span>
                     </div>
-                  ) : null}
+                    <SegmentBar
+                      value={stats.rankProgress}
+                      label={`Progress from ${stats.rank} to ${stats.nextRank}`}
+                    />
+                  </div>
+                ) : null}
 
-                  {stats.points !== null || since ? (
-                    <dl className="mt-auto grid grid-cols-2 gap-6 border-t border-muted pt-6">
-                      {stats.points !== null ? (
-                        <div className="flex flex-col-reverse gap-2">
-                          <dt>
-                            <Label>Points</Label>
-                          </dt>
-                          <dd className="font-sans font-bold text-2xl tabular-nums">
-                            {number.format(stats.points)}
-                          </dd>
-                        </div>
-                      ) : null}
-                      {since ? (
-                        <div className="flex flex-col-reverse gap-2">
-                          <dt>
-                            <Label>Hacking since</Label>
-                          </dt>
-                          <dd className="font-sans font-bold text-2xl uppercase">{since}</dd>
-                        </div>
-                      ) : null}
-                    </dl>
-                  ) : null}
-                </div>
+                {stats.points !== null || since ? (
+                  <p className="font-mono text-sm text-muted-foreground">
+                    {stats.points !== null ? (
+                      <>
+                        <span className="text-foreground tabular-nums">
+                          {number.format(stats.points)}
+                        </span>{" "}
+                        points
+                      </>
+                    ) : null}
+                    {stats.points !== null && since ? (
+                      <span className="mx-3 text-primary">{"//"}</span>
+                    ) : null}
+                    {since ? (
+                      <>
+                        hacking since <span className="text-foreground">{since}</span>
+                      </>
+                    ) : null}
+                  </p>
+                ) : null}
               </div>
             ) : null}
 
             {hasActivity ? (
               <div
-                className={`${hasRank ? "lg:col-span-7" : "lg:col-span-12"} bg-background p-6 md:p-8 flex flex-col gap-10`}
+                className={`${hasRank ? "lg:col-span-7" : "lg:col-span-12"} flex flex-col gap-12`}
               >
-                {hasMachines ? (
-                  <div className="flex flex-col gap-4">
-                    <Label>Machines owned</Label>
-                    <dl className="grid grid-cols-2 gap-6">
-                      {stats.systemOwns !== null ? (
-                        <div className="flex flex-col-reverse gap-2">
-                          <dt className="font-mono text-sm text-muted-foreground">
-                            root <span className="text-xs">/ system flags</span>
-                          </dt>
-                          <dd className="font-sans font-bold text-5xl md:text-6xl leading-none tabular-nums">
-                            {number.format(stats.systemOwns)}
-                          </dd>
-                        </div>
-                      ) : null}
-                      {stats.userOwns !== null ? (
-                        <div className="flex flex-col-reverse gap-2">
-                          <dt className="font-mono text-sm text-muted-foreground">
-                            user <span className="text-xs">/ foothold flags</span>
-                          </dt>
-                          <dd className="font-sans font-bold text-5xl md:text-6xl leading-none tabular-nums">
-                            {number.format(stats.userOwns)}
-                          </dd>
-                        </div>
-                      ) : null}
-                    </dl>
-                  </div>
-                ) : null}
-
-                {solves.length > 0 ? (
-                  <dl className="grid grid-cols-2 gap-6 border-t border-muted pt-8">
-                    {solves.map((item) => (
-                      <div
-                        key={item.label}
-                        // column-reverse packs to the bottom; justify-end pins numbers to the top so
-                        // a two-line label ("24 tasks answered") does not push its number out of line.
-                        className="flex flex-col-reverse justify-end gap-2"
-                      >
+                {figures.length > 0 ? (
+                  // One open row of big figures — no cells, no borders.
+                  <dl className="grid grid-cols-2 sm:grid-cols-4 gap-x-8 gap-y-10">
+                    {figures.map((figure) => (
+                      <div key={figure.label} className="flex flex-col-reverse justify-end gap-2">
                         <dt className="flex flex-col gap-1">
-                          <Label>{item.label}</Label>
-                          {item.detail ? (
+                          <Label>{figure.label}</Label>
+                          {figure.detail ? (
                             <span className="font-mono text-xs text-muted-foreground/70">
-                              {item.detail}
+                              {figure.detail}
                             </span>
                           ) : null}
                         </dt>
-                        <dd className="font-sans font-bold text-3xl md:text-4xl leading-none tabular-nums">
-                          {number.format(item.value)}
+                        <dd
+                          className={`font-sans font-bold leading-none tabular-nums text-6xl md:text-7xl ${
+                            figure.major ? "text-foreground" : "text-foreground/60"
+                          }`}
+                        >
+                          {number.format(figure.value)}
                         </dd>
                       </div>
                     ))}
@@ -243,7 +223,7 @@ export default function HackTheBoxSection({ stats }: { stats: HackTheBoxStats })
                 ) : null}
 
                 {stats.focusAreas.length > 0 ? (
-                  <div className="flex flex-col gap-4 border-t border-muted pt-8">
+                  <div className="flex flex-col gap-4">
                     <Label>Where I&apos;ve been solving</Label>
                     <ul className="flex flex-col gap-4">
                       {stats.focusAreas.map((area) => (

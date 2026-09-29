@@ -1,6 +1,6 @@
 import GlitchHeading from "@repo/ui/glitch-heading";
 import type { CompetitionSummary } from "@repo/types";
-import CompetitionCard from "@/components/competition-card";
+import CompetitionScoreboard from "@/components/competition-scoreboard";
 
 /**
  * CTFs and cyber competitions. Server component with no animation library,
@@ -32,11 +32,7 @@ export default function CompetitionsSection({
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-muted border border-muted">
-          {competitions.map((competition) => (
-            <CompetitionCard key={competition.id} competition={competition} />
-          ))}
-        </div>
+        <CompetitionScoreboard competitions={competitions} />
       </div>
     </section>
   );
