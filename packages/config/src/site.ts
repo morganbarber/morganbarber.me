@@ -1,18 +1,21 @@
 import type { SocialLink } from "@repo/types";
 
+/** Update on your birthday — every mention of your age on the site reads this. */
+const AGE = 17;
+
 export const SITE_CONFIG = {
   name: "Morgan Barber",
+  age: AGE,
   email: "morgan@morganbarber.me",
   location: "Longmont, CO",
   role: "Ethical Hacker & Aspiring Red Teamer",
-  roleSubtitle: "16 Year Old Cybersecurity Specialist // Aspiring Red Teamer",
+  roleSubtitle: `${AGE} Year Old Cybersecurity Specialist // Aspiring Red Teamer`,
   /**
    * The home page's meta description: who, where, what — within the ~155
    * characters Google shows. Leads with the name because name searches are the
    * query this site most needs to win.
    */
-  seoDescription:
-    "Morgan Barber, 16-year-old ethical hacker and aspiring red teamer in Longmont, CO. CompTIA Security+ certified, sharpening offensive skills on HackTheBox.",
+  seoDescription: `Morgan Barber, ${AGE}-year-old ethical hacker and aspiring red teamer in Longmont, CO. CompTIA Security+ certified, sharpening offensive skills on HackTheBox.`,
   shortDescription:
     "Cybersecurity specialist and aspiring red teamer focused on penetration testing, web exploitation and privilege escalation, grounded in system hardening and defense.",
   description:

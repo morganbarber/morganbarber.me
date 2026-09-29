@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_CONFIG } from "@repo/config/site";
 import AboutContent from "./content";
 import StructuredData from "@/components/structured-data";
 import { getCertifications } from "@repo/data/content";
@@ -7,8 +8,7 @@ import { aboutPageNode, breadcrumbNode, graph } from "@/lib/structured-data";
 
 export const metadata: Metadata = pageMetadata({
   title: "About",
-  description:
-    "About Morgan Barber, a 16-year-old ethical hacker and aspiring red teamer from Longmont, Colorado: offensive skills, toolkit and CompTIA certifications.",
+  description: `About Morgan Barber, a ${SITE_CONFIG.age}-year-old ethical hacker and aspiring red teamer from Longmont, Colorado: offensive skills, toolkit and CompTIA certifications.`,
   path: "/about",
   type: "profile",
 });
