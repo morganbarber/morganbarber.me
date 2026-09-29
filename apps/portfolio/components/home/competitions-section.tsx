@@ -1,4 +1,4 @@
-import GlitchHeading from "@repo/ui/glitch-heading";
+import SectionHeader from "@/components/section-header";
 import type { CompetitionSummary } from "@repo/types";
 import CompetitionScoreboard from "@/components/competition-scoreboard";
 
@@ -14,23 +14,13 @@ export default function CompetitionsSection({
 }) {
   return (
     <section className="bg-muted/5 py-24 lg:py-32 border-y border-muted">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="mb-16">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="h-px bg-primary w-12" />
-            <span className="font-mono text-sm tracking-widest text-primary">COMPETITIONS</span>
-          </div>
-          <GlitchHeading
-            as="h2"
-            lines={["CAPTURE", "THE FLAG"]}
-            className="text-4xl md:text-6xl"
-            lineClassName={[undefined, "text-transparent text-stroke"]}
-          />
-          <p className="mt-6 max-w-xl font-mono text-muted-foreground leading-relaxed">
-            Offense under a clock in CTFs, defense under a clock in CyberPatriot. Competitions are
-            where the practice gets tested.
-          </p>
-        </div>
+      <div className="shell">
+        <SectionHeader
+          eyebrow="COMPETITIONS"
+          title={["CAPTURE", "THE FLAG"]}
+          intro="Offense under a clock in CTFs, defense under a clock in CyberPatriot. Competitions are where the practice gets tested."
+          className="mb-16"
+        />
 
         <CompetitionScoreboard competitions={competitions} />
       </div>

@@ -31,13 +31,13 @@ export default async function MessagesPage() {
       description="Submissions from the contact form. Message text is shown as plain text and never rendered as HTML."
     >
       {error ? (
-        <div className="flex items-start gap-2 rounded border border-danger/40 bg-danger/5 px-4 py-3 text-danger">
-          <TriangleAlert className="h-4 w-4 mt-0.5 shrink-0" aria-hidden="true" />
+        <div className="alert alert-danger">
+          <TriangleAlert className="size-4 mt-0.5 shrink-0" aria-hidden="true" />
           <span>{error}</span>
         </div>
       ) : !messages || messages.length === 0 ? (
         <div className="rounded border border-border bg-surface p-10 text-center">
-          <Mail className="h-6 w-6 mx-auto text-muted-foreground mb-3" aria-hidden="true" />
+          <Mail className="size-6 mx-auto text-muted-foreground mb-3" aria-hidden="true" />
           <p className="text-muted-foreground">No messages yet.</p>
         </div>
       ) : (

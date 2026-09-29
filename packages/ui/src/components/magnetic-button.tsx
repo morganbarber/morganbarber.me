@@ -4,13 +4,36 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 import { useRef } from "react";
 import { cn } from "../utils";
 
+const VARIANTS = {
+  /** Subtle border that fills with the foreground on hover. */
+  ghost: "border-foreground/20 hover:bg-foreground hover:text-background",
+  /** Primary call to action. */
+  solid: "border-primary bg-primary text-background hover:bg-transparent hover:text-primary",
+  /** Secondary action beside a solid one. */
+  outline: "border-foreground text-foreground hover:bg-foreground hover:text-background",
+};
+
+const SIZES = {
+  md: "px-6 py-3 text-sm",
+  lg: "px-8 py-4 text-lg",
+  xl: "px-12 py-6 text-xl",
+};
+
 interface MagneticButtonProps {
   children: React.ReactNode;
+  variant?: keyof typeof VARIANTS;
+  size?: keyof typeof SIZES;
   className?: string;
   onClick?: () => void;
 }
 
-export default function MagneticButton({ children, className, onClick }: MagneticButtonProps) {
+export default function MagneticButton({
+  children,
+  variant = "ghost",
+  size = "md",
+  className,
+  onClick,
+}: MagneticButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
   const x = useMotionValue(0);
@@ -46,7 +69,9 @@ export default function MagneticButton({ children, className, onClick }: Magneti
       onClick={onClick}
       style={{ x: mouseX, y: mouseY }}
       className={cn(
-        "relative px-6 py-3 border border-foreground/20 font-mono text-sm uppercase hover:bg-foreground hover:text-background transition-colors duration-300",
+        "relative border font-mono uppercase transition-colors duration-300",
+        VARIANTS[variant],
+        SIZES[size],
         className,
       )}
     >

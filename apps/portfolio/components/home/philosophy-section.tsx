@@ -6,7 +6,7 @@ import { SITE_CONFIG } from "@repo/config/site";
 
 export default function PhilosophySection() {
   return (
-    <section className="max-w-7xl mx-auto px-6 py-24 lg:py-48 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+    <section className="shell py-24 lg:py-48 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
       <motion.div
         initial={{ opacity: 0, x: -50 }}
         whileInView={{ opacity: 1, x: 0 }}

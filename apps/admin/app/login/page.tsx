@@ -8,7 +8,7 @@ export default async function LoginPage() {
   if (await isAuthenticated()) redirect("/");
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6">
+    <main className="min-h-screen grid place-items-center p-6">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <h1 className="text-xl font-bold tracking-tight">morganbarber.me</h1>

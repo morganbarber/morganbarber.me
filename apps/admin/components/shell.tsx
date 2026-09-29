@@ -57,18 +57,15 @@ export default function Shell({
             href={portfolioUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-2 rounded text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
+            className="nav-link hover:text-primary"
           >
-            <ExternalLink className="h-4 w-4" aria-hidden="true" />
+            <ExternalLink className="size-4" aria-hidden="true" />
             View site
           </a>
 
           <form action={logout}>
-            <button
-              type="submit"
-              className="w-full flex items-center gap-2 px-3 py-2 rounded text-muted-foreground hover:text-danger hover:bg-muted transition-colors text-left"
-            >
-              <LogOut className="h-4 w-4" aria-hidden="true" />
+            <button type="submit" className="nav-link w-full text-left hover:text-danger">
+              <LogOut className="size-4" aria-hidden="true" />
               Sign out
             </button>
           </form>

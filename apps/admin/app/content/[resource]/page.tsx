@@ -58,18 +58,15 @@ export default async function ResourceListPage({
       title={resource.label}
       description={resource.description}
       actions={
-        <Link
-          href={`/content/${slug}/new`}
-          className="inline-flex items-center gap-2 bg-primary text-background font-bold px-4 py-2 rounded hover:opacity-90 transition-opacity"
-        >
-          <Plus className="h-4 w-4" aria-hidden="true" />
+        <Link href={`/content/${slug}/new`} className="btn btn-primary">
+          <Plus className="size-4" aria-hidden="true" />
           New {resource.singular.toLowerCase()}
         </Link>
       }
     >
       {error ? (
-        <div className="flex items-start gap-2 rounded border border-danger/40 bg-danger/5 px-4 py-3 text-danger">
-          <TriangleAlert className="h-4 w-4 mt-0.5 shrink-0" aria-hidden="true" />
+        <div className="alert alert-danger">
+          <TriangleAlert className="size-4 mt-0.5 shrink-0" aria-hidden="true" />
           <span>{error}</span>
         </div>
       ) : !rows || rows.length === 0 ? (
@@ -79,7 +76,7 @@ export default async function ResourceListPage({
             href={`/content/${slug}/new`}
             className="inline-flex items-center gap-2 mt-4 text-primary hover:underline"
           >
-            <Plus className="h-4 w-4" aria-hidden="true" />
+            <Plus className="size-4" aria-hidden="true" />
             Create the first one
           </Link>
         </div>
@@ -152,7 +149,7 @@ export default async function ResourceListPage({
                             className="text-muted-foreground hover:text-primary transition-colors"
                             title="View on the site"
                           >
-                            <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                            <ExternalLink className="size-4" aria-hidden="true" />
                             <span className="sr-only">View on the site</span>
                           </a>
                         ) : null}

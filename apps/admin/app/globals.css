@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "@repo/tailwind-config/tokens.css";
 @import "@repo/tailwind-config/base.css";
+@import "@repo/tailwind-config/components.css";
 
 /*
   Admin dashboard styling.
@@ -24,4 +25,54 @@ body {
   color: var(--foreground);
   font-family: var(--font-mono);
   font-size: 14px;
+}
+
+/*
+  Admin component utilities. The dashboard's controls are small and rounded
+  (unlike the portfolio's square buttons), so they are defined here rather
+  than shared. Compose: `btn btn-primary`, `btn btn-ghost btn-sm`, `alert
+  alert-danger`.
+*/
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded px-4 py-2 transition-colors disabled:cursor-not-allowed disabled:opacity-60;
+}
+@utility btn-sm {
+  @apply gap-1.5 px-2.5 py-1.5 text-xs;
+}
+@utility btn-primary {
+  @apply bg-primary font-bold text-background hover:opacity-90;
+}
+/* Bordered, muted until hovered. */
+@utility btn-ghost {
+  @apply border border-border text-muted-foreground hover:border-primary hover:text-primary;
+}
+@utility btn-ghost-danger {
+  @apply border border-border text-muted-foreground hover:border-danger hover:text-danger;
+}
+@utility btn-danger {
+  @apply border border-danger bg-danger/10 text-danger hover:bg-danger/20;
+}
+
+@utility card {
+  @apply rounded border border-border bg-surface p-5;
+}
+
+@utility alert {
+  @apply flex items-start gap-2 rounded border px-4 py-3;
+}
+@utility alert-danger {
+  @apply border-danger/40 bg-danger/5 text-danger;
+}
+@utility alert-success {
+  @apply border-primary/40 bg-primary/5 text-primary;
+}
+
+@utility field {
+  @apply w-full rounded border border-border bg-background px-3 py-2 outline-none transition-colors focus:border-primary aria-[invalid=true]:border-danger;
+}
+
+/* Sidebar links. The hover colour is set per link (primary, or danger for
+   sign-out), so it is deliberately not part of the utility. */
+@utility nav-link {
+  @apply flex items-center gap-2 rounded px-3 py-2 text-muted-foreground transition-colors hover:bg-muted;
 }

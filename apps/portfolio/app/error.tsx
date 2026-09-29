@@ -26,7 +26,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <main className="relative flex flex-col items-center justify-center min-h-screen px-4 overflow-hidden bg-background">
+    <main className="splash">
       <div className="relative z-10 flex flex-col items-center text-center space-y-8 max-w-xl">
         <div className="space-y-2">
           <p className="font-mono text-sm md:text-base text-secondary tracking-widest uppercase">
@@ -36,33 +36,20 @@ export default function Error({
             as="h1"
             lines={["SYSTEM", "FAULT"]}
             className="text-5xl md:text-7xl leading-none"
-            lineClassName={[undefined, "text-transparent text-stroke"]}
+            lineClassName={[undefined, "text-stroke"]}
           />
         </div>
 
-        <div className="w-full font-mono text-sm text-muted-foreground space-y-2 border-l-2 border-secondary/50 pl-4 py-2 text-left bg-muted/10">
-          <p className="before:content-['>'] before:mr-2 before:text-secondary">
-            Something failed while rendering this page.
-          </p>
-          {error.digest ? (
-            <p className="before:content-['>'] before:mr-2 before:text-secondary break-all">
-              Reference: {error.digest}
-            </p>
-          ) : null}
+        <div className="log-block w-full border-secondary/50 [--log-accent:var(--secondary)]">
+          <p>Something failed while rendering this page.</p>
+          {error.digest ? <p className="break-all">Reference: {error.digest}</p> : null}
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <button
-            type="button"
-            onClick={reset}
-            className="bg-primary text-background hover:bg-transparent hover:text-primary border border-primary font-bold px-8 py-4 font-mono text-sm uppercase tracking-widest transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-          >
+          <button type="button" onClick={reset} className="btn btn-solid px-8 font-bold">
             RETRY
           </button>
-          <Link
-            href="/"
-            className="border border-muted px-8 py-4 font-mono text-sm uppercase tracking-widest hover:border-primary hover:text-primary transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-          >
+          <Link href="/" className="btn btn-quiet px-8">
             RETURN HOME
           </Link>
         </div>

@@ -1,5 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
-import GlitchHeading from "@repo/ui/glitch-heading";
+import { cn } from "@repo/ui/utils";
+import SectionHeader from "@/components/section-header";
 import { HACKTHEBOX } from "@repo/config/site";
 import type { HackTheBoxStats } from "@repo/data/hackthebox";
 
@@ -50,7 +51,7 @@ function SegmentBar({ value, label }: { value: number; label: string }) {
         <span
           key={i}
           aria-hidden="true"
-          className={`h-3 flex-1 ${i < filled ? "bg-primary" : "bg-muted"}`}
+          className={cn("h-3 flex-1", i < filled ? "bg-primary" : "bg-muted")}
         />
       ))}
     </div>
@@ -58,11 +59,7 @@ function SegmentBar({ value, label }: { value: number; label: string }) {
 }
 
 function Label({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-      {children}
-    </span>
-  );
+  return <span className="kicker">{children}</span>;
 }
 
 export default function HackTheBoxSection({ stats }: { stats: HackTheBoxStats }) {
@@ -103,36 +100,24 @@ export default function HackTheBoxSection({ stats }: { stats: HackTheBoxStats })
   const hasActivity = figures.length > 0 || stats.focusAreas.length > 0;
 
   return (
-    <section className="bg-background py-24 lg:py-32 border-t border-muted">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="border-t border-muted py-24 lg:py-32">
+      <div className="shell">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-10 mb-16">
-          <div>
-            <div className="flex items-center gap-4 mb-4">
-              <div className="h-px bg-primary w-12" />
-              <span className="font-mono text-sm tracking-widest text-primary">
-                OFFENSIVE PRACTICE
-              </span>
-            </div>
-            <GlitchHeading
-              as="h2"
-              lines={["HACK THE", "BOX"]}
-              className="text-4xl md:text-6xl"
-              lineClassName={[undefined, "text-transparent text-stroke"]}
-            />
-            <p className="mt-6 max-w-xl font-mono text-muted-foreground leading-relaxed">
-              {HACKTHEBOX.tagline}
-            </p>
-          </div>
+          <SectionHeader
+            eyebrow="OFFENSIVE PRACTICE"
+            title={["HACK THE", "BOX"]}
+            intro={HACKTHEBOX.tagline}
+          />
 
           <a
             href={stats.profileUrl}
             target="_blank"
             rel="noopener noreferrer external"
-            className="group inline-flex items-center gap-3 self-start lg:self-auto border border-primary px-6 py-4 font-mono text-sm uppercase tracking-widest text-primary hover:bg-primary hover:text-background transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+            className="group btn btn-outline self-start lg:self-auto"
           >
             {stats.username ? `@${stats.username}` : "View profile"}
             <ArrowUpRight
-              className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
               aria-hidden="true"
             />
             <span className="sr-only">(HackTheBox profile, opens in a new tab)</span>
@@ -195,7 +180,7 @@ export default function HackTheBoxSection({ stats }: { stats: HackTheBoxStats })
 
             {hasActivity ? (
               <div
-                className={`${hasRank ? "lg:col-span-7" : "lg:col-span-12"} flex flex-col gap-12`}
+                className={cn("flex flex-col gap-12", hasRank ? "lg:col-span-7" : "lg:col-span-12")}
               >
                 {figures.length > 0 ? (
                   // One open row of big figures — no cells, no borders.
@@ -211,9 +196,10 @@ export default function HackTheBoxSection({ stats }: { stats: HackTheBoxStats })
                           ) : null}
                         </dt>
                         <dd
-                          className={`font-sans font-bold leading-none tabular-nums text-6xl md:text-7xl ${
-                            figure.major ? "text-foreground" : "text-foreground/60"
-                          }`}
+                          className={cn(
+                            "font-sans text-6xl md:text-7xl font-bold leading-none tabular-nums",
+                            !figure.major && "text-foreground/60",
+                          )}
                         >
                           {number.format(figure.value)}
                         </dd>

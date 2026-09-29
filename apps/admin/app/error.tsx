@@ -22,10 +22,10 @@ export default function Error({
   }, [error]);
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6">
+    <main className="min-h-screen grid place-items-center p-6">
       <div className="max-w-lg w-full rounded border border-danger/40 bg-danger/5 p-6">
         <div className="flex items-start gap-3">
-          <TriangleAlert className="h-5 w-5 text-danger shrink-0 mt-0.5" aria-hidden="true" />
+          <TriangleAlert className="size-5 text-danger shrink-0 mt-0.5" aria-hidden="true" />
           <div className="min-w-0">
             <h1 className="font-bold text-danger">Something went wrong</h1>
             <p className="mt-2 whitespace-pre-wrap break-words text-muted-foreground">
@@ -36,11 +36,7 @@ export default function Error({
             ) : null}
 
             <div className="mt-5 flex items-center gap-4">
-              <button
-                type="button"
-                onClick={reset}
-                className="bg-primary text-background font-bold px-4 py-2 rounded hover:opacity-90 transition-opacity"
-              >
+              <button type="button" onClick={reset} className="btn btn-primary">
                 Try again
               </button>
               <Link href="/" className="text-muted-foreground hover:text-foreground">

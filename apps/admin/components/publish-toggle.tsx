@@ -1,4 +1,5 @@
 import { Eye, EyeOff } from "lucide-react";
+import { cn } from "@repo/ui/utils";
 import { togglePublished } from "@/actions/content";
 
 /**
@@ -25,16 +26,17 @@ export default function PublishToggle({
       <button
         type="submit"
         title={published ? "Published — click to unpublish" : "Draft — click to publish"}
-        className={`inline-flex items-center gap-1.5 rounded border px-2 py-1 text-xs transition-colors ${
+        className={cn(
+          "inline-flex items-center gap-1.5 rounded border px-2 py-1 text-xs transition-colors",
           published
             ? "border-primary/40 bg-primary/10 text-primary hover:bg-primary/20"
-            : "border-border bg-muted text-muted-foreground hover:text-foreground"
-        }`}
+            : "border-border bg-muted text-muted-foreground hover:text-foreground",
+        )}
       >
         {published ? (
-          <Eye className="h-3 w-3" aria-hidden="true" />
+          <Eye className="size-3" aria-hidden="true" />
         ) : (
-          <EyeOff className="h-3 w-3" aria-hidden="true" />
+          <EyeOff className="size-3" aria-hidden="true" />
         )}
         {published ? "Live" : "Draft"}
       </button>

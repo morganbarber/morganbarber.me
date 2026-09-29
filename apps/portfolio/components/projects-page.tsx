@@ -5,7 +5,7 @@ import type { ProjectSummary } from "@repo/types";
 
 export default function ProjectsPage({ projects }: { projects: ProjectSummary[] }) {
   return (
-    <main className="min-h-screen pt-32 px-6 max-w-7xl mx-auto">
+    <main className="min-h-screen pt-32 shell">
       <GlitchText text="PROJECTS" className="text-5xl md:text-8xl mb-8 block" />
 
       <p className="max-w-2xl font-mono text-muted-foreground leading-relaxed mb-12">

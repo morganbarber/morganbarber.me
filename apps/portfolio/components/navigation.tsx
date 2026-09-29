@@ -91,20 +91,14 @@ export default function Navigation() {
   return (
     <header className="fixed top-0 left-0 w-full z-40 bg-background/80 backdrop-blur-md border-b border-muted">
       {/* Keyboard users can jump straight past the nav. */}
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-primary focus:text-background focus:px-4 focus:py-2 focus:font-mono focus:text-sm"
-      >
+      <a href="#main" className="skip-link">
         SKIP TO CONTENT
       </a>
 
-      <nav
-        aria-label="Primary"
-        className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto"
-      >
+      <nav aria-label="Primary" className="flex items-center justify-between shell py-4">
         <Link
           href="/"
-          className="font-sans text-xl font-bold tracking-tighter hover:text-primary transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+          className="font-sans text-xl font-bold tracking-tighter hover:text-primary transition-colors"
         >
           morganbarber.me
         </Link>
@@ -142,12 +136,12 @@ export default function Navigation() {
           aria-expanded={open}
           aria-controls="mobile-nav"
           aria-label={open ? "Close menu" : "Open menu"}
-          className="md:hidden p-2 -mr-2 text-foreground hover:text-primary transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          className="md:hidden p-2 -mr-2 text-foreground hover:text-primary transition-colors focus-visible:outline-offset-2"
         >
           {open ? (
-            <X className="h-6 w-6" aria-hidden="true" />
+            <X className="size-6" aria-hidden="true" />
           ) : (
-            <Menu className="h-6 w-6" aria-hidden="true" />
+            <Menu className="size-6" aria-hidden="true" />
           )}
         </button>
       </nav>

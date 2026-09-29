@@ -9,14 +9,14 @@ import ContactForm from "@/components/contact-form";
  */
 export default function ContactPage() {
   return (
-    <main className="min-h-screen pt-32 pb-24 px-6 max-w-7xl mx-auto flex flex-col justify-center">
+    <main className="min-h-screen pt-32 pb-24 shell flex flex-col justify-center">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div>
           <GlitchHeading
             as="h1"
             lines={["CONTACT", "FORM"]}
             className="text-5xl md:text-7xl leading-none"
-            lineClassName={[undefined, "text-transparent text-stroke"]}
+            lineClassName={[undefined, "text-stroke"]}
             wrapperClassName={"mb-8"}
           />
 
@@ -29,7 +29,7 @@ export default function ContactPage() {
             <p className="text-primary mb-2">{"// EMAIL"}</p>
             <a
               href={`mailto:${SITE_CONFIG.email}`}
-              className="hover:text-primary transition-colors text-2xl break-all focus-visible:outline-2 focus-visible:outline-primary"
+              className="hover:text-primary transition-colors text-2xl break-all"
             >
               {SITE_CONFIG.email}
             </a>
@@ -44,7 +44,7 @@ export default function ContactPage() {
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer external"
-                    className="hover:text-primary transition-colors text-xl w-fit inline-block focus-visible:outline-2 focus-visible:outline-primary"
+                    className="hover:text-primary transition-colors text-xl w-fit inline-block"
                   >
                     {link.name}
                   </a>

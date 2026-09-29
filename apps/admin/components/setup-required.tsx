@@ -10,10 +10,10 @@ import { KeyRound } from "lucide-react";
  */
 export default function SetupRequired() {
   return (
-    <main className="min-h-screen flex items-center justify-center p-6">
+    <main className="min-h-screen grid place-items-center p-6">
       <div className="max-w-xl w-full rounded border border-border bg-surface p-8">
         <div className="flex items-center gap-3 mb-5">
-          <KeyRound className="h-5 w-5 text-primary" aria-hidden="true" />
+          <KeyRound className="size-5 text-primary" aria-hidden="true" />
           <h1 className="text-lg font-bold">One more setting</h1>
         </div>
 
@@ -50,7 +50,7 @@ export default function SetupRequired() {
 function Step({ n, children }: { n: number; children: React.ReactNode }) {
   return (
     <li className="flex gap-3">
-      <span className="shrink-0 w-5 h-5 rounded-full bg-primary/15 text-primary text-xs flex items-center justify-center font-bold">
+      <span className="shrink-0 size-5 rounded-full bg-primary/15 text-primary text-xs grid place-items-center font-bold">
         {n}
       </span>
       <span className="leading-relaxed">{children}</span>

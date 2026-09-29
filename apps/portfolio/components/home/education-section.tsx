@@ -1,29 +1,20 @@
 "use client";
 
 import { motion } from "framer-motion";
-import GlitchHeading from "@repo/ui/glitch-heading";
+import SectionHeader from "@/components/section-header";
 import type { EducationSummary } from "@repo/types";
 
 export default function EducationSection({ education }: { education: EducationSummary[] }) {
   return (
     <section className="bg-background py-24 lg:py-32">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="shell">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="mb-16"
         >
-          <div className="flex items-center gap-4 mb-4">
-            <div className="h-px bg-primary w-12" />
-            <span className="font-mono text-sm tracking-widest text-primary">EDUCATION</span>
-          </div>
-          <GlitchHeading
-            as="h2"
-            lines={["EDUCATION", "HISTORY"]}
-            className="text-4xl md:text-6xl"
-            lineClassName={[undefined, "text-transparent text-stroke"]}
-          />
+          <SectionHeader eyebrow="EDUCATION" title={["EDUCATION", "HISTORY"]} />
         </motion.div>
 
         {/* Ruled rows with the years stamped large in outline type — a ledger,
@@ -38,7 +29,7 @@ export default function EducationSection({ education }: { education: EducationSu
               transition={{ delay: i * 0.1 }}
               className="group grid gap-4 border-b border-muted py-10 md:grid-cols-[16rem_1fr] md:gap-12"
             >
-              <span className="font-sans text-4xl md:text-5xl font-bold uppercase leading-none tracking-tight text-transparent text-stroke transition-colors group-hover:text-primary/90">
+              <span className="font-sans text-4xl md:text-5xl font-bold uppercase leading-none tracking-tight text-stroke transition-colors group-hover:text-primary/90">
                 {item.period}
               </span>
 

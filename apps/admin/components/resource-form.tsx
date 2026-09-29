@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@repo/ui/utils";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
@@ -32,14 +33,10 @@ function SubmitButton({ isEdit }: { isEdit: boolean }) {
   const { pending } = useFormStatus();
 
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="inline-flex items-center gap-2 bg-primary text-background font-bold px-5 py-2.5 rounded hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed transition-opacity"
-    >
+    <button type="submit" disabled={pending} className="btn btn-primary px-5 py-2.5">
       {pending ? (
         <>
-          <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
+          <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
           Saving…
         </>
       ) : isEdit ? (
@@ -84,16 +81,12 @@ export default function ResourceForm({ resource, row, id }: ResourceFormProps) {
         <div
           role="status"
           aria-live="polite"
-          className={`flex items-start gap-2 rounded border px-4 py-3 ${
-            state.status === "success"
-              ? "border-primary/40 bg-primary/5 text-primary"
-              : "border-danger/40 bg-danger/5 text-danger"
-          }`}
+          className={cn("alert", state.status === "success" ? "alert-success" : "alert-danger")}
         >
           {state.status === "success" ? (
-            <CircleCheck className="h-4 w-4 mt-0.5 shrink-0" aria-hidden="true" />
+            <CircleCheck className="size-4 mt-0.5 shrink-0" aria-hidden="true" />
           ) : (
-            <TriangleAlert className="h-4 w-4 mt-0.5 shrink-0" aria-hidden="true" />
+            <TriangleAlert className="size-4 mt-0.5 shrink-0" aria-hidden="true" />
           )}
           <span>{state.message}</span>
         </div>
@@ -118,7 +111,7 @@ export default function ResourceForm({ resource, row, id }: ResourceFormProps) {
                 name={field.name}
                 defaultChecked={checkedFor(field)}
                 aria-describedby={describedBy}
-                className="mt-0.5 h-4 w-4 accent-[var(--primary)]"
+                className="mt-0.5 size-4 accent-[var(--primary)]"
               />
               <div className="min-w-0">
                 <label htmlFor={field.name} className="font-bold cursor-pointer">
@@ -141,8 +134,7 @@ export default function ResourceForm({ resource, row, id }: ResourceFormProps) {
           placeholder: field.placeholder,
           "aria-invalid": Boolean(error),
           "aria-describedby": describedBy,
-          className:
-            "w-full rounded border border-border bg-surface px-3 py-2 outline-none transition-colors focus:border-primary aria-[invalid=true]:border-danger",
+          className: "field bg-surface",
         };
 
         return (
@@ -161,7 +153,7 @@ export default function ResourceForm({ resource, row, id }: ResourceFormProps) {
               <textarea
                 {...shared}
                 rows={field.rows ?? 6}
-                className={`${shared.className} resize-y font-mono`}
+                className={cn(shared.className, "resize-y font-mono")}
               />
             ) : field.type === "number" ? (
               <input {...shared} type="number" inputMode="numeric" />
