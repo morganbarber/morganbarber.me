@@ -1,6 +1,6 @@
 # 0004. SST with local state, deploying to Vercel
 
-- **Status:** Accepted
+- **Status:** Accepted — amended by [0008](0008-ci-deploys-code-sst-owns-infrastructure.md) (CI now deploys code; SST still owns infrastructure)
 - **Date:** 2026-09-15
 
 ## Context

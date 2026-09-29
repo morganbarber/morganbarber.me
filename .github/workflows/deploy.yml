@@ -1,0 +1,72 @@
+name: Deploy
+
+# Ships the public site to Vercel production after CI passes on main.
+#
+# Split of responsibilities (ADR 0008):
+#   • This workflow deploys CODE: `vercel deploy --prod` builds the commit CI
+#     just tested, using the project settings and environment variables that
+#     already exist on Vercel.
+#   • SST (`npm run deploy`, run locally) owns INFRASTRUCTURE: the project,
+#     its env vars and domains. Its state is local (ADR 0004), so it never
+#     runs here.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  # Manual re-deploy of main (e.g. after rotating an env var on Vercel). The
+  # production environment only admits main, so other refs are refused.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One production deploy at a time; a newer one queues rather than cancelling
+# a deploy that is mid-upload.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to production
+    # workflow_run fires for every CI completion — failures, PR runs and fork
+    # runs included. Only a successful push to this repository's main deploys.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Secrets live on the environment, which is restricted to main.
+    environment:
+      name: production
+      url: ${{ vars.PRODUCTION_URL }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The exact commit CI verified, not whatever main points at now.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Deploy to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TELEMETRY_DISABLED: "1"
+        # Pinned CLI. The upload honours .vercelignore, which is what keeps
+        # apps/admin and every .env file off Vercel.
+        run: npx --yes vercel@61.0.0 deploy --prod --yes --token "$VERCEL_TOKEN"
+
+      # Post-deploy smoke test against what visitors actually receive.
+      - name: Security headers
+        run: node tooling/checks/bin/check-headers.mjs "${{ vars.PRODUCTION_URL }}"
+
+      - name: SEO
+        run: node tooling/checks/bin/check-seo.mjs "${{ vars.PRODUCTION_URL }}"

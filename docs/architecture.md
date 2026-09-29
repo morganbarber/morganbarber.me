@@ -83,16 +83,15 @@ Environment variables are split three ways in `turbo.json`:
 
 ## CI/CD
 
-| Workflow       | Trigger          | Jobs                                                                    |
-| -------------- | ---------------- | ----------------------------------------------------------------------- |
-| `ci.yml`       | push, PR         | quality, workflow lint, test + coverage, boundaries, build, smoke       |
-| `security.yml` | push, PR, weekly | npm audit, signatures, SBOM, dependency review¹, gitleaks, secret scans |
-| `codeql.yml`   | push, PR, weekly | CodeQL `security-extended` (public repo or GHAS only¹)                  |
-| `pr-title.yml` | PR               | Conventional Commit title                                               |
+| Workflow       | Trigger            | Jobs                                                                   |
+| -------------- | ------------------ | ---------------------------------------------------------------------- |
+| `ci.yml`       | push, PR           | quality, workflow lint, test + coverage, boundaries, build, smoke      |
+| `security.yml` | push, PR, weekly   | npm audit, signatures, SBOM, dependency review, gitleaks, secret scans |
+| `codeql.yml`   | push, PR, weekly   | CodeQL `security-extended`                                             |
+| `pr-title.yml` | PR                 | Conventional Commit title                                              |
+| `deploy.yml`   | CI success on main | `vercel deploy --prod`, then headers + SEO against production          |
 
-¹ Code scanning and dependency review need GitHub Advanced Security on a
-private repository. Both jobs skip while the repo is private and run
-automatically once it is public.
+`main` accepts changes only through pull requests with passing required checks.
 
 All third-party actions are pinned to a commit SHA; Dependabot bumps them.
-There is no deploy workflow — see [ADR 0004](adr/0004-sst-local-state-vercel.md).
+CI deploys code; SST (run locally) owns infrastructure — see [ADR 0008](adr/0008-ci-deploys-code-sst-owns-infrastructure.md).
