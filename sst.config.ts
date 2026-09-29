@@ -95,6 +95,14 @@ export default $config({
     const analyticsSalt = optional("ANALYTICS_SALT");
     const revalidateSecret = optional("REVALIDATE_SECRET");
     const htbToken = optional("HTB_APP_TOKEN");
+    /**
+     * Vercel plan. Features gated to paid plans are only requested on "pro" /
+     * "enterprise": asking for one on Hobby fails the whole project create
+     * ("invalid_billing_plan"), not just that setting.
+     */
+    const paidPlan = ["pro", "enterprise"].includes(
+      (optional("VERCEL_PLAN") ?? "hobby").toLowerCase(),
+    );
 
     /**
      * A secret key in the publishable slot would be compiled into the
@@ -178,8 +186,11 @@ export default $config({
         Known trade-off, documented by Vercel: skew protection sets a
         per-deployment environment variable, which makes every Turborepo build
         a cache miss. Correctness over build speed for a site this size.
+
+        Pro/Enterprise only — on Hobby a stale tab's contact-form submit after
+        a redeploy fails and needs a reload, which is acceptable here.
       */
-      skewProtection: "12 hours",
+      ...(paidPlan ? { skewProtection: "12 hours" as const } : {}),
 
       // Exposes VERCEL_ENV / VERCEL_URL to the build, which the proxy uses to
       // mark non-production deployments noindex.
