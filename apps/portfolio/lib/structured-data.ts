@@ -1,3 +1,4 @@
+import { isUrlOnHost } from "@repo/security/url";
 import { SITE_CONFIG, SKILL_GROUPS, SOCIAL_LINKS } from "@repo/config/site";
 import type {
   BlogPost,
@@ -213,10 +214,13 @@ export function projectsIndexNode(projects: ProjectSummary[]): Node {
   };
 }
 
+/** Hosts whose links mark a project as source code in the structured data. */
+const CODE_HOSTS = ["github.com", "gitlab.com"] as const;
+
 /** A project. Typed as source code when it links to a repository. */
 export function projectNode(project: Project): Node {
   const url = absoluteUrl(`/projects/${project.id}`);
-  const isRepository = Boolean(project.link && /github\.com|gitlab\.com/i.test(project.link));
+  const isRepository = isUrlOnHost(project.link, CODE_HOSTS);
 
   return {
     "@type": isRepository ? "SoftwareSourceCode" : "CreativeWork",

@@ -212,17 +212,19 @@ console.log(bold("\nNonce propagation"));
 
 const cspNonce = /'nonce-([^']+)'/.exec(csp)?.[1];
 const htmlNonces = [...html.matchAll(/nonce="([^"]+)"/g)].map((m) => m[1]);
-const scriptTags = [...html.matchAll(/<script([^>]*)>/g)].map((m) => m[1]);
-const unNonced = scriptTags.filter((attrs) => !/nonce=/.test(attrs));
+// Case-insensitive with a word boundary: `<SCRIPT` counts, `<scripts>` does
+// not. An audit that misses an un-nonced tag is worse than no audit.
+const scriptTags = [...html.matchAll(/<script\b([^>]*)>/gi)].map((m) => m[1]);
+const unNonced = scriptTags.filter((attrs) => !/nonce=/i.test(attrs));
 
 // <style> elements are subject to the nonce as well once style-src is
 // nonce-based. A missed one does not throw an error anywhere — the browser
 // silently drops it — so an un-nonced stylesheet means an unstyled site.
-const styleTags = [...html.matchAll(/<style([^>]*)>/g)].map((m) => m[1]);
+const styleTags = [...html.matchAll(/<style\b([^>]*)>/gi)].map((m) => m[1]);
 const styleNonceRequired = /'nonce-/.test(
   (directives["style-src-elem"] ?? directives["style-src"] ?? []).join(" "),
 );
-const unNoncedStyles = styleTags.filter((attrs) => !/nonce=/.test(attrs));
+const unNoncedStyles = styleTags.filter((attrs) => !/nonce=/i.test(attrs));
 if (styleNonceRequired && unNoncedStyles.length > 0) {
   fail(
     "style nonce",

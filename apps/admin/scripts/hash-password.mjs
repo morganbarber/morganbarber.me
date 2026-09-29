@@ -7,12 +7,17 @@
  * what that guidance exists to prevent: it survives in backups, editor swap
  * files and shell history, and anyone who reads the file has the credential.
  *
- * Usage:
- *   npm run admin:hash-password              # generates a strong password too
- *   npm run admin:hash-password -- "my pw"   # hashes one you chose
+ * Usage (run in a terminal):
+ *   npm run admin:hash-password                # generates a strong password too
+ *   npm run admin:hash-password -- --choose    # prompts for one you choose
+ *
+ * A chosen password is read from a hidden prompt, never from argv: a command-
+ * line argument lands in shell history and the process list — the very
+ * exposure this script exists to avoid.
  */
 
 import { randomBytes, scrypt } from "node:crypto";
+import { createInterface } from "node:readline";
 import { promisify } from "node:util";
 
 const scryptAsync = promisify(scrypt);
@@ -25,8 +30,36 @@ const scryptAsync = promisify(scrypt);
 const PARAMS = { N: 16384, r: 8, p: 1 };
 const KEY_LENGTH = 64;
 
-const supplied = process.argv[2];
-const password = supplied ?? randomBytes(18).toString("base64url");
+/*
+  The generated password is shown once, so it must only go to a person at a
+  terminal — never into a file, pipe or CI log where it would persist.
+*/
+if (!process.stdin.isTTY || !process.stdout.isTTY) {
+  console.error("Run this in an interactive terminal: it shows or asks for a password.");
+  process.exit(1);
+}
+
+/** Reads a line without echoing it. */
+async function promptHidden(question) {
+  const rl = createInterface({ input: process.stdin, output: process.stdout, terminal: true });
+  const write = rl._writeToOutput.bind(rl);
+  rl._writeToOutput = (text) => write(text.startsWith(question) ? text : "");
+  try {
+    return await new Promise((resolve) => rl.question(question, resolve));
+  } finally {
+    rl.close();
+    process.stdout.write("\n");
+  }
+}
+
+const choose = process.argv.includes("--choose");
+if (process.argv.slice(2).some((arg) => arg !== "--choose")) {
+  console.error("Passwords are not accepted as arguments (shell history). Use --choose.");
+  process.exit(1);
+}
+const password = choose
+  ? await promptHidden("New admin password: ")
+  : randomBytes(18).toString("base64url");
 
 if (password.length < 8) {
   console.error("Password must be at least 8 characters.");
@@ -52,7 +85,7 @@ console.log("\nAdd this to apps/admin/.env.local:\n");
 console.log(`ADMIN_PASSWORD_HASH=${encoded}`);
 console.log("\nThen REMOVE any ADMIN_PASSWORD line.\n");
 
-if (!supplied) {
+if (!choose) {
   console.log("Your password (store it in a password manager — it is not recoverable):\n");
   console.log(`  ${password}\n`);
 }

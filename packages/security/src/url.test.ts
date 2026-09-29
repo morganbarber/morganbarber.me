@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { isSafeExternalUrl, isSafeInternalPath, safeHref } from "./url.ts";
+import { isSafeExternalUrl, isSafeInternalPath, isUrlOnHost, safeHref } from "./url.ts";
 
 /**
  * Tests for URL scheme validation (OWASP A03:2021 — Injection).
@@ -75,5 +75,32 @@ describe("safeHref", () => {
     assert.equal(safeHref("javascript:alert(1)"), null);
     assert.equal(safeHref("//evil.example"), null);
     assert.equal(safeHref(null), null);
+  });
+});
+
+describe("isUrlOnHost", () => {
+  const hosts = ["github.com", "gitlab.com"];
+
+  it("accepts the listed hosts, with or without www", () => {
+    assert.equal(isUrlOnHost("https://github.com/morganbarber/psti.io", hosts), true);
+    assert.equal(isUrlOnHost("https://www.GitHub.com/x", hosts), true);
+    assert.equal(isUrlOnHost("http://gitlab.com/x", hosts), true);
+  });
+
+  it("rejects hosts that merely contain a listed name", () => {
+    for (const url of [
+      "https://evil.example/github.com",
+      "https://github.com.evil.example/x",
+      "https://notgithub.com/x",
+      "https://evil.example/?next=https://github.com",
+    ]) {
+      assert.equal(isUrlOnHost(url, hosts), false, url);
+    }
+  });
+
+  it("rejects non-http schemes and empty input", () => {
+    assert.equal(isUrlOnHost("javascript://github.com/%0aalert(1)", hosts), false);
+    assert.equal(isUrlOnHost(null, hosts), false);
+    assert.equal(isUrlOnHost("", hosts), false);
   });
 });

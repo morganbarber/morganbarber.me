@@ -129,27 +129,27 @@ imports them.** CI enforces it.
 
 ## Commands
 
-| Command                       | What it does                                                    |
-| ----------------------------- | --------------------------------------------------------------- |
-| `npm run dev`                 | Portfolio dev server (localhost:3000)                           |
-| `npm run dev:admin`           | Admin dashboard (127.0.0.1:3100)                                |
-| `npm run build`               | Production build of the site                                    |
-| `npm run build:all`           | Build every app                                                 |
-| `npm run type-check`          | TypeScript across every workspace                               |
-| `npm run lint`                | ESLint across every workspace                                   |
-| `npm run format`              | Prettier, write (`format:check` to verify only)                 |
-| `npm test`                    | Unit tests (Node built-in runner)                               |
-| `npm run test:coverage`       | Tests with coverage thresholds; LCOV to `coverage/lcov.info`    |
-| `npm run verify`              | format + types + lint + coverage + audit — run before pushing   |
-| `npm run check:supabase`      | Diagnose the database end to end                                |
-| `npm run check:headers`       | Verify security headers and CSP nonces against a running server |
-| `npm run check:seo`           | Audit every sitemap URL's metadata, structured data and assets  |
-| `npm run check:deps`          | Fail on undeclared `@repo/*` imports                            |
-| `npm run audit:security`      | Fail on any high/critical dependency advisory                   |
-| `npm run admin:hash-password` | Generate a scrypt `ADMIN_PASSWORD_HASH`                         |
-| `npm run sst:install`         | Download the Vercel provider (once, before first deploy)        |
-| `npm run deploy`              | Production deploy (loads `.env.sst`); `deploy:diff` to preview  |
-| `npm run deploy:preview`      | Deploy a preview stage                                          |
+| Command                       | What it does                                                        |
+| ----------------------------- | ------------------------------------------------------------------- |
+| `npm run dev`                 | Portfolio dev server (localhost:3000)                               |
+| `npm run dev:admin`           | Admin dashboard (127.0.0.1:3100)                                    |
+| `npm run build`               | Production build of the site                                        |
+| `npm run build:all`           | Build every app                                                     |
+| `npm run type-check`          | TypeScript across every workspace                                   |
+| `npm run lint`                | ESLint across every workspace                                       |
+| `npm run format`              | Prettier, write (`format:check` to verify only)                     |
+| `npm test`                    | Unit tests (Node built-in runner)                                   |
+| `npm run test:coverage`       | Tests with coverage thresholds; LCOV to `coverage/lcov.info`        |
+| `npm run verify`              | format + types + lint + coverage + audit — run before pushing       |
+| `npm run check:supabase`      | Diagnose the database end to end                                    |
+| `npm run check:headers`       | Verify security headers and CSP nonces against a running server     |
+| `npm run check:seo`           | Audit every sitemap URL's metadata, structured data and assets      |
+| `npm run check:deps`          | Fail on undeclared `@repo/*` imports                                |
+| `npm run audit:security`      | Fail on any high/critical dependency advisory                       |
+| `npm run admin:hash-password` | Generate a scrypt `ADMIN_PASSWORD_HASH` (`-- --choose` to pick one) |
+| `npm run sst:install`         | Download the Vercel provider (once, before first deploy)            |
+| `npm run deploy`              | Production deploy (loads `.env.sst`); `deploy:diff` to preview      |
+| `npm run deploy:preview`      | Deploy a preview stage                                              |
 
 `npm install` installs a pre-commit hook (husky + lint-staged) that formats and
 lints staged files. Contribution workflow: **[CONTRIBUTING.md](CONTRIBUTING.md)**.
