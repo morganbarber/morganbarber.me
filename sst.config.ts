@@ -19,15 +19,14 @@
  *   npm install
  *   npx sst install                       # downloads the Vercel provider
  *
- *   export VERCEL_API_TOKEN=...           # vercel.com/account/tokens
- *   export VERCEL_TEAM=...                # optional, team slug or ID
+ *   cp .env.sst.example .env.sst          # fill in the values
+ *   npm run deploy:diff                   # preview what will change
+ *   npm run deploy                        # sst deploy --stage production
  *
- *   cp .env.sst.example .env.sst          # fill in the values below
- *
- *   npx sst deploy --stage production
- *
- * Every value in `.env.sst` is read at deploy time and pushed to Vercel as a
- * project environment variable. Nothing is hardcoded here.
+ * The npm scripts load `.env.sst` with `node --env-file`. SST itself only
+ * auto-loads `.env` and `.env.<stage>`, so running `npx sst deploy` directly
+ * would NOT see `.env.sst` — use the scripts. Every value is pushed to Vercel
+ * as a project environment variable; nothing is hardcoded here.
  */
 
 // ---------------------------------------------------------------------------
@@ -44,8 +43,8 @@ function required(name: string): string {
   if (!value) {
     throw new Error(
       `${name} is not set.\n\n` +
-        `Copy .env.sst.example to .env.sst and fill it in, then re-run the deploy.\n` +
-        `SST loads .env and .env.<stage> automatically; anything already exported wins.`,
+        `Copy .env.sst.example to .env.sst and fill it in, then deploy with \`npm run deploy\`\n` +
+        `(the npm scripts load .env.sst; a bare \`npx sst deploy\` does not).`,
     );
   }
   return value;

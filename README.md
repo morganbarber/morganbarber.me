@@ -148,7 +148,7 @@ imports them.** CI enforces it.
 | `npm run audit:security`      | Fail on any high/critical dependency advisory                   |
 | `npm run admin:hash-password` | Generate a scrypt `ADMIN_PASSWORD_HASH`                         |
 | `npm run sst:install`         | Download the Vercel provider (once, before first deploy)        |
-| `npm run deploy`              | `sst deploy --stage production`                                 |
+| `npm run deploy`              | Production deploy (loads `.env.sst`); `deploy:diff` to preview  |
 | `npm run deploy:preview`      | Deploy a preview stage                                          |
 
 `npm install` installs a pre-commit hook (husky + lint-staged) that formats and
@@ -286,8 +286,13 @@ deployed; `apps/admin` is excluded three ways (see below).
 npx sst install                    # downloads the Vercel provider, once
 
 cp .env.sst.example .env.sst       # fill in credentials + app config
-npx sst deploy --stage production
+npm run deploy:diff                # preview
+npm run deploy                     # production
 ```
+
+Use the npm scripts: they load `.env.sst` with `node --env-file`. SST on its
+own only reads `.env` / `.env.<stage>`, so a bare `npx sst deploy` would not see
+it and fails with "NEXT_PUBLIC_SUPABASE_URL is not set".
 
 State is stored locally (`home: "local"` in `sst.config.ts`), so **no AWS
 account is required** — the only cloud credential is a Vercel API token. The

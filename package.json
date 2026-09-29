@@ -15,8 +15,8 @@
     "check:seo": "npm run check:seo --workspace portfolio-web",
     "check:supabase": "npm run check:supabase --workspace portfolio-web",
     "clean": "rm -rf node_modules .turbo apps/*/.next apps/*/.turbo packages/*/.turbo packages/*/dist",
-    "deploy": "sst deploy --stage production",
-    "deploy:preview": "sst deploy --stage preview",
+    "deploy": "node --env-file=.env.sst node_modules/.bin/sst deploy --stage production",
+    "deploy:preview": "node --env-file=.env.sst node_modules/.bin/sst deploy --stage preview",
     "dev": "turbo dev --filter=portfolio-web",
     "dev:admin": "turbo dev --filter=@repo/admin",
     "dev:all": "turbo dev",
@@ -25,12 +25,13 @@
     "lint": "turbo lint && eslint .",
     "prepare": "husky",
     "sst:install": "sst install",
-    "sst:remove": "sst remove",
+    "sst:remove": "node --env-file=.env.sst node_modules/.bin/sst remove",
     "test": "turbo test",
     "test:coverage": "node --experimental-strip-types --test --experimental-test-coverage --test-coverage-exclude='**/*.test.ts' --test-coverage-exclude='**/node_modules/**' --test-coverage-lines=80 --test-coverage-branches=80 --test-coverage-functions=65 --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info 'packages/*/src/*.test.ts' 'apps/*/lib/*.test.ts'",
     "type-check": "turbo type-check",
     "verify": "npm run format:check && npm run type-check && npm run lint && npm run test:coverage && npm run audit:security",
-    "check:deps": "node tooling/checks/bin/check-deps.mjs"
+    "check:deps": "node tooling/checks/bin/check-deps.mjs",
+    "deploy:diff": "node --env-file=.env.sst node_modules/.bin/sst diff --stage production"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
