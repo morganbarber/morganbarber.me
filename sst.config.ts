@@ -297,7 +297,7 @@ export default $config({
     const customDomain = optional("VERCEL_DOMAIN");
 
     if (isProduction && customDomain) {
-      new vercel.ProjectDomain("PortfolioDomain", {
+      const primaryDomain = new vercel.ProjectDomain("PortfolioDomain", {
         projectId: project.id,
         domain: customDomain,
       });
@@ -307,12 +307,19 @@ export default $config({
         ? customDomain.slice(4)
         : `www.${customDomain}`;
 
-      new vercel.ProjectDomain("PortfolioDomainRedirect", {
-        projectId: project.id,
-        domain: redirectFrom,
-        redirect: customDomain,
-        redirectStatusCode: 308,
-      });
+      new vercel.ProjectDomain(
+        "PortfolioDomainRedirect",
+        {
+          projectId: project.id,
+          domain: redirectFrom,
+          redirect: customDomain,
+          redirectStatusCode: 308,
+        },
+        // Nothing in the arguments references primaryDomain, so without this
+        // Pulumi creates both at once — and Vercel rejects a redirect to a
+        // domain not yet on the project ("Unable to redirect ... not added").
+        { dependsOn: [primaryDomain] },
+      );
     }
 
     return {
