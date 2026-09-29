@@ -10,6 +10,7 @@
     "./proxy": "./src/proxy.ts",
     "./rate-limit": "./src/rate-limit.ts",
     "./request": "./src/request.ts",
+    "./serialize": "./src/serialize.ts",
     "./url": "./src/url.ts"
   },
   "scripts": {

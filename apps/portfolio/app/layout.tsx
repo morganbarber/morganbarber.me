@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { jsonForScript } from "@repo/security/serialize";
 import { Oswald, JetBrains_Mono } from "next/font/google";
 import { headers } from "next/headers";
 import { Suspense } from "react";
@@ -35,12 +36,11 @@ const siteUrl = getSiteUrl();
  * If storage throws (locked-down profiles) it is skipped too: an intro that
  * replays on every navigation is worse than none.
  *
- * Built only from constants — nothing request-derived is interpolated — and it
+ * Built only from constants — nothing request-derived is interpolated, and the
+ * one interpolated value goes through `jsonForScript` regardless — and it
  * carries the per-request nonce, so it passes the strict CSP.
  */
-const INTRO_PREPAINT_SCRIPT = `(function(){var d=document.documentElement;function s(){d.setAttribute("data-intro-seen","")}try{var ua=navigator.userAgent||"";if(/bot|crawl|spider|slurp|lighthouse|pagespeed|chrome-lighthouse|headlesschrome|preview/i.test(ua)){return s()}if(/(^|\\.)(google|bing|duckduckgo|yahoo|ecosia|brave|startpage|yandex|baidu|qwant)\\./i.test((function(){try{return new URL(document.referrer).hostname}catch(e){return ""}})())){return s()}if(sessionStorage.getItem(${JSON.stringify(
-  INTRO_STORAGE_KEY,
-)})==="true"||matchMedia("(prefers-reduced-motion: reduce)").matches){s()}}catch(e){s()}})();`;
+const INTRO_PREPAINT_SCRIPT = `(function(){var d=document.documentElement;function s(){d.setAttribute("data-intro-seen","")}try{var ua=navigator.userAgent||"";if(/bot|crawl|spider|slurp|lighthouse|pagespeed|chrome-lighthouse|headlesschrome|preview/i.test(ua)){return s()}if(/(^|\\.)(google|bing|duckduckgo|yahoo|ecosia|brave|startpage|yandex|baidu|qwant)\\./i.test((function(){try{return new URL(document.referrer).hostname}catch(e){return ""}})())){return s()}if(sessionStorage.getItem(${jsonForScript(INTRO_STORAGE_KEY)})==="true"||matchMedia("(prefers-reduced-motion: reduce)").matches){s()}}catch(e){s()}})();`;
 
 /**
  * `display: "swap"` renders text immediately in the fallback face and swaps

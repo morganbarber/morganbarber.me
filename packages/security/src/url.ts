@@ -41,3 +41,15 @@ export function safeHref(value: string | null | undefined): string | null {
   if (isSafeExternalUrl(value)) return value;
   return null;
 }
+
+/**
+ * True when `value` is an http(s) URL whose host is one of `hosts` (a leading
+ * `www.` is ignored). Compares the parsed hostname: a substring or unanchored
+ * regex test also matches `https://evil.example/github.com` and
+ * `https://github.com.evil.example`.
+ */
+export function isUrlOnHost(value: string | null | undefined, hosts: readonly string[]): boolean {
+  if (!isSafeExternalUrl(value)) return false;
+  const host = new URL(value).hostname.toLowerCase().replace(/^www\./, "");
+  return hosts.includes(host);
+}

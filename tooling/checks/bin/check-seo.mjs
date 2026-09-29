@@ -34,11 +34,12 @@ const attr = (html, re) => html.match(re)?.[1] ?? null;
 const meta = (html, key) =>
   attr(html, new RegExp(`<meta[^>]+(?:name|property)="${key}"[^>]+content="([^"]*)"`)) ??
   attr(html, new RegExp(`<meta[^>]+content="([^"]*)"[^>]+(?:name|property)="${key}"`));
+// &amp; is decoded LAST: decoding it first would turn "&amp;quot;" into '"'.
 const decode = (s) =>
   s
-    ?.replace(/&amp;/g, "&")
-    .replace(/&#x27;|&#39;/g, "'")
-    .replace(/&quot;/g, '"');
+    ?.replace(/&#x27;|&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, "&");
 
 let failures = 0;
 const titles = new Map();
