@@ -16,6 +16,10 @@ npm run dev
 
 ## Workflow
 
+`main` is protected: nobody — including the owner — can push to it directly.
+Every change lands through a pull request, and **merging deploys to
+production** automatically once CI passes.
+
 1. Branch from `main`: `feat/…`, `fix/…`, `chore/…`.
 2. Commit. The pre-commit hook runs Prettier and ESLint on staged files only.
    `git commit --no-verify` skips it; CI will still run the same checks.
@@ -25,6 +29,12 @@ npm run dev
    [Conventional Commit](https://www.conventionalcommits.org/) — `feat(ui): …`,
    `fix(security): …` — because PRs are squash-merged and the title becomes the
    commit message.
+5. Merge once the required checks are green. The squash commit goes to `main`,
+   CI runs again, and `deploy.yml` ships it.
+
+Infrastructure changes (a new Vercel env var or domain) are not deployed by
+CI: apply them with `npm run deploy` locally **before** merging code that
+needs them.
 
 ## Where code goes
 

@@ -164,19 +164,21 @@ npm run check:headers -- https://morganbarber.me # production
 
 ### Continuous integration
 
-| Workflow       | Runs on          | What it gates                                                                                                       |
-| -------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `ci.yml`       | push, PR         | format, lint, types, workflow lint, tests + coverage, boundaries, build, smoke (headers + SEO against a real build) |
-| `security.yml` | push, PR, weekly | npm audit + signatures, SBOM, dependency review¹, gitleaks, secret-file scans                                       |
-| `codeql.yml`   | push, PR, weekly | CodeQL `security-extended`¹                                                                                         |
-| `pr-title.yml` | PR               | Conventional Commit PR titles                                                                                       |
+| Workflow       | Runs on              | What it gates                                                                                                       |
+| -------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `ci.yml`       | push, PR             | format, lint, types, workflow lint, tests + coverage, boundaries, build, smoke (headers + SEO against a real build) |
+| `security.yml` | push, PR, weekly     | npm audit + signatures, SBOM, dependency review, gitleaks, secret-file scans                                        |
+| `codeql.yml`   | push, PR, weekly     | CodeQL `security-extended`                                                                                          |
+| `pr-title.yml` | PR                   | Conventional Commit PR titles                                                                                       |
+| `deploy.yml`   | CI success on `main` | `vercel deploy --prod` of the tested commit, then headers + SEO checks against production                           |
 
-¹ Skipped while the repository is private: both need GitHub Advanced Security
-there, and run automatically once it is public.
+`main` is protected: every change goes through a pull request whose required
+checks pass; direct pushes, force pushes and deletion are blocked for everyone.
+Merging deploys. Infrastructure (Vercel project, env vars, domains) is still
+applied locally with `npm run deploy`
+([ADR 0008](docs/adr/0008-ci-deploys-code-sst-owns-infrastructure.md)).
 
-Actions are pinned by SHA and kept current by Dependabot. There is deliberately
-no deploy workflow: SST state is local
-([ADR 0004](docs/adr/0004-sst-local-state-vercel.md)).
+Actions are pinned by SHA and kept current by Dependabot.
 
 ---
 
