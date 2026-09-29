@@ -294,6 +294,12 @@ Use the npm scripts: they load `.env.sst` with `node --env-file`. SST on its
 own only reads `.env` / `.env.<stage>`, so a bare `npx sst deploy` would not see
 it and fails with "NEXT_PUBLIC_SUPABASE_URL is not set".
 
+The deployment carries the current commit's metadata, and on Vercel's Hobby
+plan a deployment is **blocked** unless the commit author's email belongs to a
+GitHub account linked to the Vercel account. This repo is configured to commit
+as that address (`git config --local user.email`); if a deploy shows as
+Blocked, check the author of `HEAD`.
+
 State is stored locally (`home: "local"` in `sst.config.ts`), so **no AWS
 account is required** — the only cloud credential is a Vercel API token. The
 trade-off is that `.sst/` holds the state and should be backed up, and
