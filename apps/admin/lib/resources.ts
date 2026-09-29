@@ -288,8 +288,8 @@ export const RESOURCES: ResourceDef[] = [
         label: "Certificate URL",
         type: "text",
         required: true,
-        placeholder: "/certifications/security-plus.pdf",
-        help: "An https:// URL, or a path starting with / for a file in the site's public folder.",
+        placeholder: "/certifications/comptia-security-plus.pdf",
+        help: "An https:// URL, or /certifications/<issuer>-<name>.pdf for a file in apps/portfolio/public/certifications. Redact candidate/account IDs before publishing a PDF.",
       },
       { name: "issued_on", label: "Issued on", type: "date", help: "Optional. YYYY-MM-DD." },
       {

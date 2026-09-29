@@ -65,3 +65,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+
+# Original certificate PDFs (unredacted: contain the CompTIA candidate ID).
+# Redacted copies are published from apps/portfolio/public/certifications.
+certs/

@@ -137,18 +137,21 @@ on conflict (id) do update set
 
 create unique index if not exists certifications_name_key on public.certifications (name);
 
-insert into public.certifications (name, file_url, issuer, published, sort_order)
+insert into public.certifications (name, file_url, issuer, issued_on, published, sort_order)
 values
-  ('CompTIA Security+',                               '/certifications/security-plus.pdf',                    'CompTIA',   true, 10),
-  ('CompTIA Network+',                                '/certifications/network-plus.pdf',                     'CompTIA',   true, 20),
-  ('CompTIA A+',                                      '/certifications/a-plus.pdf',                           'CompTIA',   true, 30),
-  ('CompTIA IT Operations Specialist',                '/certifications/it-operations-specialist.pdf',         'CompTIA',   true, 40),
-  ('CompTIA Secure Infrastructure Specialist',        '/certifications/secure-infrastructure-specialist.pdf', 'CompTIA',   true, 50),
-  ('Microsoft Office Specialist (Word/PowerPoint)',   '/certifications/mos.pdf',                              'Microsoft', true, 60),
-  ('PCEP - Certified Entry-Level Python Programmer',  '/certifications/pcep.pdf',                             'Python Institute', true, 70)
+  ('CompTIA Security+',                        '/certifications/comptia-security-plus.pdf',                    'CompTIA',          '2025-09-06', true, 10),
+  ('CompTIA Network+',                         '/certifications/comptia-network-plus.pdf',                     'CompTIA',          '2025-06-26', true, 20),
+  ('CompTIA A+',                               '/certifications/comptia-a-plus.pdf',                           'CompTIA',          '2025-01-11', true, 30),
+  ('CompTIA Secure Infrastructure Specialist', '/certifications/comptia-secure-infrastructure-specialist.pdf', 'CompTIA',          '2025-09-06', true, 40),
+  ('CompTIA IT Operations Specialist',         '/certifications/comptia-it-operations-specialist.pdf',         'CompTIA',          '2025-06-26', true, 50),
+  ('PCAP - Certified Associate Python Programmer',   '/certifications/python-institute-pcap.pdf',        'Python Institute', '2026-03-27', true, 60),
+  ('PCEP - Certified Entry-Level Python Programmer', '/certifications/python-institute-pcep.pdf',        'Python Institute', '2025-05-21', true, 70),
+  ('Microsoft Office Specialist: Associate (Word, PowerPoint, Excel)',
+                                               '/certifications/microsoft-office-specialist-associate.pdf',    'Microsoft',        '2026-02-09', true, 80)
 on conflict (name) do update set
   file_url   = excluded.file_url,
   issuer     = excluded.issuer,
+  issued_on  = excluded.issued_on,
   published  = excluded.published,
   sort_order = excluded.sort_order;
 
