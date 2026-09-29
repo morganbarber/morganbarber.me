@@ -4,15 +4,21 @@ import { motion } from "framer-motion";
 import GlitchHeading from "@repo/ui/glitch-heading";
 import { SERVICES } from "@repo/config/site";
 
+/**
+ * Capabilities as an engagement path rather than a grid of boxes: the phases
+ * run top to bottom in the order a real engagement does, joined by a single
+ * rail, each with the command it typically opens with. The heading column is
+ * sticky on large screens so the path scrolls past it.
+ */
 export default function ServicesSection() {
   return (
     <section className="bg-muted/5 py-24 lg:py-32 border-y border-muted">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-12 gap-16">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mb-16"
+          className="lg:col-span-4 lg:sticky lg:top-32 self-start"
         >
           <div className="flex items-center gap-4 mb-4">
             <div className="h-px bg-primary w-12" />
@@ -24,30 +30,49 @@ export default function ServicesSection() {
             className="text-4xl md:text-6xl"
             lineClassName={[undefined, "text-transparent text-stroke"]}
           />
+          <p className="mt-6 max-w-sm font-mono text-sm text-muted-foreground leading-relaxed">
+            The path an engagement takes, from agreeing the scope to handing over the fix.
+          </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-muted border border-muted">
+        <ol className="lg:col-span-8 relative">
+          {/* The rail: one continuous line behind every phase marker. */}
+          <span
+            aria-hidden="true"
+            className="absolute left-[19px] top-3 bottom-3 w-px bg-gradient-to-b from-primary via-muted to-transparent"
+          />
+
           {SERVICES.map((service, i) => (
-            <motion.div
+            <motion.li
               key={service.title}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="bg-background p-8 md:p-12 hover:bg-muted/10 transition-colors group relative overflow-hidden"
+              initial={{ opacity: 0, x: 24 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.45, delay: i * 0.05 }}
+              className="group relative grid grid-cols-[40px_1fr] gap-6 pb-12 last:pb-0"
             >
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
-                <span className="font-mono text-xs border border-foreground/20 px-2 py-1">
-                  SYS.0{i + 1}
-                </span>
+              <span
+                aria-hidden="true"
+                className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full border border-primary bg-background font-mono text-xs text-primary transition-colors group-hover:bg-primary group-hover:text-background"
+              >
+                {String(i + 1).padStart(2, "0")}
+              </span>
+
+              <div className="pt-1">
+                <h3 className="text-2xl md:text-3xl font-bold uppercase leading-tight transition-colors group-hover:text-primary">
+                  {service.title}
+                </h3>
+                <p className="mt-2 max-w-xl text-sm md:text-base text-muted-foreground leading-relaxed">
+                  {service.description}
+                </p>
+                <code className="mt-4 inline-flex max-w-full items-center gap-2 overflow-x-auto whitespace-nowrap font-mono text-xs text-muted-foreground/80">
+                  <span className="text-primary">$</span>
+                  {service.command}
+                </code>
               </div>
-              <h3 className="text-2xl font-bold uppercase mb-4 group-hover:text-primary transition-colors">
-                {service.title}
-              </h3>
-              <p className="text-sm text-muted-foreground">{service.description}</p>
-            </motion.div>
+            </motion.li>
           ))}
-        </div>
+        </ol>
       </div>
     </section>
   );

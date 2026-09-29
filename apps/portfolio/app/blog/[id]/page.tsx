@@ -153,12 +153,12 @@ export default async function BlogPostPage({ params }: Props) {
           >
             {"// More from the blog"}
           </h2>
-          <ul className="space-y-4 list-none m-0 p-0">
+          <ul className="list-none m-0 p-0 border-t border-muted">
             {morePosts.map((other) => (
               <li key={other.slug}>
                 <Link
                   href={`/blog/${other.slug}`}
-                  className="group flex items-start justify-between gap-6 border border-muted p-5 hover:border-primary transition-colors"
+                  className="group flex items-start justify-between gap-6 border-b border-muted py-5 transition-colors"
                 >
                   <span>
                     <span className="block font-bold uppercase group-hover:text-primary transition-colors">

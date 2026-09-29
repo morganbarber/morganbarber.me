@@ -26,39 +26,34 @@ export default function EducationSection({ education }: { education: EducationSu
           />
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Ruled rows with the years stamped large in outline type — a ledger,
+            not a grid of cards. */}
+        <ol className="border-t border-muted">
           {education.map((item, i) => (
-            <motion.div
+            <motion.li
               key={item.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="border border-muted p-8 relative overflow-hidden group hover:border-primary/50 transition-colors"
+              className="group grid gap-4 border-b border-muted py-10 md:grid-cols-[16rem_1fr] md:gap-12"
             >
-              <div className="absolute top-0 right-0 p-4 opacity-20">
-                <span className="font-mono text-xs border border-foreground/20 px-2 py-1">
-                  {i + 1}
-                </span>
-              </div>
+              <span className="font-sans text-4xl md:text-5xl font-bold uppercase leading-none tracking-tight text-transparent text-stroke transition-colors group-hover:text-primary/90">
+                {item.period}
+              </span>
 
-              <div className="mb-6">
-                <h3 className="text-xl md:text-2xl font-bold uppercase mb-2 group-hover:text-primary transition-colors">
+              <div>
+                <h3 className="text-xl md:text-2xl font-bold uppercase leading-tight transition-colors group-hover:text-primary">
                   {item.degree}
                 </h3>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-mono text-muted-foreground">
-                  <span className="text-primary">{item.school}</span>
-                  <span>{"//"}</span>
-                  <span>{item.period}</span>
-                </div>
+                <p className="mt-2 font-mono text-sm text-primary">{item.school}</p>
+                <p className="mt-4 max-w-2xl text-muted-foreground leading-relaxed text-sm md:text-base">
+                  {item.details}
+                </p>
               </div>
-
-              <p className="text-muted-foreground leading-relaxed text-sm md:text-base">
-                {item.details}
-              </p>
-            </motion.div>
+            </motion.li>
           ))}
-        </div>
+        </ol>
       </div>
     </section>
   );

@@ -25,57 +25,72 @@ export const SITE_CONFIG = {
 export interface Capability {
   title: string;
   description: string;
+  /** The command this phase typically opens with — shown on the engagement path. */
+  command: string;
 }
 
 /** Home page "capabilities" grid — ordered the way an engagement runs. */
 export const SERVICES: readonly Capability[] = [
   {
     title: "PENETRATION TESTING",
+    command: "cat rules-of-engagement.txt",
     description:
       "Scoped, methodical testing from first scan to final report, with findings written so they can actually be fixed.",
   },
   {
     title: "RECON & ENUMERATION",
+    command: "nmap -sC -sV -p- $TARGET",
     description:
       "Mapping the attack surface before touching it: ports, services, directories, subdomains and public information.",
   },
   {
     title: "WEB EXPLOITATION",
+    command: "ffuf -w common.txt -u http://$TARGET/FUZZ",
     description:
       "Finding and proving OWASP Top 10 flaws — injection, broken access control, authentication bypasses — with Burp Suite.",
   },
   {
     title: "PRIVILEGE ESCALATION",
+    command: "sudo -l && ./linpeas.sh",
     description:
       "Turning a foothold into root or SYSTEM on Linux and Windows through misconfigurations, weak permissions and vulnerable services.",
   },
   {
     title: "VULNERABILITY ASSESSMENT",
+    command: "nmap --script vuln $TARGET",
     description:
       "Auditing systems against frameworks like NIST — the work I did reviewing my school district's security.",
   },
   {
     title: "OFFENSIVE TOOLING",
+    command: "python3 scanner.py --target $TARGET",
     description:
       "Writing Python to automate the repetitive parts of an attack, like my own web vulnerability scanner.",
   },
 ];
 
-/** Home page toolkit grid, most-used first. */
-export const STACK = [
-  "KALI LINUX",
-  "NMAP",
-  "BURP SUITE",
-  "METASPLOIT",
-  "PYTHON",
-  "BASH",
-  "FFUF",
-  "NETCAT",
-  "SQLMAP",
-  "HASHCAT",
-  "WIRESHARK",
-  "LINPEAS",
-] as const;
+export type ToolKind = "recon" | "exploit" | "post" | "script" | "platform";
+
+export interface Tool {
+  name: string;
+  kind: ToolKind;
+}
+
+/** Home page toolkit, most-used first. `kind` colours it in the terminal listing. */
+export const STACK: readonly Tool[] = [
+  { name: "kali-linux", kind: "platform" },
+  { name: "nmap", kind: "recon" },
+  { name: "burp-suite", kind: "exploit" },
+  { name: "metasploit", kind: "exploit" },
+  { name: "python3", kind: "script" },
+  { name: "bash", kind: "script" },
+  { name: "ffuf", kind: "recon" },
+  { name: "netcat", kind: "post" },
+  { name: "sqlmap", kind: "exploit" },
+  { name: "hashcat", kind: "post" },
+  { name: "wireshark", kind: "recon" },
+  { name: "linpeas", kind: "post" },
+];
 
 export interface SkillGroup {
   title: string;
