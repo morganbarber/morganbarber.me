@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import GlitchHeading from "@repo/ui/glitch-heading";
+import SectionHeader from "@/components/section-header";
 import { SERVICES } from "@repo/config/site";
 
 /**
@@ -13,26 +13,19 @@ import { SERVICES } from "@repo/config/site";
 export default function ServicesSection() {
   return (
     <section className="bg-muted/5 py-24 lg:py-32 border-y border-muted">
-      <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-12 gap-16">
+      <div className="shell grid lg:grid-cols-12 gap-16">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="lg:col-span-4 lg:sticky lg:top-32 self-start"
         >
-          <div className="flex items-center gap-4 mb-4">
-            <div className="h-px bg-primary w-12" />
-            <span className="font-mono text-sm tracking-widest text-primary">CAPABILITIES</span>
-          </div>
-          <GlitchHeading
-            as="h2"
-            lines={["OFFENSIVE", "SECURITY"]}
-            className="text-4xl md:text-6xl"
-            lineClassName={[undefined, "text-transparent text-stroke"]}
+          <SectionHeader
+            eyebrow="CAPABILITIES"
+            title={["OFFENSIVE", "SECURITY"]}
+            intro="The path an engagement takes, from agreeing the scope to handing over the fix."
+            compact
           />
-          <p className="mt-6 max-w-sm font-mono text-sm text-muted-foreground leading-relaxed">
-            The path an engagement takes, from agreeing the scope to handing over the fix.
-          </p>
         </motion.div>
 
         <ol className="lg:col-span-8 relative">
@@ -53,7 +46,7 @@ export default function ServicesSection() {
             >
               <span
                 aria-hidden="true"
-                className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full border border-primary bg-background font-mono text-xs text-primary transition-colors group-hover:bg-primary group-hover:text-background"
+                className="node relative z-10 grid size-10 place-items-center font-mono text-xs text-primary group-hover:text-background"
               >
                 {String(i + 1).padStart(2, "0")}
               </span>

@@ -140,7 +140,7 @@ export default async function ProjectPage({ params }: Props) {
             >
               <MagneticButton>
                 <span className="flex items-center gap-2">
-                  VIEW CODE <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                  VIEW CODE <ExternalLink className="size-4" aria-hidden="true" />
                 </span>
               </MagneticButton>
             </a>

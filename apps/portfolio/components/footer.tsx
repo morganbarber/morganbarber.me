@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="border-t border-muted py-12 bg-background relative z-10">
-      <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+      <div className="shell flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="flex flex-col items-center md:items-start">
           <span className="font-sans text-xl font-bold tracking-tighter">morganbarber.me</span>
           <span className="font-mono text-xs text-muted-foreground mt-1">

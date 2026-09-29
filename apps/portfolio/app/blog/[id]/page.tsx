@@ -99,7 +99,7 @@ export default async function BlogPostPage({ params }: Props) {
             ) : null}
             {post.reading_minutes ? (
               <span className="inline-flex items-center gap-1 text-muted-foreground">
-                <Clock className="h-3 w-3" aria-hidden="true" />
+                <Clock className="size-3" aria-hidden="true" />
                 {post.reading_minutes} MIN READ
               </span>
             ) : null}
@@ -118,7 +118,7 @@ export default async function BlogPostPage({ params }: Props) {
             can see and follow is the concrete form of the "experience and
             expertise" signal search quality guidelines describe.
           */}
-          <p className="mt-6 font-mono text-xs uppercase tracking-widest text-muted-foreground">
+          <p className="mt-6 kicker">
             By{" "}
             <Link
               href="/about"
@@ -147,10 +147,7 @@ export default async function BlogPostPage({ params }: Props) {
 
       {morePosts.length > 0 ? (
         <aside aria-labelledby="more-posts" className="mt-20 border-t border-muted pt-10">
-          <h2
-            id="more-posts"
-            className="font-mono text-sm uppercase tracking-widest text-primary mb-6"
-          >
+          <h2 id="more-posts" className="eyebrow uppercase mb-6">
             {"// More from the blog"}
           </h2>
           <ul className="list-none m-0 p-0 border-t border-muted">
@@ -171,7 +168,7 @@ export default async function BlogPostPage({ params }: Props) {
                     ) : null}
                   </span>
                   <ArrowRight
-                    className="h-4 w-4 mt-1 shrink-0 text-muted-foreground group-hover:text-primary transition-colors"
+                    className="size-4 mt-1 shrink-0 text-muted-foreground group-hover:text-primary transition-colors"
                     aria-hidden="true"
                   />
                 </Link>

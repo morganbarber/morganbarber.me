@@ -27,11 +27,11 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full bg-primary text-background font-bold border border-primary px-6 py-4 font-mono text-sm uppercase tracking-widest transition-colors hover:bg-transparent hover:text-primary disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      className="btn btn-solid w-full font-bold disabled:cursor-not-allowed disabled:opacity-60"
     >
       {pending ? (
         <span className="flex items-center justify-center gap-2">
-          <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
+          <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
           TRANSMITTING...
         </span>
       ) : (
@@ -188,12 +188,12 @@ export default function ContactForm() {
       >
         {state.status === "success" ? (
           <span className="flex items-center gap-2 text-primary">
-            <CircleCheck className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <CircleCheck className="size-4 shrink-0" aria-hidden="true" />
             {state.message}
           </span>
         ) : state.status === "error" ? (
           <span className="flex items-center gap-2 text-secondary">
-            <TriangleAlert className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <TriangleAlert className="size-4 shrink-0" aria-hidden="true" />
             {state.message}
           </span>
         ) : null}

@@ -11,6 +11,10 @@
     "./base.css": {
       "style": "./base.css",
       "default": "./base.css"
+    },
+    "./components.css": {
+      "style": "./components.css",
+      "default": "./components.css"
     }
   },
   "peerDependencies": {

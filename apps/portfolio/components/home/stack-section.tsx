@@ -1,4 +1,4 @@
-import GlitchHeading from "@repo/ui/glitch-heading";
+import SectionHeader from "@/components/section-header";
 import { STACK, type ToolKind } from "@repo/config/site";
 
 /**
@@ -42,25 +42,19 @@ export default function StackSection() {
 
   return (
     <section className="bg-muted/5 py-24 lg:py-32 border-y border-muted">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="mb-12 text-right md:text-left">
-          <div className="flex items-center gap-4 mb-4 justify-end md:justify-start">
-            <span className="font-mono text-sm tracking-widest text-primary">ARSENAL</span>
-            <div className="h-px bg-primary w-12" />
-          </div>
-          <GlitchHeading
-            as="h2"
-            lines={["OFFENSIVE", "TOOLKIT"]}
-            className="text-4xl md:text-6xl"
-            lineClassName={[undefined, "text-transparent text-stroke"]}
-          />
-        </div>
+      <div className="shell">
+        <SectionHeader
+          eyebrow="ARSENAL"
+          title={["OFFENSIVE", "TOOLKIT"]}
+          align="end"
+          className="mb-12"
+        />
 
         <figure className="max-w-4xl overflow-hidden rounded-lg border border-muted bg-[#0b0b0b] shadow-[0_0_60px_-20px_rgba(0,255,65,0.25)]">
           <figcaption className="flex items-center gap-2 border-b border-muted px-4 py-3">
-            <span aria-hidden="true" className="h-3 w-3 rounded-full bg-secondary/80" />
-            <span aria-hidden="true" className="h-3 w-3 rounded-full bg-amber-300/80" />
-            <span aria-hidden="true" className="h-3 w-3 rounded-full bg-primary/80" />
+            <span aria-hidden="true" className="size-3 rounded-full bg-secondary/80" />
+            <span aria-hidden="true" className="size-3 rounded-full bg-amber-300/80" />
+            <span aria-hidden="true" className="size-3 rounded-full bg-primary/80" />
             <span className="ml-3 font-mono text-xs text-muted-foreground">
               morgan@kali: ~/arsenal
             </span>

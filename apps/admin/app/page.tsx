@@ -34,8 +34,8 @@ export default async function DashboardPage() {
       description="Everything on morganbarber.me, editable from here. Changes go live immediately."
     >
       {error ? (
-        <div className="mb-6 flex items-start gap-2 rounded border border-danger/40 bg-danger/5 px-4 py-3 text-danger">
-          <TriangleAlert className="h-4 w-4 mt-0.5 shrink-0" aria-hidden="true" />
+        <div className="mb-6 alert alert-danger">
+          <TriangleAlert className="size-4 mt-0.5 shrink-0" aria-hidden="true" />
           <div>
             <p className="font-bold">Could not reach the database</p>
             <p className="text-sm mt-1">{error}</p>
@@ -52,12 +52,12 @@ export default async function DashboardPage() {
             <Link
               key={resource.slug}
               href={`/content/${resource.slug}`}
-              className="group rounded border border-border bg-surface p-5 hover:border-primary transition-colors"
+              className="group card hover:border-primary transition-colors"
             >
               <div className="flex items-start justify-between gap-3">
                 <h2 className="font-bold">{resource.label}</h2>
                 <ArrowRight
-                  className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0"
+                  className="size-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0"
                   aria-hidden="true"
                 />
               </div>
@@ -66,12 +66,12 @@ export default async function DashboardPage() {
 
               <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
                 <span className="inline-flex items-center gap-1">
-                  <Eye className="h-3 w-3" aria-hidden="true" />
+                  <Eye className="size-3" aria-hidden="true" />
                   {stat?.published ?? 0} live
                 </span>
                 {drafts > 0 ? (
                   <span className="inline-flex items-center gap-1 text-primary">
-                    <EyeOff className="h-3 w-3" aria-hidden="true" />
+                    <EyeOff className="size-3" aria-hidden="true" />
                     {drafts} draft{drafts === 1 ? "" : "s"}
                   </span>
                 ) : null}
@@ -80,14 +80,11 @@ export default async function DashboardPage() {
           );
         })}
 
-        <Link
-          href="/messages"
-          className="group rounded border border-border bg-surface p-5 hover:border-primary transition-colors"
-        >
+        <Link href="/messages" className="group card hover:border-primary transition-colors">
           <div className="flex items-start justify-between gap-3">
             <h2 className="font-bold">Messages</h2>
             <Inbox
-              className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0"
+              className="size-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0"
               aria-hidden="true"
             />
           </div>

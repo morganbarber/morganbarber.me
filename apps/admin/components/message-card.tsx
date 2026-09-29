@@ -19,7 +19,7 @@ export default function MessageCard({ message }: { message: ContactMessage }) {
   const received = new Date(message.created_at);
 
   return (
-    <article className="rounded border border-border bg-surface p-5">
+    <article className="card">
       <header className="flex flex-wrap items-start justify-between gap-3 mb-3">
         <div className="min-w-0">
           <p className="font-bold break-words">{message.name}</p>
@@ -47,43 +47,32 @@ export default function MessageCard({ message }: { message: ContactMessage }) {
 
       <footer className="mt-4 pt-3 border-t border-border flex flex-wrap items-center gap-2">
         {message.status !== "read" ? (
-          <StatusButton id={message.id} status="read" icon={<CheckCheck className="h-3.5 w-3.5" />}>
+          <StatusButton id={message.id} status="read" icon={<CheckCheck className="size-3.5" />}>
             Mark read
           </StatusButton>
         ) : null}
 
         {message.status !== "new" ? (
-          <StatusButton id={message.id} status="new" icon={<Mail className="h-3.5 w-3.5" />}>
+          <StatusButton id={message.id} status="new" icon={<Mail className="size-3.5" />}>
             Mark unread
           </StatusButton>
         ) : null}
 
         {message.status !== "archived" ? (
-          <StatusButton
-            id={message.id}
-            status="archived"
-            icon={<Archive className="h-3.5 w-3.5" />}
-          >
+          <StatusButton id={message.id} status="archived" icon={<Archive className="size-3.5" />}>
             Archive
           </StatusButton>
         ) : null}
 
         {message.status !== "spam" ? (
-          <StatusButton
-            id={message.id}
-            status="spam"
-            icon={<ShieldAlert className="h-3.5 w-3.5" />}
-          >
+          <StatusButton id={message.id} status="spam" icon={<ShieldAlert className="size-3.5" />}>
             Spam
           </StatusButton>
         ) : null}
 
         <form action={removeMessage.bind(null, message.id)} className="ml-auto">
-          <button
-            type="submit"
-            className="inline-flex items-center gap-1.5 rounded border border-border px-2.5 py-1.5 text-xs text-muted-foreground hover:text-danger hover:border-danger transition-colors"
-          >
-            <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+          <button type="submit" className="btn btn-sm btn-ghost-danger">
+            <Trash2 className="size-3.5" aria-hidden="true" />
             Delete
           </button>
         </form>
@@ -105,10 +94,7 @@ function StatusButton({
 }) {
   return (
     <form action={updateMessageStatus.bind(null, id, status)}>
-      <button
-        type="submit"
-        className="inline-flex items-center gap-1.5 rounded border border-border px-2.5 py-1.5 text-xs text-muted-foreground hover:text-primary hover:border-primary transition-colors"
-      >
+      <button type="submit" className="btn btn-sm btn-ghost">
         <span aria-hidden="true">{icon}</span>
         {children}
       </button>

@@ -83,9 +83,9 @@ export default async function EditResourcePage({
               href={`${portfolioUrl}${livePath}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded border border-border px-3 py-2 text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+              className="btn btn-ghost px-3"
             >
-              <ExternalLink className="h-4 w-4" aria-hidden="true" />
+              <ExternalLink className="size-4" aria-hidden="true" />
               View live
             </a>
           ) : null}

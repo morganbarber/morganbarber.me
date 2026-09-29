@@ -1,4 +1,5 @@
 import { ArrowUpRight, Trophy } from "lucide-react";
+import { cn } from "@repo/ui/utils";
 import type { CompetitionSummary } from "@repo/types";
 
 /**
@@ -21,7 +22,7 @@ export default function CompetitionScoreboard({
     <div role="table" aria-label="Competitions" className="font-mono">
       <div
         role="row"
-        className={`hidden md:grid ${COLUMNS} gap-6 border-b border-primary/60 pb-3 text-xs uppercase tracking-widest text-muted-foreground`}
+        className={cn("kicker hidden gap-6 border-b border-primary/60 pb-3 md:grid", COLUMNS)}
       >
         <span role="columnheader">#</span>
         <span role="columnheader">Event</span>
@@ -34,12 +35,15 @@ export default function CompetitionScoreboard({
         <div
           key={c.id}
           role="row"
-          className={`group relative grid grid-cols-1 ${COLUMNS} gap-x-6 gap-y-2 border-b border-muted py-6 transition-colors hover:bg-primary/[0.03]`}
+          className={cn(
+            "group relative grid gap-x-6 gap-y-2 border-b border-muted py-6 transition-colors hover:bg-primary/[0.03]",
+            COLUMNS,
+          )}
         >
           {/* Accent that slides in on hover — the row, not a box, is the unit. */}
           <span
             aria-hidden="true"
-            className="absolute left-0 top-0 h-full w-0.5 origin-top scale-y-0 bg-primary transition-transform duration-300 group-hover:scale-y-100"
+            className="absolute inset-y-0 left-0 w-0.5 origin-top scale-y-0 bg-primary transition-transform duration-300 group-hover:scale-y-100"
           />
 
           <span role="cell" className="text-sm text-primary tabular-nums md:pl-3">
@@ -53,11 +57,11 @@ export default function CompetitionScoreboard({
                   href={c.link}
                   target="_blank"
                   rel="noopener noreferrer external"
-                  className="inline-flex items-start gap-2 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                  className="inline-flex items-start gap-2 transition-colors hover:text-primary"
                 >
                   {c.name}
                   <ArrowUpRight
-                    className="mt-1 h-4 w-4 shrink-0 opacity-40 transition-opacity group-hover:opacity-100"
+                    className="mt-1 size-4 shrink-0 opacity-40 transition-opacity group-hover:opacity-100"
                     aria-hidden="true"
                   />
                   <span className="sr-only">(opens in a new tab)</span>
@@ -96,7 +100,7 @@ export default function CompetitionScoreboard({
           <span role="cell" className="text-sm text-primary md:pt-1">
             {c.result ? (
               <span className="inline-flex items-start gap-2">
-                <Trophy className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                <Trophy className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                 {c.result}
               </span>
             ) : null}

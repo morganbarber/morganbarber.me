@@ -6,12 +6,12 @@ import type { BlogPostSummary } from "@repo/types";
 
 export default function BlogPage({ posts }: { posts: BlogPostSummary[] }) {
   return (
-    <main className="min-h-screen pt-32 px-6 max-w-7xl mx-auto">
+    <main className="min-h-screen pt-32 shell">
       <GlitchHeading
         as="h1"
         lines={["LATEST", "BLOG"]}
         className="text-5xl md:text-8xl leading-none"
-        lineClassName={[undefined, "text-transparent text-stroke"]}
+        lineClassName={[undefined, "text-stroke"]}
         wrapperClassName={"mb-8"}
       />
 
@@ -33,7 +33,7 @@ export default function BlogPage({ posts }: { posts: BlogPostSummary[] }) {
           >
             <Link
               href={`/blog/${post.slug}`}
-              className="group grid gap-4 py-10 md:grid-cols-[11rem_1fr_auto] md:gap-10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+              className="group grid gap-4 py-10 md:grid-cols-[11rem_1fr_auto] md:gap-10"
             >
               <div className="flex flex-row gap-4 md:flex-col md:gap-2 font-mono text-xs uppercase tracking-widest">
                 <span className="text-primary">{post.date}</span>
@@ -47,10 +47,10 @@ export default function BlogPage({ posts }: { posts: BlogPostSummary[] }) {
                   <p className="mt-4 text-muted-foreground leading-relaxed">{post.summary}</p>
                 ) : null}
               </article>
-              <span className="hidden md:flex items-center gap-2 self-center font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors group-hover:text-primary">
+              <span className="hidden md:flex items-center gap-2 self-center kicker transition-colors group-hover:text-primary">
                 Read log
                 <ArrowRight
-                  className="h-4 w-4 transition-transform group-hover:translate-x-1"
+                  className="size-4 transition-transform group-hover:translate-x-1"
                   aria-hidden="true"
                 />
               </span>

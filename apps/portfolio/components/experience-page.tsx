@@ -12,7 +12,7 @@ export default function ExperiencePage({
   competitions: CompetitionSummary[];
 }) {
   return (
-    <main className="min-h-screen pt-32 px-6 max-w-7xl mx-auto">
+    <main className="min-h-screen pt-32 shell">
       <GlitchText text="EXPERIENCE" className="text-5xl md:text-8xl block leading-none" />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
@@ -28,7 +28,7 @@ export default function ExperiencePage({
                 className="enter-slide relative"
                 style={{ animationDelay: `${index * 0.2}s` }}
               >
-                <div className="absolute -left-[37px] top-2 w-4 h-4 bg-background border-2 border-primary rounded-full group-hover:bg-primary transition-colors" />
+                <div className="node absolute top-2 -left-[37px] size-4 border-2" />
                 <div className="font-mono text-primary text-sm mb-2">{job.period}</div>
                 <h3 className="text-2xl md:text-3xl font-bold uppercase mb-2 leading-tight">
                   {job.role}
@@ -52,7 +52,7 @@ export default function ExperiencePage({
                 className="enter-rise border-b border-muted py-8"
                 style={{ animationDelay: `${0.2 + index * 0.2}s` }}
               >
-                <span className="block font-sans text-3xl font-bold uppercase leading-none tracking-tight text-transparent text-stroke">
+                <span className="block font-sans text-3xl font-bold uppercase leading-none tracking-tight text-stroke">
                   {edu.period}
                 </span>
                 <h3 className="mt-4 text-xl md:text-2xl font-bold uppercase leading-tight">

@@ -15,7 +15,7 @@ export default function HeroSection() {
               starts at first paint with no JavaScript at all.
             */}
       <div className="hero-rise relative z-10 text-center">
-        <p className="font-mono text-sm md:text-base text-primary mb-4 tracking-widest uppercase">
+        <p className="eyebrow md:text-base mb-4 uppercase">
           {"// "}
           {SITE_CONFIG.roleSubtitle}
         </p>
@@ -24,18 +24,18 @@ export default function HeroSection() {
           as="h1"
           lines={["MORGAN", "BARBER"]}
           className="text-6xl md:text-8xl lg:text-[10rem] leading-none"
-          lineClassName={["mb-2", "text-transparent text-stroke"]}
+          lineClassName={["mb-2", "text-stroke"]}
         />
       </div>
 
       <div className="hero-fade mt-12 flex flex-col md:flex-row gap-6 items-center">
         <Link href="/projects">
-          <MagneticButton className="bg-primary text-background hover:bg-transparent hover:text-primary border-primary font-bold text-lg px-8 py-4">
+          <MagneticButton variant="solid" size="lg" className="font-bold">
             PROJECTS
           </MagneticButton>
         </Link>
         <Link href="/contact">
-          <MagneticButton className="text-foreground border-foreground text-lg px-8 py-4">
+          <MagneticButton variant="outline" size="lg">
             CONTACT
           </MagneticButton>
         </Link>

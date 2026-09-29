@@ -1,0 +1,25 @@
+/*
+  Named utilities shared by every app. Import after tokens.css.
+
+  These exist so markup reads as intent ("shell", "kicker") instead of the
+  same five utilities copied onto every section. They are real Tailwind v4
+  utilities (@utility), so variants work (`md:kicker`) and they sort and
+  purge like built-ins.
+
+  Overriding one is safe (`shell py-24`, `btn px-8`): Tailwind v4 emits
+  multi-property utilities before single-property ones, so the more specific
+  class wins — verified against the built CSS. App-specific pieces (buttons,
+  cards) live in each app's globals.css, because the two apps style them
+  differently.
+*/
+
+/* Page-width container: every section's content column. `w-full` matters
+   inside flex parents, where `mx-auto` alone shrinks to content width. */
+@utility shell {
+  @apply mx-auto w-full max-w-7xl px-6;
+}
+
+/* Small mono caption: stat labels, table headers, metadata. */
+@utility kicker {
+  @apply font-mono text-xs uppercase tracking-widest text-muted-foreground;
+}

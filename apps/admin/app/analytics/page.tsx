@@ -27,8 +27,8 @@ export default async function AnalyticsPage() {
       description="Last 30 days. Visitors are counted by a salted hash of their IP — no raw addresses are ever stored."
     >
       {error ? (
-        <div className="flex items-start gap-2 rounded border border-danger/40 bg-danger/5 px-4 py-3 text-danger">
-          <TriangleAlert className="h-4 w-4 mt-0.5 shrink-0" aria-hidden="true" />
+        <div className="alert alert-danger">
+          <TriangleAlert className="size-4 mt-0.5 shrink-0" aria-hidden="true" />
           <span>{error}</span>
         </div>
       ) : !data ? null : (
@@ -117,7 +117,7 @@ export default async function AnalyticsPage() {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded border border-border bg-surface p-5">
+    <div className="card">
       <p className="text-xs uppercase tracking-widest text-muted-foreground">{label}</p>
       <p className="mt-2 text-3xl font-bold tabular-nums">{value.toLocaleString()}</p>
     </div>

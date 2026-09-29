@@ -17,15 +17,11 @@ function ConfirmButton() {
   const { pending } = useFormStatus();
 
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="inline-flex items-center gap-2 rounded border border-danger bg-danger/10 px-3 py-2 text-danger hover:bg-danger/20 disabled:opacity-60 transition-colors"
-    >
+    <button type="submit" disabled={pending} className="btn btn-danger px-3">
       {pending ? (
-        <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
+        <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
       ) : (
-        <Trash2 className="h-4 w-4" aria-hidden="true" />
+        <Trash2 className="size-4" aria-hidden="true" />
       )}
       {pending ? "Deleting…" : "Confirm delete"}
     </button>
@@ -46,12 +42,8 @@ export default function DeleteButton({
 
   if (!armed) {
     return (
-      <button
-        type="button"
-        onClick={() => setArmed(true)}
-        className="inline-flex items-center gap-2 rounded border border-border px-3 py-2 text-muted-foreground hover:text-danger hover:border-danger transition-colors"
-      >
-        <Trash2 className="h-4 w-4" aria-hidden="true" />
+      <button type="button" onClick={() => setArmed(true)} className="btn btn-ghost-danger px-3">
+        <Trash2 className="size-4" aria-hidden="true" />
         Delete
       </button>
     );

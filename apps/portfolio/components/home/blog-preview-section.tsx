@@ -6,7 +6,7 @@ import type { BlogPostSummary } from "@repo/types";
 export default function BlogPreviewSection({ posts }: { posts: BlogPostSummary[] }) {
   return (
     <section className="bg-foreground text-background py-24">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="shell">
         <div className="flex flex-col md:flex-row justify-between md:items-end mb-16 gap-6">
           <div>
             <h2 className="text-4xl md:text-8xl font-bold uppercase leading-none">
