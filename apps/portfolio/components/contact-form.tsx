@@ -24,18 +24,16 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="btn btn-solid w-full font-bold disabled:cursor-not-allowed disabled:opacity-60"
-    >
+    <button type="submit" disabled={pending} className="btn btn-primary w-full md:w-auto md:px-12">
       {pending ? (
         <span className="flex items-center justify-center gap-2">
           <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
-          TRANSMITTING...
+          Sending…
         </span>
       ) : (
-        "SEND TRANSMISSION"
+        <>
+          Send message <span aria-hidden="true">→</span>
+        </>
       )}
     </button>
   );
@@ -72,16 +70,10 @@ export default function ContactForm() {
 
   const fieldError = (field: "name" | "email" | "message") => state.fieldErrors?.[field];
 
-  const inputClass =
-    "w-full bg-background border border-muted p-4 outline-none transition-colors font-mono focus:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary aria-[invalid=true]:border-secondary";
+  const inputClass = "field";
 
   return (
-    <form
-      ref={formRef}
-      action={formAction}
-      className="space-y-6 bg-muted/5 p-8 border border-muted/20 backdrop-blur-sm"
-      noValidate
-    >
+    <form ref={formRef} action={formAction} className="space-y-10" noValidate>
       <input ref={renderedAtRef} type="hidden" name="renderedAt" defaultValue="0" />
 
       {/*
@@ -101,9 +93,12 @@ export default function ContactForm() {
         />
       </div>
 
-      <div className="space-y-2">
-        <label htmlFor="name" className="font-mono text-xs uppercase tracking-widest text-primary">
-          Identity <span aria-hidden="true">*</span>
+      <div className="space-y-1">
+        <label htmlFor="name" className="label">
+          name{" "}
+          <span aria-hidden="true" className="text-primary">
+            *
+          </span>
         </label>
         <input
           type="text"
@@ -112,21 +107,21 @@ export default function ContactForm() {
           required
           maxLength={120}
           autoComplete="name"
-          placeholder="NAME"
+          placeholder="Your name"
           aria-invalid={Boolean(fieldError("name"))}
           aria-describedby={fieldError("name") ? "name-error" : undefined}
           className={inputClass}
         />
         {fieldError("name") ? (
-          <p id="name-error" className="font-mono text-xs text-secondary">
+          <p id="name-error" className="text-sm text-secondary">
             {fieldError("name")}
           </p>
         ) : null}
       </div>
 
-      <div className="space-y-2">
-        <label htmlFor="email" className="font-mono text-xs uppercase tracking-widest text-primary">
-          Return Address
+      <div className="space-y-1">
+        <label htmlFor="email" className="label">
+          email
         </label>
         <input
           type="email"
@@ -134,28 +129,28 @@ export default function ContactForm() {
           name="email"
           maxLength={254}
           autoComplete="email"
-          placeholder="YOU@EXAMPLE.COM"
+          placeholder="you@example.com"
           aria-invalid={Boolean(fieldError("email"))}
           aria-describedby={fieldError("email") ? "email-error" : "email-hint"}
           className={inputClass}
         />
         {fieldError("email") ? (
-          <p id="email-error" className="font-mono text-xs text-secondary">
+          <p id="email-error" className="text-sm text-secondary">
             {fieldError("email")}
           </p>
         ) : (
-          <p id="email-hint" className="font-mono text-xs text-muted-foreground">
+          <p id="email-hint" className="text-sm text-muted-foreground">
             Optional — but I cannot reply without it.
           </p>
         )}
       </div>
 
-      <div className="space-y-2">
-        <label
-          htmlFor="message"
-          className="font-mono text-xs uppercase tracking-widest text-primary"
-        >
-          Transmission <span aria-hidden="true">*</span>
+      <div className="space-y-1">
+        <label htmlFor="message" className="label">
+          message{" "}
+          <span aria-hidden="true" className="text-primary">
+            *
+          </span>
         </label>
         <textarea
           id="message"
@@ -164,13 +159,13 @@ export default function ContactForm() {
           required
           minLength={10}
           maxLength={5000}
-          placeholder="ENTER MESSAGE..."
+          placeholder="What are you working on?"
           aria-invalid={Boolean(fieldError("message"))}
           aria-describedby={fieldError("message") ? "message-error" : undefined}
           className={`${inputClass} resize-none`}
         />
         {fieldError("message") ? (
-          <p id="message-error" className="font-mono text-xs text-secondary">
+          <p id="message-error" className="text-sm text-secondary">
             {fieldError("message")}
           </p>
         ) : null}

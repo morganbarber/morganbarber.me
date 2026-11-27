@@ -71,7 +71,7 @@ export default async function BlogPostPage({ params }: Props) {
     new Date(post.updated_at).getTime() - new Date(post.created_at).getTime() > 86_400_000;
 
   return (
-    <main className="min-h-screen pt-32 pb-24 px-6 max-w-3xl mx-auto">
+    <main className="shell max-w-4xl pt-32 pb-32 md:pt-40">
       <StructuredData
         data={graph(
           blogPostingNode(post),
@@ -88,14 +88,16 @@ export default async function BlogPostPage({ params }: Props) {
       />
 
       <article>
-        <header className="mb-10 border-b border-muted pb-8">
-          <div className="flex flex-wrap items-center gap-4 text-sm font-mono text-primary mb-4">
+        <header className="mb-14 border-b border-line pb-12">
+          <div className="mb-8 flex flex-wrap items-center gap-4 font-mono text-xs text-primary">
             {/* Machine-readable date alongside the stylised display date. */}
             <time dateTime={post.created_at}>
               {post.date ?? dateFormatter.format(new Date(post.created_at))}
             </time>
             {post.tag ? (
-              <span className="border border-muted px-2 py-1 rounded-full">{post.tag}</span>
+              <span className="rounded-full border border-line px-3 py-1">
+                #{post.tag.toLowerCase()}
+              </span>
             ) : null}
             {post.reading_minutes ? (
               <span className="inline-flex items-center gap-1 text-muted-foreground">
@@ -105,12 +107,14 @@ export default async function BlogPostPage({ params }: Props) {
             ) : null}
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-bold uppercase leading-tight mb-6">
-            {post.title}
+          <h1 data-split className="font-head mb-8 text-[clamp(2.5rem,6vw,4.75rem)] capitalize">
+            {post.title.toLowerCase()}
           </h1>
 
           {post.summary ? (
-            <p className="text-xl text-muted-foreground leading-relaxed">{post.summary}</p>
+            <p data-reveal className="text-xl leading-relaxed text-muted-foreground">
+              {post.summary}
+            </p>
           ) : null}
 
           {/*
@@ -118,7 +122,7 @@ export default async function BlogPostPage({ params }: Props) {
             can see and follow is the concrete form of the "experience and
             expertise" signal search quality guidelines describe.
           */}
-          <p className="mt-6 kicker">
+          <p className="mt-8 label">
             By{" "}
             <Link
               href="/about"
@@ -146,20 +150,20 @@ export default async function BlogPostPage({ params }: Props) {
       </article>
 
       {morePosts.length > 0 ? (
-        <aside aria-labelledby="more-posts" className="mt-20 border-t border-muted pt-10">
-          <h2 id="more-posts" className="eyebrow uppercase mb-6">
-            {"// More from the blog"}
+        <aside aria-labelledby="more-posts" className="mt-24 border-t border-line pt-10">
+          <h2 id="more-posts" className="mb-6 label">
+            more from the blog
           </h2>
-          <ul className="list-none m-0 p-0 border-t border-muted">
+          <ul className="m-0 list-none border-t border-line p-0">
             {morePosts.map((other) => (
               <li key={other.slug}>
                 <Link
                   href={`/blog/${other.slug}`}
-                  className="group flex items-start justify-between gap-6 border-b border-muted py-5 transition-colors"
+                  className="group flex items-start justify-between gap-6 border-b border-line py-6"
                 >
                   <span>
-                    <span className="block font-bold uppercase group-hover:text-primary transition-colors">
-                      {other.title}
+                    <span className="font-head block text-2xl capitalize transition-colors group-hover:text-primary">
+                      {other.title.toLowerCase()}
                     </span>
                     {other.summary ? (
                       <span className="block mt-2 text-sm text-muted-foreground">

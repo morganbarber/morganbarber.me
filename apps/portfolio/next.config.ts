@@ -55,7 +55,7 @@ const nextConfig: NextConfig = {
 
     // Rewrites `import { X } from "lucide-react"` to a direct deep import, so a
     // page using three icons does not pull the whole icon set into dev compiles.
-    optimizePackageImports: ["lucide-react", "framer-motion"],
+    optimizePackageImports: ["lucide-react"],
 
     serverActions: {
       /*
