@@ -31,6 +31,8 @@ export default function Cursor() {
 
     let state = "";
     let visible = false;
+    // Tracked here so tweens never have to read the ring's computed width.
+    let width = 36;
 
     const setState = (next: string, caption = "") => {
       if (next === state && text.textContent === caption) return;
@@ -40,13 +42,19 @@ export default function Cursor() {
       // theme tokens, including root mode; GSAP handles only the geometry.
       el.dataset.state = next;
       const scale = next === "label" ? 1 : next === "link" ? 1.9 : next === "hidden" ? 0 : 0.6;
-      gsap.to(el, {
-        scale,
-        width: next === "label" ? Math.max(84, caption.length * 9 + 36) : 36,
-        duration: 0.35,
-        ease: "power3.out",
-        overwrite: "auto",
-      });
+      const nextWidth = next === "label" ? Math.max(84, caption.length * 9 + 36) : 36;
+      gsap.fromTo(
+        el,
+        { width },
+        {
+          scale,
+          width: nextWidth,
+          duration: 0.35,
+          ease: "power3.out",
+          overwrite: "auto",
+        },
+      );
+      width = nextWidth;
       gsap.to(text, { autoAlpha: next === "label" ? 1 : 0, duration: 0.2 });
     };
 

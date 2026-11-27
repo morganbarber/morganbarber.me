@@ -13,6 +13,12 @@ import { isStatic, setLenis } from "@/lib/motion";
  * ScrollTrigger. Two independent loops is what makes scrubbed animations
  * shimmer half a frame behind the scroll position.
  *
+ * Lenis runs FIRST in each tick (the `prioritize` flag). Its scroll write
+ * and ScrollTrigger's scroll read then happen before any tween has written a
+ * style that frame; run after the tweens, the same write forced a full style
+ * and layout recalculation of the page on every frame of scrolling (measured:
+ * ~2.4 s of main-thread time per 8 s of scroll at 4x CPU throttle).
+ *
  * Lag smoothing is disabled because Lenis already integrates time; with it on,
  * a long frame makes GSAP pretend less time passed than Lenis did, and pinned
  * sections drift against the content.
@@ -25,9 +31,10 @@ export default function SmoothScroll() {
     if (isStatic()) return;
 
     const lenis = new Lenis({
-      duration: 1.15,
+      duration: 0.95,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
+      // A touch quicker than the default: long smoothing reads as input lag.
       // Touch keeps native momentum; Lenis on touch feels laggy.
       syncTouch: false,
     });
@@ -35,7 +42,7 @@ export default function SmoothScroll() {
 
     lenis.on("scroll", ScrollTrigger.update);
     const tick = (time: number) => lenis.raf(time * 1000);
-    gsap.ticker.add(tick);
+    gsap.ticker.add(tick, false, true);
     gsap.ticker.lagSmoothing(0);
 
     return () => {

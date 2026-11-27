@@ -30,7 +30,8 @@ export default function ScrollEffects() {
   const pathname = usePathname();
 
   useGSAP(
-    () => {
+    (_context, contextSafe) => {
+      if (!contextSafe) return;
       if (isStatic()) {
         releaseAnimPending();
         return;
@@ -40,24 +41,44 @@ export default function ScrollEffects() {
       const all = <T extends Element = HTMLElement>(selector: string) =>
         Array.from(root.querySelectorAll<T & Element>(selector)) as T[];
 
-      // Headings: masked line (or char) reveal. autoSplit re-splits when the
-      // webfont swaps in or the width changes, and onSplit hands the new
-      // animation back so it resumes at the right progress.
+      // Headings: masked line (or char) reveal.
+      //
+      // Split lazily: a heading is held invisible until it nears the viewport,
+      // split then, revealed, and restored to plain text when the reveal ends.
+      // Splitting every heading at mount measured as a layout pass per heading
+      // inside the load-time long task, and left hundreds of transformed
+      // spans in the DOM for the rest of the visit.
       for (const el of all<HTMLElement>("[data-split]")) {
         const chars = el.dataset.split === "chars";
-        SplitText.create(el, {
-          type: chars ? "lines,chars" : "lines",
-          mask: "lines",
-          autoSplit: true,
-          onSplit(self) {
-            return gsap.from(chars ? self.chars : self.lines, {
-              yPercent: 115,
-              rotate: chars ? 6 : 2,
+        gsap.set(el, { autoAlpha: 0 });
+        const reveal = contextSafe(() => {
+          const split = SplitText.create(el, {
+            type: chars ? "lines,chars" : "lines",
+            mask: "lines",
+          });
+          gsap.set(el, { autoAlpha: 1 });
+          // fromTo, not from: explicit end values mean GSAP never reads the
+          // fresh spans' computed style, which forced a layout mid-scroll.
+          gsap.fromTo(
+            chars ? split.chars : split.lines,
+            { yPercent: 115, rotate: chars ? 6 : 2 },
+            {
+              yPercent: 0,
+              rotate: 0,
               duration: chars ? 1 : 1.15,
               stagger: chars ? 0.022 : 0.09,
-              scrollTrigger: { trigger: el, start: "top 88%", once: true },
-            });
-          },
+              onComplete: () => split.revert(),
+            },
+          );
+        });
+        ScrollTrigger.create({
+          trigger: el,
+          // clamp(): a heading too near the end of the page to ever reach
+          // 90% still triggers instead of staying hidden.
+          start: "clamp(top 90%)",
+          once: true,
+          // Wait for the webfont so lines are measured in the real face.
+          onEnter: () => void document.fonts.ready.then(reveal),
         });
       }
 
@@ -68,13 +89,11 @@ export default function ScrollEffects() {
           start: "top 90%",
           once: true,
           onEnter: (batch) =>
-            gsap.to(batch, {
-              autoAlpha: 1,
-              y: 0,
-              duration: 1,
-              stagger: 0.08,
-              overwrite: true,
-            }),
+            gsap.fromTo(
+              batch,
+              { autoAlpha: 0, y: 48 },
+              { autoAlpha: 1, y: 0, duration: 1, stagger: 0.08, overwrite: true },
+            ),
         });
       }
 
@@ -105,13 +124,16 @@ export default function ScrollEffects() {
       }
 
       for (const el of all<HTMLElement>("[data-draw]")) {
-        gsap.from(el, {
-          scaleX: 0,
-          transformOrigin: "left center",
-          duration: 1.4,
-          ease: "mb.inOut",
-          scrollTrigger: { trigger: el, start: "top 92%", once: true },
-        });
+        gsap.fromTo(
+          el,
+          { scaleX: 0, transformOrigin: "left center" },
+          {
+            scaleX: 1,
+            duration: 1.4,
+            ease: "mb.inOut",
+            scrollTrigger: { trigger: el, start: "top 92%", once: true },
+          },
+        );
       }
 
       for (const el of all<HTMLElement>("[data-parallax]")) {

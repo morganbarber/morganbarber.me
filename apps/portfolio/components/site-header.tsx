@@ -42,12 +42,19 @@ export default function SiteHeader() {
       const el = header.current;
       if (!el) return;
       let hidden = false;
+      let scrolled = false;
 
       ScrollTrigger.create({
         start: 0,
         end: "max",
         onUpdate: (self) => {
-          el.toggleAttribute("data-scrolled", self.scroll() > 40);
+          // Written only when it flips: an attribute write every frame is a
+          // style invalidation every frame.
+          const nowScrolled = self.scroll() > 40;
+          if (nowScrolled !== scrolled) {
+            scrolled = nowScrolled;
+            el.toggleAttribute("data-scrolled", scrolled);
+          }
           if (isStatic()) return;
           const shouldHide = self.direction === 1 && self.scroll() > 240;
           if (shouldHide === hidden) return;

@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
-import { gsap, useGSAP, Flip } from "@/lib/gsap";
+import { gsap, useGSAP } from "@/lib/gsap";
+import type { Flip as FlipPlugin } from "gsap/Flip";
 import { hasFinePointer, isStatic } from "@/lib/motion";
 import type { ProjectSummary } from "@repo/types";
 
@@ -27,7 +28,8 @@ export default function ProjectList({
   const preview = useRef<HTMLDivElement>(null);
   const [filter, setFilter] = useState<string>("all");
   const [hovered, setHovered] = useState<ProjectSummary | null>(null);
-  const flipState = useRef<Flip.FlipState | null>(null);
+  const flipState = useRef<ReturnType<typeof FlipPlugin.getState> | null>(null);
+  const flip = useRef<typeof FlipPlugin | null>(null);
 
   const categories = useMemo(
     () => ["all", ...new Set(projects.map((p) => p.category.toLowerCase()))],
@@ -72,10 +74,16 @@ export default function ProjectList({
     });
   };
 
-  const choose = (next: string) => {
+  const choose = async (next: string) => {
     if (next === filter) return;
     if (!isStatic() && root.current) {
-      flipState.current = Flip.getState(root.current.querySelectorAll("[data-project]"));
+      // Loaded on first use: only this filter needs Flip.
+      if (!flip.current) {
+        const { Flip } = await import("gsap/Flip");
+        gsap.registerPlugin(Flip);
+        flip.current = Flip;
+      }
+      flipState.current = flip.current.getState(root.current.querySelectorAll("[data-project]"));
     }
     setFilter(next);
   };
@@ -84,7 +92,8 @@ export default function ProjectList({
   useGSAP(
     () => {
       const state = flipState.current;
-      if (!state) return;
+      const Flip = flip.current;
+      if (!state || !Flip) return;
       flipState.current = null;
       Flip.from(state, {
         duration: 0.7,
@@ -112,7 +121,7 @@ export default function ProjectList({
               key={category}
               type="button"
               aria-pressed={filter === category}
-              onClick={() => choose(category)}
+              onClick={() => void choose(category)}
               className={`rounded-full border px-4 py-2 font-mono text-xs transition-colors ${
                 filter === category
                   ? "border-primary bg-primary text-background"
