@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import HomePage from "@/components/home-page";
 import StructuredData from "@/components/structured-data";
-import { getHomePageData } from "@repo/data/content";
+import { getCertifications, getHomePageData } from "@repo/data/content";
 import { getHackTheBoxStats } from "@repo/data/hackthebox";
 import { SITE_CONFIG } from "@repo/config/site";
 import { pageMetadata } from "@/lib/seo";
@@ -19,10 +19,8 @@ export default async function Home() {
   // Independent reads, fetched together: the HackTheBox call is cached for six
   // hours but a cold miss is a network round trip that should not queue
   // behind the database.
-  const [{ posts, projects, experience, education, competitions }, hackTheBox] = await Promise.all([
-    getHomePageData(),
-    getHackTheBoxStats(),
-  ]);
+  const [{ posts, projects, experience, education, competitions }, hackTheBox, certifications] =
+    await Promise.all([getHomePageData(), getHackTheBoxStats(), getCertifications()]);
 
   return (
     <>
@@ -34,6 +32,7 @@ export default async function Home() {
         education={education}
         hackTheBox={hackTheBox}
         competitions={competitions}
+        certifications={certifications.data}
       />
     </>
   );

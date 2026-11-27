@@ -78,8 +78,8 @@ export function buildCsp({ nonce, isDev }: CspOptions): string {
       Dev keeps `'unsafe-inline'` because the HMR overlay injects unnonced
       style elements.
 
-      `style-src-attr` stays permissive because framer-motion animates through
-      element `style` attributes — 37 of them on the home page alone. Attribute
+      `style-src-attr` stays permissive because GSAP animates through
+      element `style` attributes (and SplitText and pinning write them too). Attribute
       styles cannot contain selectors, so they carry none of the exfiltration
       risk a `<style>` element does.
     */

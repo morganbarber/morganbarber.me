@@ -4,12 +4,6 @@
   "private": true,
   "exports": {
     "./utils": "./src/utils.ts",
-    "./glitch-text": "./src/components/glitch-text.tsx",
-    "./magnetic-button": "./src/components/magnetic-button.tsx",
-    "./loader": "./src/components/loader.tsx",
-    "./smooth-scroll": "./src/components/smooth-scroll.tsx",
-    "./scroll-progress": "./src/components/scroll-progress.tsx",
-    "./glitch-heading": "./src/components/glitch-heading.tsx",
     "./intro": "./src/intro.ts"
   },
   "scripts": {
@@ -18,9 +12,6 @@
   },
   "dependencies": {
     "clsx": "^2.1.1",
-    "framer-motion": "^13.4.1",
-    "lenis": "^1.3.26",
-    "lucide-react": "^1.47.0",
     "react": "^19",
     "react-dom": "^19",
     "tailwind-merge": "^3.7.0"

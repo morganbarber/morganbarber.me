@@ -53,7 +53,7 @@ injected `<style>` to run. CSS injection is a genuine exfiltration primitive
 (attribute selectors plus `background: url()` leak input values character by
 character) and a UI-redressing one, so it is worth closing.
 
-`style-src-attr` stays permissive because framer-motion animates through element
+`style-src-attr` stays permissive because GSAP animates through element
 `style` attributes — 37 on the home page alone. Attribute styles cannot contain
 selectors, so they carry none of that risk.
 

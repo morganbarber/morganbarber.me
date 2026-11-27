@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import GlitchHeading from "@repo/ui/glitch-heading";
 
 /**
  * Route-level error boundary.
@@ -26,33 +25,22 @@ export default function Error({
   }, [error]);
 
   return (
-    <main className="splash">
-      <div className="relative z-10 flex flex-col items-center text-center space-y-8 max-w-xl">
-        <div className="space-y-2">
-          <p className="font-mono text-sm md:text-base text-secondary tracking-widest uppercase">
-            {"// ERROR_CODE_500"}
-          </p>
-          <GlitchHeading
-            as="h1"
-            lines={["SYSTEM", "FAULT"]}
-            className="text-5xl md:text-7xl leading-none"
-            lineClassName={[undefined, "text-stroke"]}
-          />
-        </div>
-
-        <div className="log-block w-full border-secondary/50 [--log-accent:var(--secondary)]">
-          <p>Something failed while rendering this page.</p>
-          {error.digest ? <p className="break-all">Reference: {error.digest}</p> : null}
-        </div>
-
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <button type="button" onClick={reset} className="btn btn-solid px-8 font-bold">
-            RETRY
-          </button>
-          <Link href="/" className="btn btn-quiet px-8">
-            RETURN HOME
-          </Link>
-        </div>
+    <main className="shell flex min-h-[100svh] flex-col justify-center pt-28 pb-20">
+      <p className="mb-6 label">
+        <span className="text-secondary">error</span> / http 500
+      </p>
+      <h1 className="font-display text-[clamp(4rem,14vw,12rem)] leading-[0.85]">Fault.</h1>
+      <div className="mt-10 max-w-lg space-y-1 font-mono text-sm text-muted-foreground">
+        <p>Something failed while rendering this page.</p>
+        {error.digest ? <p className="break-all">reference: {error.digest}</p> : null}
+      </div>
+      <div className="mt-10 flex flex-wrap gap-4">
+        <button type="button" onClick={reset} className="btn btn-primary">
+          Retry
+        </button>
+        <Link href="/" className="btn btn-ghost">
+          Back home
+        </Link>
       </div>
     </main>
   );

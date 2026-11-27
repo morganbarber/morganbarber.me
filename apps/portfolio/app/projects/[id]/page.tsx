@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ExternalLink } from "lucide-react";
-import MagneticButton from "@repo/ui/magnetic-button";
 import { getProject, getProjectIds } from "@repo/data/content";
 import Prose from "@/components/prose";
 import Breadcrumbs from "@/components/breadcrumbs";
@@ -75,7 +73,7 @@ export default async function ProjectPage({ params }: Props) {
   const safeLink = isSafeExternalUrl(project.link) ? project.link : null;
 
   return (
-    <main className="min-h-screen pt-32 pb-24 px-6 max-w-3xl mx-auto">
+    <main className="shell max-w-5xl pt-32 pb-32 md:pt-40">
       <StructuredData
         data={graph(
           projectNode(project),
@@ -96,59 +94,62 @@ export default async function ProjectPage({ params }: Props) {
       />
 
       <article>
-        <header className="mb-10 border-b border-muted pb-8">
-          <div className="flex flex-wrap items-center gap-4 text-sm font-mono text-primary mb-6">
-            <span className="text-muted-foreground">
-              {"// "}
-              {project.id}
+        <header className="mb-16 border-b border-line pb-12">
+          <div className="mb-8 flex flex-wrap items-center gap-3 font-mono text-xs">
+            <span className="text-muted-foreground">project {project.id}</span>
+            <span className="rounded-full bg-primary/10 px-3 py-1 text-primary">
+              {project.category.toLowerCase()}
             </span>
-            <span className="px-2 py-1 bg-primary/10 rounded text-xs">{project.category}</span>
-            <span className="px-2 py-1 border border-muted rounded text-xs text-muted-foreground">
-              {project.status}
+            <span className="rounded-full border border-line px-3 py-1 text-muted-foreground">
+              {project.status.toLowerCase()}
             </span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-bold uppercase leading-tight mb-6">
+          <h1
+            data-split="chars"
+            className="font-display text-[clamp(3rem,9vw,7.5rem)] leading-[0.88]"
+          >
             {project.title}
           </h1>
 
-          <p className="text-xl text-muted-foreground leading-relaxed mb-8">
+          <p data-reveal className="mt-10 max-w-2xl text-xl leading-relaxed text-muted-foreground">
             {project.description}
           </p>
 
-          {project.tags.length > 0 ? (
-            <ul className="flex flex-wrap gap-2 mb-8 list-none p-0">
-              {project.tags.map((tag) => (
-                <li
-                  key={tag}
-                  className="text-xs font-mono border border-primary/30 px-2 py-1 rounded text-primary/80"
-                >
-                  {tag}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-
-          {safeLink ? (
-            <a
-              href={safeLink}
-              target="_blank"
-              /* noopener severs window.opener; noreferrer also withholds the
-                 referring URL from the destination. */
-              rel="noopener noreferrer external"
-              className="inline-block"
-            >
-              <MagneticButton>
-                <span className="flex items-center gap-2">
-                  VIEW CODE <ExternalLink className="size-4" aria-hidden="true" />
-                </span>
-              </MagneticButton>
-            </a>
-          ) : null}
+          <div data-reveal className="mt-10 flex flex-wrap items-center gap-6">
+            {safeLink ? (
+              <a
+                href={safeLink}
+                target="_blank"
+                /* noopener severs window.opener; noreferrer also withholds the
+                   referring URL from the destination. */
+                rel="noopener noreferrer external"
+                className="btn btn-primary"
+              >
+                View code <span aria-hidden="true">↗</span>
+              </a>
+            ) : null}
+            {project.tags.length > 0 ? (
+              <ul className="flex list-none flex-wrap gap-2 p-0">
+                {project.tags.map((tag) => (
+                  <li
+                    key={tag}
+                    className="rounded-full border border-line px-3 py-1 font-mono text-xs text-muted-foreground"
+                  >
+                    {tag.toLowerCase()}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
         </header>
 
-        <h2 className="text-2xl font-bold text-foreground mb-4 uppercase">Project Overview</h2>
-        <Prose content={project.content} />
+        <div className="grid gap-10 md:grid-cols-[12rem_minmax(0,1fr)]">
+          <h2 className="label">project overview</h2>
+          <div data-reveal>
+            <Prose content={project.content} />
+          </div>
+        </div>
       </article>
     </main>
   );

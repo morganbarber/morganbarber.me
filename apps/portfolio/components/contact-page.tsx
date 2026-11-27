@@ -1,61 +1,63 @@
-import GlitchHeading from "@repo/ui/glitch-heading";
 import { SOCIAL_LINKS, SITE_CONFIG } from "@repo/config/site";
 import ContactForm from "@/components/contact-form";
+import CopyButton from "@/components/copy-button";
+import PageIntro from "@/components/page-intro";
+import LocalTime from "@/components/local-time";
+import { socialLabel } from "@/lib/site-nav";
 
 /**
- * Server component. Only the form itself needs interactivity, so only the form
- * ships JavaScript — the previous version marked the whole page "use client"
- * and pulled framer-motion into the bundle for a page with no animation.
+ * Server component. Only the form and the copy button ship JavaScript.
  */
 export default function ContactPage() {
   return (
-    <main className="min-h-screen pt-32 pb-24 shell flex flex-col justify-center">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <div>
-          <GlitchHeading
-            as="h1"
-            lines={["CONTACT", "FORM"]}
-            className="text-5xl md:text-7xl leading-none"
-            lineClassName={[undefined, "text-stroke"]}
-            wrapperClassName={"mb-8"}
-          />
+    <main>
+      <PageIntro
+        path="/contact"
+        title="Say hello"
+        lede="Open to internships, collaboration and security research conversations. I reply within a day."
+      />
 
-          <p className="font-mono text-muted-foreground max-w-md mb-8">
-            Open to internships, collaboration and security research conversations. Response time:
-            &lt; 24 hours.
-          </p>
-
-          <div className="font-mono text-lg">
-            <p className="text-primary mb-2">{"// EMAIL"}</p>
-            <a
-              href={`mailto:${SITE_CONFIG.email}`}
-              className="hover:text-primary transition-colors text-2xl break-all"
-            >
-              {SITE_CONFIG.email}
-            </a>
+      <section className="shell grid gap-16 pb-32 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+        <div className="space-y-10">
+          <div data-reveal>
+            <p className="mb-3 label">email</p>
+            <CopyButton
+              value={SITE_CONFIG.email}
+              label="Email copied"
+              className="link-draw text-left text-2xl break-all text-primary md:text-3xl"
+            />
+            <p className="mt-2 text-sm text-muted-foreground">Click to copy, or use the form.</p>
           </div>
-
-          <div className="font-mono text-lg mt-8">
-            <p className="text-primary mb-2">{"// SOCIALS"}</p>
-            <ul className="flex flex-col gap-2 list-none p-0">
+          <div data-reveal>
+            <p className="mb-3 label">elsewhere</p>
+            <ul className="space-y-2">
               {SOCIAL_LINKS.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer external"
-                    className="hover:text-primary transition-colors text-xl w-fit inline-block"
+                    className="link-draw text-xl"
                   >
-                    {link.name}
+                    {socialLabel(link.name)}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
+          <div data-reveal>
+            <p className="mb-3 label">my local time</p>
+            <p className="font-mono text-xl">
+              <LocalTime />
+            </p>
+            <p className="text-sm text-muted-foreground">{SITE_CONFIG.location}</p>
+          </div>
         </div>
 
-        <ContactForm />
-      </div>
+        <div data-reveal>
+          <ContactForm />
+        </div>
+      </section>
     </main>
   );
 }

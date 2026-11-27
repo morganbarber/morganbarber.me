@@ -2,303 +2,451 @@
 @import "@repo/tailwind-config/tokens.css";
 @import "@repo/tailwind-config/base.css";
 @import "@repo/tailwind-config/components.css";
-@source "../../../packages/ui/src/**/*";
+
+/*
+  morganbarber.me — design system.
+
+  Dark, quiet and technical: a near-black field, a warm off-white ink, and one
+  signal colour (vermilion — red team) that is spent only on what matters.
+  Archivo carries everything set in prose and display (its width axis is opened
+  up for the big type); JetBrains Mono is the material of the terminal and the
+  labels. Motion is GSAP throughout; this file only holds the resting states.
+
+  The shared tokens.css defines the names; the values are overridden here so
+  the admin app keeps its own look.
+*/
 
 @theme {
-  --font-sans: var(--font-oswald), Impact, Haettenschweiler, ui-sans-serif, system-ui;
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-line: var(--line);
+  --color-kind-recon: var(--kind-recon);
+  --color-kind-exploit: var(--kind-exploit);
+  --color-kind-post: var(--kind-post);
+  --color-kind-script: var(--kind-script);
+}
+
+:root {
+  --background: #08090b;
+  --foreground: #ecebe6;
+  --surface: #101115;
+  --border: #23252b;
+  --muted: #17181c;
+  /* #8e9098 on #08090b ≈ 6.6:1 — clears WCAG AA for body text. */
+  --muted-foreground: #8e9098;
+  --line: rgb(236 235 230 / 0.1);
+
+  /* Vermilion: the one signal colour. */
+  --primary: #ff5a36;
+  /* Errors and "danger" states. */
+  --secondary: #ff4d6d;
+  --accent: #7dd3fc;
+
+  /* The arsenal legend, coloured the way `ls --color` colours by type. */
+  --kind-recon: #7dd3fc;
+  --kind-exploit: var(--primary);
+  --kind-post: #c4a7ff;
+  --kind-script: #f5c46b;
+}
+
+/* Root mode (the easter egg): the old site's phosphor green comes back. */
+html[data-root] {
+  --primary: #3dff7a;
+  --kind-exploit: #3dff7a;
+}
+
+/* ------------------------------------------------------------------------- */
+/* Base                                                                       */
+/* ------------------------------------------------------------------------- */
+
+html,
+body {
+  overflow-x: clip;
+}
+
+html {
+  scroll-padding-top: 6rem;
+  scrollbar-gutter: stable;
+  background: var(--background);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-mono);
-  /* Brutalist cursor — deliberate. */
-  cursor: crosshair;
-  /* Stops iOS inflating font sizes on rotation. */
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
   -webkit-text-size-adjust: 100%;
+  font-kerning: normal;
 }
 
-/* Typing in a field with a crosshair cursor is needlessly hostile. */
-input,
-textarea,
-select {
-  cursor: text;
+h1,
+h2,
+h3,
+h4,
+p {
+  overflow-wrap: break-word;
+  min-width: 0;
 }
 
-button,
-a,
-[role="button"] {
-  cursor: pointer;
+::selection {
+  background: var(--primary);
+  color: var(--background);
 }
 
-/*
-  Anchor targets clear the fixed header instead of hiding behind it.
-
-  `scroll-behavior: smooth` is deliberately NOT set: Lenis (packages/ui
-  smooth-scroll) drives scrolling itself, and the native smooth behaviour fights
-  it — the two animate the same scroll position on different clocks, which shows
-  up as stutter on anchor jumps. Lenis provides the smoothing; CSS provides the
-  offset.
-*/
-html {
-  scroll-padding-top: 6rem;
-  /*
-    Reserves the scrollbar's width even on pages too short to scroll. Without
-    it, navigating between a short page (no scrollbar) and a long one (with)
-    shifts the whole layout sideways by the scrollbar width — the most common
-    source of "the page jolts when I click a link".
-  */
-  scrollbar-gutter: stable;
+/* Film grain over everything: a faint fractal noise texture, fixed, never
+   intercepting input. Data URIs are allowed by img-src. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/*
-  Intro overlay suppression, applied before first paint by the inline script in
-  app/layout.tsx. This is what stops returning visitors seeing the overlay flash
-  on and off during hydration.
-*/
+/* Lenis (smooth scroll). */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+.lenis [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+/* ------------------------------------------------------------------------- */
+/* Pre-paint states                                                           */
+/* ------------------------------------------------------------------------- */
+
+/* Returning visitors never see the boot overlay (set before first paint). */
 html[data-intro-seen] [data-intro-overlay] {
   display: none !important;
 }
 
 /*
-  Intro exit. `forwards` holds the final keyframe until the element is removed,
-  which is what prevents the one-frame snap back to full opacity that the
-  previous framer-motion exit produced.
+  While scripts boot, anything about to animate in is held hidden so it never
+  flashes in its final state first. The pre-paint script sets this flag only
+  when motion will actually run, and removes it itself after four seconds —
+  so a failed bundle can never leave content invisible.
 */
-@keyframes intro-exit {
-  from {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    opacity: 0;
-    transform: translate3d(0, -100px, 0);
-  }
+html[data-anim-pending] [data-split],
+html[data-anim-pending] [data-reveal],
+html[data-anim-pending] [data-hero-hide] {
+  visibility: hidden;
 }
 
-.intro-leaving {
-  animation: intro-exit 0.5s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+/* ------------------------------------------------------------------------- */
+/* Type                                                                       */
+/* ------------------------------------------------------------------------- */
+
+/* Display: Archivo opened to its widest, heaviest cut. */
+@utility font-display {
+  font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 800;
+  font-variation-settings: "wdth" 125;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
 }
 
-/* Long words and URLs wrap instead of forcing a horizontal scrollbar. */
-p,
-h1,
-h2,
-h3,
-h4 {
-  overflow-wrap: break-word;
+/* Section heads: big, tight, sentence case, normal width. */
+@utility font-head {
+  font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  font-variation-settings: "wdth" 108;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
 }
 
-/*
-  Glitch heading (packages/ui/src/components/glitch-text.tsx).
-
-  The two colour-fringe layers are pseudo-elements rather than duplicated DOM
-  nodes. That is what fixed the "last character wraps to the next line" bug: the
-  old markup needed an `inline-block` wrapper to size itself, and the browser's
-  shrink-to-fit rounding made that box a fraction of a pixel too narrow. A
-  single block-level element has no such box to round.
-
-  `content: attr(data-text)` also means the duplicated text is not selectable
-  and never reaches the accessibility tree, so copying a heading yields the text
-  once rather than three times.
-*/
-.glitch-text {
-  position: relative;
-  /* isolate creates a stacking context so the layers sit behind the real text
-     but still in front of the section background. The previous `-z-10` pushed
-     them behind the background entirely on some sections. */
-  isolation: isolate;
+/* Labels are terminal material: mono, lower case, small, untracked. */
+@utility label {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--muted-foreground);
 }
 
-.glitch-text::before,
-.glitch-text::after {
-  content: attr(data-text);
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  user-select: none;
-  opacity: 0;
-  transition: opacity 100ms ease-out;
-  /* Inherit type metrics from the host element so the layers line up exactly. */
-  font: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
-  -webkit-text-stroke: inherit;
-}
-
-.glitch-text::before {
-  color: var(--primary);
-  transform: translate(2px, -2px);
-  mix-blend-mode: screen;
-}
-
-.glitch-text::after {
-  color: var(--secondary);
-  transform: translate(-2px, 2px);
-  mix-blend-mode: screen;
-  transition-delay: 75ms;
-}
-
-.glitch-text:hover::before,
-.glitch-text:hover::after,
-.glitch-text:focus-visible::before,
-.glitch-text:focus-visible::after {
-  opacity: 1;
-}
-
-/* The fringe is decorative; motion-sensitive users get the clean heading. */
-@media (prefers-reduced-motion: reduce) {
-  .glitch-text::before,
-  .glitch-text::after {
-    display: none;
-  }
-}
-
-/*
-  Marquee (components/home/marquee-section.tsx). Translating by -50% of a track
-  made of two identical halves moves by exactly one half, so the loop point is
-  seamless regardless of text width. The global reduced-motion rule below stops
-  it for users who ask.
-*/
-/*
-  Hero entrance (components/home/hero-section.tsx). Pure CSS so it starts at
-  first paint rather than after hydration — the heading is the LCP element.
-  Runs to 'both' so the pre-start frame is the hidden state, not a flash of
-  the final one.
-*/
-@keyframes hero-rise {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 24px, 0);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes hero-fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.hero-rise {
-  animation: hero-rise 0.6s ease-out 0.05s both;
-}
-
-.hero-fade {
-  animation: hero-fade 0.6s ease-out 0.3s both;
-}
-
-/*
-  Page-content entrances (blog, projects, experience, about). These replaced
-  framer-motion on-mount animations, which server-render content at opacity:0
-  and only reveal it after hydration — so every index page's main content was
-  invisible until the JavaScript bundle ran, hurting LCP on exactly the pages
-  search traffic lands on. Per-item stagger comes from an inline
-  animation-delay. `both` holds the hidden state until the delay elapses.
-*/
-@keyframes enter-slide {
-  from {
-    opacity: 0;
-    transform: translate3d(-20px, 0, 0);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-.enter-rise {
-  animation: hero-rise 0.5s ease-out both;
-}
-
-.enter-slide {
-  animation: enter-slide 0.5s ease-out both;
-}
-
-@keyframes marquee {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    transform: translate3d(-50%, 0, 0);
-  }
-}
-
-.marquee-track {
-  animation: marquee 40s linear infinite;
-  will-change: transform;
-}
-
-/* Outlined display type — the second line of every section heading. Sets
-   its own transparent fill, so it never needs `text-transparent` beside it. */
 @utility text-stroke {
   -webkit-text-stroke: 1px var(--foreground);
   color: transparent;
 }
 
-/*
-  Buttons. Square, mono, uppercase — the site's one button shape in three
-  weights: solid (primary action), outline (secondary, green), quiet (neutral).
-*/
+@utility kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.5rem;
+  padding: 0.05rem 0.35rem;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 0.3rem;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  line-height: 1.4;
+  color: var(--muted-foreground);
+}
+
+/* ------------------------------------------------------------------------- */
+/* Controls                                                                   */
+/* ------------------------------------------------------------------------- */
+
 @utility btn {
-  @apply inline-flex items-center justify-center gap-3 border px-6 py-4 font-mono text-sm uppercase tracking-widest transition-colors;
-}
-@utility btn-solid {
-  @apply border-primary bg-primary text-background hover:bg-transparent hover:text-primary;
-}
-@utility btn-outline {
-  @apply border-primary text-primary hover:bg-primary hover:text-background;
-}
-@utility btn-quiet {
-  @apply border-muted hover:border-primary hover:text-primary;
-}
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 3.25rem;
+  padding: 0 1.6rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+  font-weight: 600;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    color 0.4s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)),
+    border-color 0.4s,
+    background-color 0.4s;
 
-/* Section eyebrow text ("CAPABILITIES", "ARSENAL"…). */
-@utility eyebrow {
-  @apply font-mono text-sm tracking-widest text-primary;
-}
-
-/* Full-screen centred layout for the 404 and error pages. */
-@utility splash {
-  @apply relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4;
-}
-
-/* Terminal-style message block on the status pages; each <p> gets a prompt
-   marker in the block's accent colour (set with `text-*` on the marker via
-   --log-accent). */
-@utility log-block {
-  @apply space-y-2 border-l-2 bg-muted/10 py-2 pl-4 text-left font-mono text-sm text-muted-foreground;
-
-  & > p::before {
-    content: ">";
-    margin-right: 0.5rem;
-    color: var(--log-accent, var(--primary));
+  /* A fill that wipes up from the bottom on hover. */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    transform: translateY(101%);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  &:hover::before,
+  &:focus-visible::before {
+    transform: translateY(0);
+  }
+  &:active {
+    transform: scale(0.98);
+  }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
   }
 }
 
-/* Timeline marker: a ring that fills on its row's hover. Used by the
-   engagement path and the experience timelines. */
-@utility node {
-  @apply rounded-full border border-primary bg-background transition-colors group-hover:bg-primary;
-}
-
-/* Hidden until hover or keyboard focus on pointer devices; always visible on
-   touch, where there is no hover. */
-@utility hover-reveal {
-  @media (hover: hover) {
-    @apply max-h-0 overflow-hidden opacity-0 transition-all duration-300 group-hover:max-h-24 group-hover:opacity-100 group-focus-visible:max-h-24 group-focus-visible:opacity-100;
+@utility btn-primary {
+  background: var(--primary);
+  color: var(--background);
+  &::before {
+    background: var(--foreground);
   }
 }
 
-/* "Skip to content": invisible until focused by keyboard. */
+@utility btn-ghost {
+  border-color: var(--line);
+  color: var(--foreground);
+  &::before {
+    background: var(--foreground);
+  }
+  &:hover,
+  &:focus-visible {
+    color: var(--background);
+    border-color: var(--foreground);
+  }
+}
+
+/* Underline that draws in from the left on hover. */
+@utility link-draw {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  &:hover,
+  &:focus-visible {
+    background-size: 100% 1px;
+  }
+}
+
+@utility link-quiet {
+  color: var(--muted-foreground);
+  transition: color 0.25s;
+  &:hover,
+  &:focus-visible {
+    color: var(--foreground);
+  }
+}
+
 @utility skip-link {
-  @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-primary focus:px-4 focus:py-2 focus:font-mono focus:text-background;
+  @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-background;
+}
+
+/* Field: hairline underline that lights up on focus. */
+@utility field {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  padding: 0.9rem 0;
+  font-size: 1.1rem;
+  color: var(--foreground);
+  outline: none;
+  transition: border-color 0.3s;
+  &::placeholder {
+    color: color-mix(in srgb, var(--muted-foreground) 70%, transparent);
+  }
+  &:focus {
+    border-color: var(--primary);
+  }
+  &[aria-invalid="true"] {
+    border-color: var(--secondary);
+  }
+}
+
+/* ------------------------------------------------------------------------- */
+/* Layout pieces                                                              */
+/* ------------------------------------------------------------------------- */
+
+@utility section-pad {
+  padding-block: clamp(5rem, 9vw, 8.5rem);
+}
+
+/* The header goes solid once the page is scrolled. */
+.site-header[data-scrolled] {
+  background: color-mix(in srgb, var(--background) 78%, transparent);
+  border-color: var(--line);
+  backdrop-filter: blur(14px) saturate(1.2);
+}
+
+/* Cursor ring states (components/motion/cursor.tsx). */
+@media (hover: hover) and (pointer: fine) {
+  .cursor-ring {
+    display: flex;
+    border-color: var(--foreground);
+    mix-blend-mode: normal;
+    transition:
+      background-color 0.3s,
+      border-color 0.3s;
+  }
+}
+.cursor-ring[data-state="link"] {
+  background-color: color-mix(in srgb, var(--primary) 18%, transparent);
+  border-color: var(--primary);
+}
+.cursor-ring[data-state="label"] {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* Hide scrollbars on draggable rails; they still scroll by keyboard and touch. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Long-form text from the database. */
+@utility prose-body {
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: color-mix(in srgb, var(--foreground) 82%, var(--background));
+  & > p + p {
+    margin-top: 1.4em;
+  }
+}
+
+/* Credential cards: a sheen that follows the pointer (--mx/--my set by GSAP). */
+.credential::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--mx, 50%) var(--my, 0%),
+    color-mix(in srgb, var(--primary) 24%, transparent),
+    transparent 55%
+  );
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.credential:hover::after,
+a:focus-visible > .credential::after {
+  opacity: 1;
+}
+.credential {
+  transition: border-color 0.4s;
+}
+a:hover > .credential,
+a:focus-visible > .credential {
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+}
+
+/* The contact heading: weight and width are driven per letter by the pointer
+   (--w / --d, set by GSAP). Without JavaScript it rests heavy and wide. */
+.flex-type,
+.flex-type * {
+  font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 800;
+  font-variation-settings:
+    "wght" var(--w, 800),
+    "wdth" var(--d, 112);
+}
+
+/* Home section rail (components/home/section-rail.tsx). */
+.rail-label {
+  opacity: 0;
+  transform: translateX(6px);
+  transition:
+    opacity 0.3s,
+    transform 0.3s,
+    color 0.3s;
+}
+.rail-item:hover .rail-label,
+.rail-item:focus-visible .rail-label,
+.rail-item[data-active] .rail-label {
+  opacity: 1;
+  transform: none;
+}
+.rail-item[data-active] .rail-label {
+  color: var(--foreground);
+}
+.rail-tick {
+  transform-origin: right center;
+  transition:
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.3s;
+}
+.rail-item[data-active] .rail-tick {
+  transform: scaleX(2.5);
+  background: var(--primary);
+}
+
+/* The hero's scroll cue: a short bar that falls through its track. */
+@keyframes scroll-cue {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(200%);
+  }
+}
+.scroll-cue {
+  animation: scroll-cue 1.8s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+}
+
+/* ------------------------------------------------------------------------- */
+/* Reduced motion                                                             */
+/* ------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .btn::before {
+    transition: none;
+  }
+  html[data-anim-pending] [data-split],
+  html[data-anim-pending] [data-reveal],
+  html[data-anim-pending] [data-hero-hide] {
+    visibility: visible;
+  }
 }

@@ -24,8 +24,8 @@ export default function GlobalError({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#050505",
-          color: "#ededed",
+          background: "#08090b",
+          color: "#ecebe6",
           fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
           padding: "2rem",
         }}
@@ -51,8 +51,8 @@ export default function GlobalError({
             onClick={reset}
             style={{
               marginTop: "2rem",
-              background: "#00ff41",
-              color: "#050505",
+              background: "#ff5a36",
+              color: "#08090b",
               border: "none",
               padding: "1rem 2rem",
               fontFamily: "inherit",

@@ -246,15 +246,15 @@ Audited against a production build. `npm run check:headers -- <url>` reproduces 
 
 Deliberate decisions, recorded so they are re-evaluated rather than rediscovered.
 
-| Risk                                     | Rationale                                                                                                                                                                                                                   |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| No MFA on the admin dashboard            | Single operator, localhost-bound, four independent guards against exposure. MFA would add a dependency and a recovery problem for no realistic gain.                                                                        |
-| Trusted Types report-only                | React and Next are not yet Trusted-Types-compliant; enforcing would break the site. Report-only surfaces which sinks remain in use — the information needed to decide when enforcement becomes possible.                    |
-| `style-src-attr 'unsafe-inline'`         | framer-motion animates via element `style` attributes (37 on the home page). Attribute styles cannot contain selectors, so they carry none of the exfiltration risk that made an injected `<style>` element worth blocking. |
-| In-process rate limiting is per-instance | The database limiter (`consume_rate_limit`) is the authoritative global ceiling. The in-process layer exists to absorb volume without a network hop.                                                                        |
-| Admin errors show real messages          | Single trusted local operator; "Permission denied — check SUPABASE_SERVICE_ROLE_KEY" turns a misconfiguration into a seconds-long fix. The public site shows only an opaque digest.                                         |
-| No WAF / CAPTCHA                         | Honeypot, time trap and layered rate limits handle the real spam volume without sending every visitor's behaviour to a third party.                                                                                         |
-| Local SST state (`.sst/`)                | Avoids requiring an AWS account for a Vercel-only deploy. Trade-off: the directory must be backed up.                                                                                                                       |
+| Risk                                     | Rationale                                                                                                                                                                                                          |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| No MFA on the admin dashboard            | Single operator, localhost-bound, four independent guards against exposure. MFA would add a dependency and a recovery problem for no realistic gain.                                                               |
+| Trusted Types report-only                | React and Next are not yet Trusted-Types-compliant; enforcing would break the site. Report-only surfaces which sinks remain in use — the information needed to decide when enforcement becomes possible.           |
+| `style-src-attr 'unsafe-inline'`         | GSAP animates via element `style` attributes (37 on the home page). Attribute styles cannot contain selectors, so they carry none of the exfiltration risk that made an injected `<style>` element worth blocking. |
+| In-process rate limiting is per-instance | The database limiter (`consume_rate_limit`) is the authoritative global ceiling. The in-process layer exists to absorb volume without a network hop.                                                               |
+| Admin errors show real messages          | Single trusted local operator; "Permission denied — check SUPABASE_SERVICE_ROLE_KEY" turns a misconfiguration into a seconds-long fix. The public site shows only an opaque digest.                                |
+| No WAF / CAPTCHA                         | Honeypot, time trap and layered rate limits handle the real spam volume without sending every visitor's behaviour to a third party.                                                                                |
+| Local SST state (`.sst/`)                | Avoids requiring an AWS account for a Vercel-only deploy. Trade-off: the directory must be backed up.                                                                                                              |
 
 ---
 

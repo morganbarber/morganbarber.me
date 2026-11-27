@@ -18,14 +18,14 @@ export default function Prose({ content }: { content: string | null }) {
 
   if (paragraphs.length === 0) {
     return (
-      <p className="font-mono text-sm text-muted-foreground border-l-2 border-muted pl-4">
-        {"// No content published yet."}
+      <p className="border-l-2 border-line pl-4 font-mono text-sm text-muted-foreground">
+        No content published yet.
       </p>
     );
   }
 
   return (
-    <div className="space-y-6 text-muted-foreground leading-relaxed text-base md:text-lg">
+    <div className="prose-body">
       {paragraphs.map((paragraph, index) => (
         // Paragraph order is stable for a given document, so the index is a
         // legitimate key here — this list is never reordered or filtered.
