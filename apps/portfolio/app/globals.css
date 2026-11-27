@@ -71,7 +71,8 @@ html {
 }
 
 body {
-  background: var(--background);
+  /* No background here: html paints it, and the grain layer below sits
+     between the two. */
   color: var(--foreground);
   font-family: var(--font-sans);
   font-size: 1rem;
@@ -94,13 +95,18 @@ p {
   color: var(--background);
 }
 
-/* Film grain over everything: a faint fractal noise texture, fixed, never
-   intercepting input. Data URIs are allowed by img-src. */
+/* Film grain: a faint fractal noise texture, fixed, never intercepting
+   input. Data URIs are allowed by img-src.
+
+   It sits BEHIND the content (z-index -1), not over it. As a top overlay it
+   blended across every pixel of every composited frame, which is real GPU
+   fill-rate cost while scrolling; behind, it replaces the plain background and
+   shows through wherever a section has none. */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: 70;
+  z-index: -1;
   pointer-events: none;
   opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -116,6 +122,13 @@ html.lenis body {
 }
 .lenis [data-lenis-prevent] {
   overscroll-behavior: contain;
+}
+/* No hover hit-testing while the page is moving under a still pointer: each
+   frame of scroll otherwise re-runs hover detection (and the cursor's state
+   changes) for whatever passes beneath it. Restored the moment scrolling
+   stops. */
+html.lenis-scrolling #main {
+  pointer-events: none;
 }
 
 /* ------------------------------------------------------------------------- */
@@ -313,9 +326,11 @@ html[data-anim-pending] [data-hero-hide] {
 
 /* The header goes solid once the page is scrolled. */
 .site-header[data-scrolled] {
-  background: color-mix(in srgb, var(--background) 78%, transparent);
   border-color: var(--line);
-  backdrop-filter: blur(14px) saturate(1.2);
+  /* Kept light: the blur re-samples everything behind the header on every
+     frame of scrolling. */
+  background: color-mix(in srgb, var(--background) 86%, transparent);
+  backdrop-filter: blur(8px);
 }
 
 /* Cursor ring states (components/motion/cursor.tsx). */
@@ -432,8 +447,10 @@ a:focus-visible > .credential {
     transform: translateY(200%);
   }
 }
+/* A few passes, then it rests: an endless animation keeps the page producing
+   frames while the visitor is just reading. */
 .scroll-cue {
-  animation: scroll-cue 1.8s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+  animation: scroll-cue 1.8s cubic-bezier(0.76, 0, 0.24, 1) 6 both;
 }
 
 /* ------------------------------------------------------------------------- */

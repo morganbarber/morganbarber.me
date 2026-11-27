@@ -58,29 +58,29 @@ export default function Preloader() {
 
       tl.to(value, {
         n: 100,
-        duration: 2,
+        duration: 1.3,
         ease: "power2.inOut",
         onUpdate: () => {
           if (counter) counter.textContent = String(Math.round(value.n)).padStart(3, "0");
         },
       })
-        .from("[data-bar]", { scaleX: 0, duration: 2, ease: "power2.inOut" }, 0)
+        .from("[data-bar]", { scaleX: 0, duration: 1.3, ease: "power2.inOut" }, 0)
         .from(
           lines,
           {
             autoAlpha: 0,
             x: -16,
             duration: 0.4,
-            stagger: 0.38,
+            stagger: 0.24,
           },
           0.1,
         )
         .to(lines, { duration: 0.6, scrambleText: { text: "{original}", chars: "01" } }, 0.1)
-        .addLabel("exit", "+=0.15")
-        .to("[data-inner]", { yPercent: 40, autoAlpha: 0, duration: 0.9, ease: "mb.inOut" }, "exit")
-        .to(overlay, { yPercent: -100, duration: 1, ease: "mb.inOut" }, "exit")
+        .addLabel("exit", "+=0.05")
+        .to("[data-inner]", { yPercent: 40, autoAlpha: 0, duration: 0.7, ease: "mb.inOut" }, "exit")
+        .to(overlay, { yPercent: -100, duration: 0.8, ease: "mb.inOut" }, "exit")
         // The hero starts rising while the cover is still lifting off it.
-        .call(markIntroDone, [], "exit+=0.35");
+        .call(markIntroDone, [], "exit+=0.2");
     },
     { scope: root },
   );

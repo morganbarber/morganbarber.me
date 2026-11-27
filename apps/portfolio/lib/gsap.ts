@@ -5,10 +5,6 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
-import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
-import { Flip } from "gsap/Flip";
-import { Draggable } from "gsap/Draggable";
-import { InertiaPlugin } from "gsap/InertiaPlugin";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { CustomEase } from "gsap/CustomEase";
 
@@ -18,6 +14,10 @@ import { CustomEase } from "gsap/CustomEase";
  * before it is registered — whichever module loads first does the work, and
  * registerPlugin is idempotent.
  *
+ * Only what the site uses on every page is registered here. Flip is loaded on
+ * demand by the projects filter (components/project-list.tsx), the one place
+ * it is needed, so it stays out of the shared bundle.
+ *
  * All of these ship in the public `gsap` package (free since 3.13); there is
  * no private registry or token involved.
  */
@@ -26,10 +26,6 @@ gsap.registerPlugin(
   ScrollTrigger,
   SplitText,
   ScrambleTextPlugin,
-  DrawSVGPlugin,
-  Flip,
-  Draggable,
-  InertiaPlugin,
   ScrollToPlugin,
   CustomEase,
 );
@@ -45,15 +41,4 @@ gsap.defaults({ ease: "mb.out", duration: 0.9 });
 // mobile address-bar resizes, which otherwise causes a visible jump.
 ScrollTrigger.config({ ignoreMobileResize: true });
 
-export {
-  gsap,
-  useGSAP,
-  ScrollTrigger,
-  SplitText,
-  ScrambleTextPlugin,
-  DrawSVGPlugin,
-  Flip,
-  Draggable,
-  InertiaPlugin,
-  ScrollToPlugin,
-};
+export { gsap, useGSAP, ScrollTrigger, SplitText, ScrambleTextPlugin, ScrollToPlugin };

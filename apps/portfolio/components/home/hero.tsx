@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef } from "react";
-import { gsap, useGSAP, SplitText } from "@/lib/gsap";
+import { gsap, useGSAP, ScrollTrigger, SplitText } from "@/lib/gsap";
 import { isStatic, whenIntroDone } from "@/lib/motion";
 import Magnetic from "@/components/motion/magnetic";
 import LocalTime from "@/components/local-time";
@@ -54,6 +54,23 @@ export default function Hero({
       gsap.set(fadeIns, { autoAlpha: 0, y: 24 });
 
       let intro: gsap.core.Timeline | null = null;
+      let cycle: gsap.core.Timeline | null = null;
+      let onScreen = true;
+
+      // ScrambleText rewrites innerHTML every frame it runs; the role cycle
+      // stops while the hero is off screen. Created here, inside the context,
+      // so it is cleaned up with the component.
+      ScrollTrigger.create({
+        trigger: el,
+        start: "top bottom",
+        end: "bottom top",
+        onToggle: (self) => {
+          onScreen = self.isActive;
+          if (onScreen) cycle?.resume();
+          else cycle?.pause();
+        },
+      });
+
       const off = whenIntroDone(() => {
         intro = gsap
           .timeline()
@@ -62,12 +79,15 @@ export default function Hero({
             duration: 1.3,
             stagger: { each: 0.045, from: "start" },
             ease: "mb.out",
+            // Deliberately NOT reverted to plain text afterwards: re-inserting
+            // the name registers as a brand-new largest paint and pushed LCP
+            // out to ~5 s in measurement.
           })
           .to(fadeIns, { autoAlpha: 1, y: 0, duration: 1, stagger: 0.08 }, 0.45)
           .from(rule, { scaleX: 0, duration: 1.4, ease: "mb.inOut" }, 0.3);
 
         if (role) {
-          const cycle = gsap.timeline({ repeat: -1, delay: 1.6 });
+          cycle = gsap.timeline({ repeat: -1, delay: 2.8, paused: !onScreen });
           for (const text of [...ROLES.slice(1), ROLES[0]]) {
             cycle.to(role, {
               duration: 1,
@@ -75,7 +95,6 @@ export default function Hero({
               delay: 2.2,
             });
           }
-          intro.add(cycle, 1.2);
         }
       });
 
@@ -92,6 +111,7 @@ export default function Hero({
       return () => {
         off();
         intro?.kill();
+        cycle?.kill();
       };
     },
     { scope: root },
@@ -153,7 +173,9 @@ export default function Hero({
               <p
                 data-hero-in
                 data-hero-hide
-                className="mt-3 font-mono text-sm text-muted-foreground"
+                // Contained: the role line rewrites itself every few seconds and
+                // must not trigger layout or paint outside its own box.
+                className="mt-3 font-mono text-sm text-muted-foreground [contain:layout_paint]"
               >
                 <span className="text-primary">$</span> currently{" "}
                 <span data-role className="text-foreground">

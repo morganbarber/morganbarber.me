@@ -32,30 +32,65 @@ export default function ContactCta({ email }: { email: string }) {
       const chars = split.chars as HTMLElement[];
       gsap.set(chars, { "--w": 400, "--d": 95 });
 
-      const move = (event: PointerEvent) => {
-        for (const char of chars) {
+      // One quickTo per letter and property, created once; letter centres
+      // measured once per hover in page coordinates. The old version read
+      // every letter's layout and spawned a new tween per letter on every
+      // pointer event.
+      const setters = chars.map((char) => ({
+        w: gsap.quickTo(char, "--w", { duration: 0.5, ease: "power3.out" }),
+        d: gsap.quickTo(char, "--d", { duration: 0.5, ease: "power3.out" }),
+      }));
+      let centres: { x: number; y: number }[] = [];
+      let pointer: { x: number; y: number } | null = null;
+      let queued = false;
+
+      const measure = () => {
+        centres = chars.map((char) => {
           const rect = char.getBoundingClientRect();
-          const dist = Math.hypot(
-            event.clientX - (rect.left + rect.width / 2),
-            event.clientY - (rect.top + rect.height / 2),
+          return {
+            x: rect.left + window.scrollX + rect.width / 2,
+            y: rect.top + window.scrollY + rect.height / 2,
+          };
+        });
+      };
+      const apply = () => {
+        queued = false;
+        if (!pointer) return;
+        centres.forEach((centre, i) => {
+          const t = gsap.utils.clamp(
+            0,
+            1,
+            1 - Math.hypot(pointer!.x - centre.x, pointer!.y - centre.y) / 420,
           );
-          const t = gsap.utils.clamp(0, 1, 1 - dist / 420);
-          gsap.to(char, {
-            "--w": 400 + t * 500,
-            "--d": 95 + t * 30,
-            duration: 0.5,
-            ease: "power3.out",
-            overwrite: "auto",
-          });
+          setters[i]?.w(400 + t * 500);
+          setters[i]?.d(95 + t * 30);
+        });
+      };
+      const move = (event: PointerEvent) => {
+        pointer = { x: event.pageX, y: event.pageY };
+        if (!queued) {
+          queued = true;
+          requestAnimationFrame(apply);
         }
       };
-      const leave = () =>
-        gsap.to(chars, { "--w": 400, "--d": 95, duration: 0.9, ease: "elastic.out(1, 0.5)" });
+      const enter = () => measure();
+      const leave = () => {
+        pointer = null;
+        gsap.to(chars, {
+          "--w": 400,
+          "--d": 95,
+          duration: 0.9,
+          ease: "elastic.out(1, 0.5)",
+          overwrite: true,
+        });
+      };
 
       const host = root.current!;
-      host.addEventListener("pointermove", move);
+      host.addEventListener("pointerenter", enter);
+      host.addEventListener("pointermove", move, { passive: true });
       host.addEventListener("pointerleave", leave);
       return () => {
+        host.removeEventListener("pointerenter", enter);
         host.removeEventListener("pointermove", move);
         host.removeEventListener("pointerleave", leave);
       };

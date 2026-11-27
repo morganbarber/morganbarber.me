@@ -64,28 +64,64 @@ export default function Marquee() {
       const [a, b] = gsap.utils.toArray<HTMLElement>("[data-track]");
       if (!a || !b) return;
 
+      // The loops run on the Web Animations API rather than GSAP: a WAAPI
+      // transform animation runs on the compositor, so the endless scroll
+      // costs the main thread nothing per frame (as GSAP tweens it cost a
+      // style update every frame, ~0.7 s per 4 s idle at 4x throttle). GSAP
+      // still drives the scroll response: speed via playbackRate, and skew.
       const loops = [
-        gsap.to(a, { xPercent: -50, duration: 38, ease: "none", repeat: -1 }),
-        gsap.fromTo(b, { xPercent: -50 }, { xPercent: 0, duration: 42, ease: "none", repeat: -1 }),
+        a.animate([{ transform: "translate3d(0,0,0)" }, { transform: "translate3d(-50%,0,0)" }], {
+          duration: 38000,
+          iterations: Infinity,
+        }),
+        b.animate([{ transform: "translate3d(-50%,0,0)" }, { transform: "translate3d(0,0,0)" }], {
+          duration: 42000,
+          iterations: Infinity,
+        }),
       ];
+      loops.forEach((loop) => loop.pause());
       const skew = gsap.quickTo("[data-skew]", "skewX", { duration: 0.5, ease: "power3" });
+
+      // Eases the speed back toward cruising after a fast scroll; runs only
+      // while the marquee is on screen and only until it has settled.
+      let speed = 1;
+      let target = 1;
+      const tick = () => {
+        target += (1 - target) * 0.04;
+        const next = speed + (target - speed) * 0.15;
+        if (Math.abs(next - speed) < 0.002 && Math.abs(target - 1) < 0.002) {
+          speed = 1;
+          loops.forEach((loop) => (loop.playbackRate = 1));
+          gsap.ticker.remove(tick);
+          return;
+        }
+        speed = next;
+        loops.forEach((loop) => (loop.playbackRate = speed));
+      };
 
       ScrollTrigger.create({
         trigger: root.current,
         start: "top bottom",
         end: "bottom top",
-        onUpdate: (self) => {
-          const velocity = self.getVelocity();
-          const boost = gsap.utils.clamp(1, 7, 1 + Math.abs(velocity) / 250);
-          skew(gsap.utils.clamp(-12, 12, velocity / -200));
-          for (const loop of loops) {
-            gsap.to(loop, { timeScale: boost, duration: 0.2, overwrite: true });
-            gsap.to(loop, { timeScale: 1, duration: 1.2, delay: 0.2 });
+        onToggle: (self) => {
+          loops.forEach((loop) => (self.isActive ? loop.play() : loop.pause()));
+          if (!self.isActive) {
+            gsap.ticker.remove(tick);
+            skew(0);
           }
         },
-        onLeave: () => skew(0),
-        onLeaveBack: () => skew(0),
+        onUpdate: (self) => {
+          const velocity = self.getVelocity();
+          target = gsap.utils.clamp(1, 7, 1 + Math.abs(velocity) / 250);
+          skew(gsap.utils.clamp(-12, 12, velocity / -200));
+          gsap.ticker.add(tick);
+        },
       });
+
+      return () => {
+        gsap.ticker.remove(tick);
+        loops.forEach((loop) => loop.cancel());
+      };
     },
     { scope: root },
   );
