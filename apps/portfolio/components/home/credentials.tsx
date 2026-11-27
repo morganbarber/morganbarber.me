@@ -55,6 +55,7 @@ export default function Credentials({
       const scroller = rail.current;
       if (!scroller || isStatic()) return;
       const cards = gsap.utils.toArray<HTMLElement>("[data-card]", scroller);
+      if (!cards.length) return;
 
       gsap.from(cards, {
         x: 160,
@@ -182,54 +183,64 @@ export default function Credentials({
 
       <div
         ref={rail}
-        className="no-scrollbar flex snap-x gap-6 overflow-x-auto px-6 pb-6 [perspective:1200px] md:px-[max(1.5rem,calc((100%_-_80rem)/2_+_1.5rem))]"
-        aria-label="Certifications"
-        role="list"
+        className="no-scrollbar overflow-x-auto pb-6 [@media(hover:none)]:snap-x [@media(hover:none)]:snap-mandatory"
       >
-        {certifications.map((cert, i) => {
-          const date = issued(cert.issued_on);
-          return (
-            <div key={cert.id} role="listitem" data-card className="shrink-0 snap-start">
-              <a
-                href={cert.file_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-cursor="view pdf"
-                className="block"
-                aria-label={`${cert.name}, ${cert.issuer}${date ? `, issued ${date}` : ""} (PDF, opens in a new tab)`}
-              >
-                <div
-                  data-card-inner
-                  className="credential relative flex h-[25rem] w-[19rem] flex-col justify-between overflow-hidden rounded-2xl border border-line bg-surface p-7 md:h-[27rem] md:w-[21rem]"
+        {/*
+          The cards sit in their own flex track rather than directly in the
+          scroller: Draggable's scrollLeft mode wraps the scroller's children
+          in a plain block <div>, which would otherwise break the row and
+          stack the cards into a column on mouse devices.
+        */}
+        <div
+          role="list"
+          aria-label="Certifications"
+          className="flex w-max gap-6 px-6 [perspective:1200px] md:px-[max(1.5rem,calc((100%_-_80rem)/2_+_1.5rem))]"
+        >
+          {certifications.map((cert, i) => {
+            const date = issued(cert.issued_on);
+            return (
+              <div key={cert.id} role="listitem" data-card className="shrink-0 snap-start">
+                <a
+                  href={cert.file_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-cursor="view pdf"
+                  className="block"
+                  aria-label={`${cert.name}, ${cert.issuer}${date ? `, issued ${date}` : ""} (PDF, opens in a new tab)`}
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <span className="font-mono text-xs text-muted-foreground">
-                      {String(i + 1).padStart(2, "0")} /{" "}
-                      {String(certifications.length).padStart(2, "0")}
-                    </span>
-                    <span className="rounded-full border border-line px-3 py-1 font-mono text-xs">
-                      {cert.issuer}
-                    </span>
-                  </div>
-
-                  <div>
-                    <p className="font-head text-[2rem] leading-[1] [overflow-wrap:anywhere]">
-                      {shortName(cert.name, cert.issuer ?? "")}
-                    </p>
-                  </div>
-
-                  <div className="flex items-end justify-between gap-4 border-t border-line pt-5">
-                    <div>
-                      <p className="label">issued</p>
-                      <p className="mt-1 text-sm">{date ?? "—"}</p>
+                  <div
+                    data-card-inner
+                    className="credential relative flex h-[25rem] w-[19rem] flex-col justify-between overflow-hidden rounded-2xl border border-line bg-surface p-7 md:h-[27rem] md:w-[21rem]"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <span className="font-mono text-xs text-muted-foreground">
+                        {String(i + 1).padStart(2, "0")} /{" "}
+                        {String(certifications.length).padStart(2, "0")}
+                      </span>
+                      <span className="rounded-full border border-line px-3 py-1 font-mono text-xs">
+                        {cert.issuer}
+                      </span>
                     </div>
-                    <span className="font-mono text-xs text-primary">open pdf ↗</span>
+
+                    <div>
+                      <p className="font-head text-[2rem] leading-[1] [overflow-wrap:anywhere]">
+                        {shortName(cert.name, cert.issuer ?? "")}
+                      </p>
+                    </div>
+
+                    <div className="flex items-end justify-between gap-4 border-t border-line pt-5">
+                      <div>
+                        <p className="label">issued</p>
+                        <p className="mt-1 text-sm">{date ?? "—"}</p>
+                      </div>
+                      <span className="font-mono text-xs text-primary">open pdf ↗</span>
+                    </div>
                   </div>
-                </div>
-              </a>
-            </div>
-          );
-        })}
+                </a>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <div className="shell mt-6">
