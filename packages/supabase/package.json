@@ -15,7 +15,7 @@
     "@repo/config": "*",
     "@repo/types": "*",
     "@supabase/ssr": "^0.12.7",
-    "@supabase/supabase-js": "^2.117.0",
+    "@supabase/supabase-js": "^2.119.2",
     "server-only": "^0.0.1"
   },
   "devDependencies": {
