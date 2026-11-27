@@ -1,18 +1,19 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, useGSAP, Draggable } from "@/lib/gsap";
+import { gsap, useGSAP } from "@/lib/gsap";
 import { hasFinePointer, isStatic } from "@/lib/motion";
 import type { CertificationSummary } from "@repo/types";
 import SectionHeading from "@/components/section-heading";
 
 /**
- * Certifications as a rail of credential cards.
+ * Certifications as a grid of credential cards, every one visible at once.
  *
- *   • drag it, throw it (inertia), or use the arrow buttons; it is also a real
- *     horizontal scroller, so keyboard focus and touch scrolling just work
+ *   • the cards deal in, staggered, as the grid arrives
  *   • each card tilts toward the pointer with a sheen that follows it
- *   • the cards deal in from the right as the section arrives
+ *
+ * This was a horizontal rail, which hid most certificates off the edge of the
+ * screen; a grid that wraps shows all of them at every width.
  *
  * Every card opens the certificate PDF (candidate IDs redacted).
  */
@@ -29,6 +30,24 @@ function issued(iso: string | null): string | null {
   return Number.isNaN(date.getTime()) ? null : dateFormat.format(date);
 }
 
+/**
+ * Lets a long name wrap after a slash ("Word/PowerPoint") instead of breaking
+ * mid-word.
+ */
+function breakable(text: string): React.ReactNode {
+  const parts = text.split("/");
+  return parts.map((part, i) => (
+    <span key={i}>
+      {part}
+      {i < parts.length - 1 ? (
+        <>
+          /<wbr />
+        </>
+      ) : null}
+    </span>
+  ));
+}
+
 /** "CompTIA Security+" → "Security+": the issuer is already on the card. */
 function shortName(name: string, issuer: string): string {
   return name.startsWith(`${issuer} `) ? name.slice(issuer.length + 1) : name;
@@ -40,7 +59,7 @@ export default function Credentials({
   certifications: CertificationSummary[];
 }) {
   const root = useRef<HTMLElement>(null);
-  const rail = useRef<HTMLDivElement>(null);
+  const grid = useRef<HTMLUListElement>(null);
 
   const issuers = Object.entries(
     certifications.reduce<Record<string, number>>((acc, cert) => {
@@ -52,43 +71,21 @@ export default function Credentials({
 
   useGSAP(
     () => {
-      const scroller = rail.current;
-      if (!scroller || isStatic()) return;
-      const cards = gsap.utils.toArray<HTMLElement>("[data-card]", scroller);
+      const list = grid.current;
+      if (!list || isStatic()) return;
+      const cards = gsap.utils.toArray<HTMLElement>("[data-card]", list);
       if (!cards.length) return;
 
       gsap.from(cards, {
-        x: 160,
-        rotateY: -25,
+        y: 80,
+        rotateX: -18,
         autoAlpha: 0,
-        duration: 1.2,
-        stagger: 0.07,
-        scrollTrigger: { trigger: scroller, start: "top 85%", once: true },
+        duration: 1.1,
+        stagger: { each: 0.07, grid: "auto", from: "start" },
+        scrollTrigger: { trigger: list, start: "top 85%", once: true },
       });
 
-      // Reading position along the rail.
-      const progress = root.current?.querySelector<HTMLElement>("[data-rail-progress]");
-      const onScroll = () => {
-        const max = scroller.scrollWidth - scroller.clientWidth;
-        if (progress) gsap.set(progress, { scaleX: max > 0 ? scroller.scrollLeft / max : 1 });
-      };
-      onScroll();
-      scroller.addEventListener("scroll", onScroll, { passive: true });
-
-      if (!hasFinePointer()) {
-        return () => scroller.removeEventListener("scroll", onScroll);
-      }
-
-      const [drag] = Draggable.create(scroller, {
-        type: "scrollLeft",
-        inertia: true,
-        edgeResistance: 0.85,
-        cursor: "grab",
-        activeCursor: "grabbing",
-        allowContextMenu: true,
-        // Clicks still reach the links unless the pointer actually moved.
-        minimumMovement: 6,
-      });
+      if (!hasFinePointer()) return;
 
       // Tilt + sheen, per card.
       const cleanups = cards.map((card) => {
@@ -101,8 +98,8 @@ export default function Credentials({
           const rect = card.getBoundingClientRect();
           const px = (event.clientX - rect.left) / rect.width;
           const py = (event.clientY - rect.top) / rect.height;
-          rx((0.5 - py) * 14);
-          ry((px - 0.5) * 18);
+          rx((0.5 - py) * 12);
+          ry((px - 0.5) * 16);
           inner.style.setProperty("--mx", `${px * 100}%`);
           inner.style.setProperty("--my", `${py * 100}%`);
         };
@@ -118,136 +115,84 @@ export default function Credentials({
         };
       });
 
-      return () => {
-        drag?.kill();
-        cleanups.forEach((fn) => fn());
-        scroller.removeEventListener("scroll", onScroll);
-      };
+      return () => cleanups.forEach((fn) => fn());
     },
     { scope: root },
   );
 
-  const step = (direction: 1 | -1) => {
-    const scroller = rail.current;
-    const card = scroller?.querySelector<HTMLElement>("[data-card]");
-    if (!scroller || !card) return;
-    const amount = (card.offsetWidth + 24) * direction;
-    gsap.to(scroller, {
-      scrollTo: { x: scroller.scrollLeft + amount },
-      duration: isStatic() ? 0 : 0.9,
-      ease: "mb.out",
-    });
-  };
-
   if (certifications.length === 0) return null;
 
   return (
-    <section ref={root} id="credentials" data-section="credentials" className="section-pad">
-      <div className="shell">
-        <SectionHeading
-          index="04"
-          label="credentials"
-          title="Certified, and still collecting."
-          intro={
-            <>
-              {issuers.map(([issuer, count], i) => (
-                <span key={issuer}>
-                  {i > 0 ? ", " : ""}
-                  <span className="text-foreground">{count}</span> from {issuer}
-                </span>
-              ))}
-              . Every card opens the certificate itself.
-            </>
-          }
-        >
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={() => step(-1)}
-              aria-label="Previous certificates"
-              className="grid size-12 place-items-center rounded-full border border-line transition-colors hover:border-primary hover:text-primary"
-            >
-              <span aria-hidden="true">←</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => step(1)}
-              aria-label="More certificates"
-              className="grid size-12 place-items-center rounded-full border border-line transition-colors hover:border-primary hover:text-primary"
-            >
-              <span aria-hidden="true">→</span>
-            </button>
-          </div>
-        </SectionHeading>
-      </div>
+    <section ref={root} id="credentials" data-section="credentials" className="shell section-pad">
+      <SectionHeading
+        index="04"
+        label="credentials"
+        title="Certified, and still collecting."
+        intro={
+          <>
+            {issuers.map(([issuer, count], i) => (
+              <span key={issuer}>
+                {i > 0 ? ", " : ""}
+                <span className="text-foreground">{count}</span> from {issuer}
+              </span>
+            ))}
+            . Every card opens the certificate itself.
+          </>
+        }
+      />
 
-      <div
-        ref={rail}
-        className="no-scrollbar overflow-x-auto pb-6 [@media(hover:none)]:snap-x [@media(hover:none)]:snap-mandatory"
+      <ul
+        ref={grid}
+        aria-label="Certifications"
+        className="grid grid-cols-1 gap-5 [perspective:1400px] sm:grid-cols-2 lg:grid-cols-4"
       >
-        {/*
-          The cards sit in their own flex track rather than directly in the
-          scroller: Draggable's scrollLeft mode wraps the scroller's children
-          in a plain block <div>, which would otherwise break the row and
-          stack the cards into a column on mouse devices.
-        */}
-        <div
-          role="list"
-          aria-label="Certifications"
-          className="flex w-max gap-6 px-6 [perspective:1200px] md:px-[max(1.5rem,calc((100%_-_80rem)/2_+_1.5rem))]"
-        >
-          {certifications.map((cert, i) => {
-            const date = issued(cert.issued_on);
-            return (
-              <div key={cert.id} role="listitem" data-card className="shrink-0 snap-start">
-                <a
-                  href={cert.file_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-cursor="view pdf"
-                  className="block"
-                  aria-label={`${cert.name}, ${cert.issuer}${date ? `, issued ${date}` : ""} (PDF, opens in a new tab)`}
+        {certifications.map((cert, i) => {
+          const date = issued(cert.issued_on);
+          return (
+            <li key={cert.id} data-card className="min-w-0">
+              <a
+                href={cert.file_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cursor="view pdf"
+                className="block h-full"
+                aria-label={`${cert.name}, ${cert.issuer}${date ? `, issued ${date}` : ""} (PDF, opens in a new tab)`}
+              >
+                <div
+                  data-card-inner
+                  className="credential relative flex h-full min-h-[17rem] flex-col justify-between gap-8 overflow-hidden rounded-2xl border border-line bg-surface p-6"
                 >
-                  <div
-                    data-card-inner
-                    className="credential relative flex h-[25rem] w-[19rem] flex-col justify-between overflow-hidden rounded-2xl border border-line bg-surface p-7 md:h-[27rem] md:w-[21rem]"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <span className="font-mono text-xs text-muted-foreground">
-                        {String(i + 1).padStart(2, "0")} /{" "}
-                        {String(certifications.length).padStart(2, "0")}
-                      </span>
-                      <span className="rounded-full border border-line px-3 py-1 font-mono text-xs">
-                        {cert.issuer}
-                      </span>
-                    </div>
+                  <div className="flex items-start justify-between gap-4">
+                    <span className="font-mono text-xs text-muted-foreground">
+                      {String(i + 1).padStart(2, "0")} /{" "}
+                      {String(certifications.length).padStart(2, "0")}
+                    </span>
+                    <span className="rounded-full border border-line px-3 py-1 font-mono text-xs whitespace-nowrap">
+                      {cert.issuer}
+                    </span>
+                  </div>
 
-                    <div>
-                      <p className="font-head text-[2rem] leading-[1] [overflow-wrap:anywhere]">
-                        {shortName(cert.name, cert.issuer ?? "")}
-                      </p>
-                    </div>
+                  <p className="font-head text-[1.75rem] leading-[1.02] hyphens-auto [overflow-wrap:break-word]">
+                    {breakable(shortName(cert.name, cert.issuer ?? ""))}
+                  </p>
 
-                    <div className="flex items-end justify-between gap-4 border-t border-line pt-5">
+                  <div className="flex items-end justify-between gap-4 border-t border-line pt-4">
+                    {date ? (
                       <div>
                         <p className="label">issued</p>
-                        <p className="mt-1 text-sm">{date ?? "—"}</p>
+                        <p className="mt-1 text-sm">{date}</p>
                       </div>
-                      <span className="font-mono text-xs text-primary">open pdf ↗</span>
-                    </div>
+                    ) : (
+                      <span className="label">{cert.issuer}</span>
+                    )}
+                    <span className="font-mono text-xs text-primary">open pdf ↗</span>
                   </div>
-                </a>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="shell mt-6">
-        <div className="h-px bg-line">
-          <div data-rail-progress className="h-full origin-left scale-x-0 bg-primary" />
-        </div>
-      </div>
+                </div>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
     </section>
   );
 }
